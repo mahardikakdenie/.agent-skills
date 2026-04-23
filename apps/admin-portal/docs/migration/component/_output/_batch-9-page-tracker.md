@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 51 |
+| PASS | 52 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 9 |
-| NOT_STARTED | 53 |
+| NOT_STARTED | 52 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -65,7 +65,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/claim/list/import` | `claim-list-import` | `apps/admin-portal/src/app/claim/list/import/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import onto shared Box, Button, and FileUpload primitives, remove the legacy view dependency, and implement inline file-to-base64 conversion for direct claim import submission. |
 | `/claim/list/import-with-preview` | `claim-list-import-with-preview` | `apps/admin-portal/src/app/claim/list/import-with-preview/page.tsx` | NO | NO | `PASS` | 2026-04-15 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /claim/list/import-with-preview onto shared Box, Button, FileUpload, Table, Select, and Dialog primitives, remove dependencies on legacy views, and implement consolidated icon components (AlertCircleIcon, EditIcon) using Box. |
 | `/export-users` | `export-users` | `apps/admin-portal/src/app/export-users/page.tsx` | NO | YES | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /export-users route onto shared @repo/ui DataTable, Button, and Box primitives, standardize the filter and dialog chrome, and implement dynamic column sizing while preserving existing Excel export and filter behavior. |
-| `/finance/billing/add` | `finance-billing-add` | `apps/admin-portal/src/app/finance/billing/add/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/finance/billing/add` | `finance-billing-add` | `apps/admin-portal/src/app/finance/billing/add/page.tsx` | NO | YES | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-04-23 updates refactor the route onto shared DataTable instance API, standardize the filters and layout on shared primitives, and implement dynamic column sizing while preserving existing billing creation logic. |
 | `/finance/billing/detail/[id]` | `finance-billing-detail-id` | `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current Pole docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
 | `/finance/billing/detail/[id]/export` | `finance-billing-detail-id-export` | `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/billing/detail/[id]/import` | `finance-billing-detail-id-import` | `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -441,14 +441,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-billing-add`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-23`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+- Notes: Latest 2026-04-23 updates refactor the route onto shared DataTable instance API, standardize the filters and layout on shared primitives, and implement dynamic column sizing while preserving existing billing creation logic.
 
 ### /finance/billing/detail/[id]
 

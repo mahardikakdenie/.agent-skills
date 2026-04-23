@@ -413,3 +413,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Combobox, DataTable, Select, and Skeleton primitives while PageHeader-style title treatment remains local.`
 - Verification note: `This logging update is based on the current claim history route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /claim/history as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+
+## Batch 9 - /finance/billing/add Route Refactor - 2026-04-23
+
+- Route focus: `/finance/billing/add`
+- Migration intent: `Refactor the create billing route onto the current shared primitive stack, standardizing the search filters and table rendering while migrating onto the shared DataTable instance API.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/billing/add/page.tsx` now renders the route shell with `Box`, replaces bespoke type and company/partner selection with shared `Select` and `Combobox` primitives.
+  - The route now mounts the shared `@repo/ui` `DataTable` directly, standardizes the page header via the local `PageHeader` component, and implements a consolidated filter section using `Box` composition.
+  - `apps/admin-portal/src/components/tableConfig/billingTransactionTableConfig.tsx` defines the transaction list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, loading skeletons, and right-aligned currency formatting using `formatMoney`.
+  - Implemented a cleaner empty state using shared `Box` and the `no-data` asset.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/billing/add/page.tsx`, `apps/admin-portal/src/components/tableConfig/billingTransactionTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, DataTable, Select, and Alert primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current create billing route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /finance/billing/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
