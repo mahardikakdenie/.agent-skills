@@ -1,7 +1,7 @@
 "use client";
 
 import { useCurrencyForm } from "@/hooks/useCurrencyForm.hooks";
-import { CurrencyForm } from "@/components/forms/CurrencyForm";
+import { CurrencyForm } from "@/components/forms/currency-form";
 
 export default function AddCurrency() {
   const {
@@ -44,7 +44,7 @@ export default function AddCurrency() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={false}
+      mode="create"
       isLoadingInsurances={isLoadingInsurances}
       isLoadingTypeCurrencies={isLoadingTypeCurrencies}
       isLoadingCurrencies={isLoadingCurrencies}

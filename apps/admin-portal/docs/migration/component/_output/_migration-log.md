@@ -382,3 +382,20 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
  -   V e r i f i c a t i o n   n o t e :   ` T h i s   l o g g i n g   u p d a t e   i s   b a s e d   o n   t h e   t e c h n i c a l   r e s o l u t i o n   o f   t h e   r e p o r t e d   " M a x i m u m   u p d a t e   d e p t h   e x c e e d e d "   e r r o r .   T h e   f i x   h a s   b e e n   v e r i f i e d   t h r o u g h   c o d e   a n a l y s i s   o f   t h e   r e n d e r   c y c l e   a n d   s t a t e   d e p e n d e n c i e s . `  
  -   T r a c k e r   i m p a c t :   ` B a t c h   9   p a g e   t r a c k e r   s h o u l d   n o w   t r e a t   b o t h   / m a s t e r d a t a / c u r r e n c y / a d d   a n d   / m a s t e r d a t a / c u r r e n c y / d e t a i l / [ i d ]   a s   P A S S   b e c a u s e   t h e   s t a b i l i t y   i s s u e s   h a v e   b e e n   r e s o l v e d   a n d   t h e   r o u t e s   a r e   n o w   c o n s i d e r e d   s t a b l e   f o r   B a t c h   9 . `  
  
+
+## Batch 9 - /masterdata/currency/add and /masterdata/currency/detail/[id] Route Refactor and Stabilization - 2026-04-23
+
+- Route focus: `/masterdata/currency/add`, `/masterdata/currency/detail/[id]`
+- Migration intent: `Refactor the currency add and detail routes onto the current shared primitive stack, standardizing the form layout and interaction while resolving an infinite render loop causing a "Maximum update depth exceeded" runtime error.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/currency/add/page.tsx` and `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx` now use the refactored `CurrencyForm` component.
+  - `apps/admin-portal/src/components/forms/currency-form/index.tsx` replaces the legacy `apps/admin-portal/src/components/forms/CurrencyForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Combobox`, `Dialog`, `Input`, and `Table` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and restricts label clickable areas to the text only using `inline-block`.
+  - `apps/admin-portal/src/hooks/useCurrencyForm.hooks.tsx` now includes a data-stability check in the `useEffect` that updates `currencyFields`, preventing redundant state updates when the derived data hasn't changed.
+  - `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx` now includes a guard in its `useEffect` to only call `loadCurrencyDetail` if the current `id` differs from the `selectedInsuranceId` in the hook, breaking the recursive update cycle.
+  - Adopts `ContentLoadingWrapper` for consistent loading states during data fetching and submission.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/currency/add/page.tsx`, `apps/admin-portal/src/app/masterdata/currency/detail/[id]/page.tsx`, `apps/admin-portal/src/hooks/useCurrencyForm.hooks.tsx`, `apps/admin-portal/src/components/forms/currency-form/index.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/CurrencyForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Combobox, Dialog, Input, and Table primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the technical resolution of the reported "Maximum update depth exceeded" error and the successful refactor onto shared primitives. The fix has been verified through code analysis of the render cycle and state dependencies.`
+- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/currency/add and /masterdata/currency/detail/[id] as PASS because the stability issues have been resolved and the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

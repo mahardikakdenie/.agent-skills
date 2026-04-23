@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useCurrencyForm } from "@/hooks/useCurrencyForm.hooks";
-import { CurrencyForm } from "@/components/forms/CurrencyForm";
+import { CurrencyForm } from "@/components/forms/currency-form";
 import { useParams } from "next/navigation";
 
 export default function EditCurrency() {
@@ -62,7 +62,7 @@ export default function EditCurrency() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      isEdit={true}
+      mode="edit"
       isLoadingInsurances={isLoadingInsurances}
       isLoadingTypeCurrencies={isLoadingTypeCurrencies}
       isLoadingCurrencies={isLoadingCurrencies}
