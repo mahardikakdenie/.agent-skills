@@ -336,8 +336,8 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
           height: 'calc(100vh - var(--fs-navbar-height, 64px))',
         }}
       >
-        {children}
-        {/* {isForbidden ? (
+        {/* {children} */}
+        {isForbidden ? (
           <div className="h-[calc(100vh-50px)] flex flex-col items-center justify-center">
             <h1 className="font-bold text-3xl">403 - Forbidden</h1>
             <p className="mx-5 text-center">Oops! You don&apos;t have permission for this page.</p>
@@ -347,7 +347,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
         ) : path.startsWith('/oauth/') ? (
           // Allow OAuth callback pages to render without authentication
           children
-        ) : null} */}
+        ) : null}
       </main>
 
       {isModalChangePassword && (

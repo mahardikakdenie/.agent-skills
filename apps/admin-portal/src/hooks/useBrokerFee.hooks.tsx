@@ -7,7 +7,7 @@ import AppURL from "@/constants/app-url.const";
 import { useBrokerFees } from "@/services/finance/hooks/queries";
 import { useDeleteBrokerFee } from "@/services/finance/hooks/mutations";
 
-interface BrokerFeeItem {
+export interface BrokerFeeItem {
   id: string;
   insurance: string;
   insurance_name: string;
@@ -112,14 +112,10 @@ export function useBrokerFee(): UseBrokerFeeProps {
     [updateURL]
   );
 
-  const setSearchTerm = useMemo(
-    () =>
-      _.debounce((keyword: string) => {
-        setSearchTermState(keyword);
-        setPageState(1);
-      }, 300),
-    []
-  );
+  const setSearchTerm = useCallback((keyword: string) => {
+    setSearchTermState(keyword);
+    setPageState(1);
+  }, []);
 
   const {
     data: brokerFeeResponse,

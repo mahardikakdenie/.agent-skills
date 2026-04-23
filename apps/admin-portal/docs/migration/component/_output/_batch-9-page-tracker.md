@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 52 |
+| PASS | 53 |
 | IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 9 |
+| DEFERRED_DATA_TABLE | 8 |
 | NOT_STARTED | 52 |
 | OUT_OF_SCOPE | 1 |
 
@@ -70,7 +70,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/finance/billing/detail/[id]/export` | `finance-billing-detail-id-export` | `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/billing/detail/[id]/import` | `finance-billing-detail-id-import` | `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/billing/detail/[id]/invoice` | `finance-billing-detail-id-invoice` | `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/finance/broker-fee` | `finance-broker-fee` | `apps/admin-portal/src/app/finance/broker-fee/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/finance/broker-fee` | `finance-broker-fee` | `apps/admin-portal/src/app/finance/broker-fee/page.tsx` | NO | YES | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-04-23 updates migrate the route onto the shared DataTable instance API, standardize the search filters on shared primitives, and implement dynamic column sizing while preserving existing navigation. |
 | `/finance/broker-fee/add` | `finance-broker-fee-add` | `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/broker-fee/detail/[id]` | `finance-broker-fee-detail-id` | `apps/admin-portal/src/app/finance/broker-fee/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/partner-comm` | `finance-partner-comm` | `apps/admin-portal/src/app/finance/partner-comm/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
@@ -516,14 +516,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-broker-fee`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-23`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Latest 2026-04-23 updates migrate the route onto the shared DataTable instance API, standardize the search filters on shared primitives, and implement dynamic column sizing while preserving existing navigation.
 
 ### /finance/broker-fee/add
 

@@ -428,3 +428,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, DataTable, Select, and Alert primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current create billing route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /finance/billing/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+
+## Batch 9 - /finance/broker-fee Route Refactor - 2026-04-23
+
+- Route focus: `/finance/broker-fee`
+- Migration intent: `Migrate the broker fee route onto the shared DataTable instance API, standardize the search filters and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/broker-fee/page.tsx` now renders the route shell with `Box`, replaces the bespoke search input with `DebouncedSearchInput`, and mounts the shared `@repo/ui` `DataTable` directly with manual pagination, column pinning, and `CompactTablePagination` integration.
+  - `apps/admin-portal/src/components/tableConfig/brokerFeeTableConfig.tsx` defines the broker fee list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, loading skeletons, and standardized shared `Button`-based row actions.
+  - `apps/admin-portal/src/hooks/useBrokerFee.hooks.tsx` now manages table state (page, rowsPerPage) with explicit URL synchronization using a local `updateURL` helper, ensuring state persistence across browser navigation.
+  - Implemented a cleaner empty state using shared `Box` and the `no-data` asset.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/broker-fee/page.tsx`, `apps/admin-portal/src/components/tableConfig/brokerFeeTableConfig.tsx`, `apps/admin-portal/src/hooks/useBrokerFee.hooks.tsx`]
+- Shared-ui impact: `No new @repo/ui export is adopted. The route now composes existing shared Box, Button, DataTable, and Skeleton primitives while extending only app-local table configuration and pagination styling.`
+- Verification note: `This logging update is based on the current broker fee route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /finance/broker-fee as PASS because the route-local migration has been completed.`
