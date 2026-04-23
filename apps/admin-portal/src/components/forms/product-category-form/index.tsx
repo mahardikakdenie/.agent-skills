@@ -129,8 +129,8 @@ export function ProductCategoryForm({
           )}
 
           <Box className="flex flex-col w-full p-4 md:p-6 gap-6">
-            <Box className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-x-6 gap-y-4 shadow-sm border border-slate-100">
-              <Box className="text-primary font-bold sm:col-span-2">Product Category Details</Box>
+            <Box className="p-4 sm:p-6 bg-white rounded-lg flex flex-col gap-4 shadow-sm border border-slate-100">
+              <Box className="text-primary font-bold">Product Category Details</Box>
               <Box>
                 <Box
                   as="label"
@@ -203,8 +203,8 @@ export function ProductCategoryForm({
 
               {/* Icon Preview */}
               {watch('icon') && (
-                <Box className="sm:col-span-2 mt-2">
-                  <Box as="label" className="inline-block text-sm font-medium text-slate-700 mb-2">
+                <Box className="mt-2">
+                  <Box as="label" className="block text-sm font-medium text-slate-700 mb-2">
                     Icon Preview
                   </Box>
                   <Box className="border border-slate-200 bg-slate-50/50 rounded-xl p-6 inline-flex items-center justify-center min-w-[120px] min-h-[120px]">
