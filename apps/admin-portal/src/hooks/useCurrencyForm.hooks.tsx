@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
@@ -142,12 +142,20 @@ export function useCurrencyForm(
       refetchOnMount: "always",
     });
 
-  const insurancesData: any = insurancesResponse;
-  const insurances = insurancesData?.data ?? insurancesData ?? [];
-  const typeCurrenciesData: any = typeCurrenciesResponse;
-  const typeCurrencies = typeCurrenciesData?.data ?? typeCurrenciesData ?? [];
-  const existingCurrenciesData: any = existingCurrenciesResponse;
-  const existingCurrencies = existingCurrenciesData?.data ?? existingCurrenciesData ?? [];
+  const insurances = useMemo(() => {
+    const data: any = insurancesResponse;
+    return data?.data ?? data ?? [];
+  }, [insurancesResponse]);
+
+  const typeCurrencies = useMemo(() => {
+    const data: any = typeCurrenciesResponse;
+    return data?.data ?? data ?? [];
+  }, [typeCurrenciesResponse]);
+
+  const existingCurrencies = useMemo(() => {
+    const data: any = existingCurrenciesResponse;
+    return data?.data ?? data ?? [];
+  }, [existingCurrenciesResponse]);
 
   useEffect(() => {
     if (existingCurrencies && isEdit) {
@@ -196,7 +204,15 @@ export function useCurrencyForm(
           return formValue;
         });
 
-        setCurrencyFields(fields);
+        // Only set if fields are actually different to prevent infinite loop
+        setCurrencyFields((prev) => {
+          const isSame =
+            prev.length === fields.length &&
+            prev.every((f, i) => f.id === fields[i].id && f.rate === fields[i].rate);
+
+          if (isSame) return prev;
+          return fields;
+        });
       }
     }
   }, [existingCurrencies, reset, isEdit, selectedInsuranceId]);

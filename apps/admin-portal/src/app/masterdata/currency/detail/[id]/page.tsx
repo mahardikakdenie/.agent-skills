@@ -44,10 +44,10 @@ export default function EditCurrency() {
       : "";
 
   useEffect(() => {
-    if (id) {
+    if (id && id !== selectedInsuranceId) {
       loadCurrencyDetail(id);
     }
-  }, [loadCurrencyDetail, id]);
+  }, [loadCurrencyDetail, id, selectedInsuranceId]);
 
   return (
     <CurrencyForm
