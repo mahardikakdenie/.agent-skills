@@ -2,8 +2,25 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-04-21
+> Last reconciled: 2026-04-23
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
+
+---
+
+## 2026-04-23 - Button and Combobox Structure and API Refinement
+
+Changed:
+
+- Refined the internal markup of `Button` by explicitly setting `Box as="span"` for the loading spinner, left icon, and right icon slots, ensuring consistent inline-flex alignment and following the "no native JSX" rule for semantic output.
+- Extended the `Combobox` public API to include `triggerClassName`, allowing for targeted styling of the underlying field-shell trigger without affecting the overall popover container or internal listbox.
+- Hardened the `Combobox` internal rendering logic to handle null or undefined `value`, `label`, and `searchValue` inputs gracefully by falling back to empty strings before trimming and normalization.
+- Reconciled `02-api-conventions.md` to include `triggerClassName` in the documented `ComboboxProps` interface.
+
+Impact:
+
+- `Button` icon alignment is now more resilient and semantically correct across different layout contexts by leveraging `as="span"` on its internal `Box` wrappers.
+- `Combobox` consumers now have the necessary hook to apply layout-specific positioning or width overrides to the trigger shell through `triggerClassName`, mirroring the established pattern for other field-shell components.
+- Downstream migrations for `Combobox` now benefit from safer internal handling of incomplete or async option data, reducing runtime errors during partial state updates.
 
 ---
 

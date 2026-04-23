@@ -46,6 +46,7 @@ export interface ComboboxProps
     state: ComboboxOptionRenderState,
   ) => React.ReactNode;
   className?: string;
+  triggerClassName?: string;
   open?: boolean;
   onClose?: () => void;
 }

@@ -61,6 +61,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       onCreateOption,
       renderOption,
       className,
+      triggerClassName,
       open,
       onClose,
       id,
@@ -94,7 +95,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     const resolvedOpen = open ?? uncontrolledOpen;
     const currentValue = isControlled ? value : uncontrolledValue;
     const resolvedSearchValue = isSearchControlled ? searchValue : uncontrolledSearchValue;
-    const trimmedSearchValue = resolvedSearchValue.trim();
+    const trimmedSearchValue = (resolvedSearchValue ?? '').trim();
     const normalizedSearchValue = trimmedSearchValue.toLowerCase();
     const selectedOption = getComboboxOption(options, currentValue);
     const searchLabel = getComboboxSearchLabel(label, searchPlaceholder);
@@ -102,7 +103,11 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
     const interactiveDisabled = disabled || loading;
     const hasExactMatch =
       normalizedSearchValue.length > 0 &&
-      options.some((option) => [option.label, option.value].some((candidate) => candidate.trim().toLowerCase() === normalizedSearchValue));
+      options.some((option) =>
+        [option.label, option.value].some(
+          (candidate) => (candidate ?? '').trim().toLowerCase() === normalizedSearchValue,
+        ),
+      );
     const canCreateOption = Boolean(onCreateOption) && !interactiveDisabled && normalizedSearchValue.length > 0 && !hasExactMatch;
     const resolvedCreateOptionLabel =
       typeof createOptionLabel === 'function'
@@ -253,14 +258,17 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 aria-expanded={resolvedOpen}
                 aria-haspopup="listbox"
                 aria-controls={listId}
-                className={comboboxTriggerVariants({
-                  variant,
-                  size,
-                  disabled: interactiveDisabled,
-                  invalid,
-                  open: resolvedOpen,
-                  clearable: showClearButton,
-                })}
+                className={cn(
+                  comboboxTriggerVariants({
+                    variant,
+                    size,
+                    disabled: interactiveDisabled,
+                    invalid,
+                    open: resolvedOpen,
+                    clearable: showClearButton,
+                  }),
+                  triggerClassName,
+                )}
                 onBlur={onBlur}
                 onFocus={onFocus}
                 onKeyDown={handleTriggerKeyDown}
@@ -314,7 +322,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
               className={comboboxCommandVariants()}
               shouldFilter
               filter={(itemValue, search, keywords = []) => {
-                const normalizedSearch = search.trim().toLowerCase();
+                const normalizedSearch = (search ?? '').trim().toLowerCase();
 
                 if (!normalizedSearch) {
                   return 1;
@@ -380,14 +388,16 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                         </Box>
                       </CommandPrimitive.Item>
                     ) : null}
-                    {options.map((option) => {
-                      const selected = option.value === currentValue;
+                    {options.map((option, index) => {
+                      const value = option.value ?? '';
+                      const label = option.label ?? '';
+                      const selected = value === currentValue;
 
                       return (
                         <CommandPrimitive.Item
-                          key={option.value}
-                          value={option.value}
-                          keywords={option.keywords ?? [option.label, option.value]}
+                          key={option.value || `option-${index}`}
+                          value={value}
+                          keywords={option.keywords ?? [label, value]}
                           disabled={option.disabled}
                           className={comboboxItemVariants()}
                           onSelect={handleOptionSelect}

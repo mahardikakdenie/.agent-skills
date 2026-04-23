@@ -953,6 +953,7 @@ export interface ComboboxProps {
   onCreateOption?: (searchValue: string) => void;
   renderOption?: (option: ComboboxOption, state: ComboboxOptionRenderState) => React.ReactNode;
   className?: string;
+  triggerClassName?: string;
   open?: boolean;
   onClose?: () => void;
 }

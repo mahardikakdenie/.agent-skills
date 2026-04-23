@@ -34,19 +34,19 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const isDisabled = disabled || loading;
     const iconMarkup = loading ? (
-      <Box data-slot="button-spinner" aria-hidden="true" className="shrink-0">
+      <Box as="span" data-slot="button-spinner" aria-hidden="true" className="shrink-0">
         <LoaderCircle className="h-4 w-4 animate-spin" />
       </Box>
     ) : null;
 
     const leadingMarkup = !loading && leftIcon ? (
-      <Box data-slot="button-left-icon" aria-hidden="true" className="shrink-0">
+      <Box as="span" data-slot="button-left-icon" aria-hidden="true" className="shrink-0">
         {leftIcon}
       </Box>
     ) : null;
 
     const trailingMarkup = !loading && rightIcon ? (
-      <Box data-slot="button-right-icon" aria-hidden="true" className="shrink-0">
+      <Box as="span" data-slot="button-right-icon" aria-hidden="true" className="shrink-0">
         {rightIcon}
       </Box>
     ) : null;
