@@ -118,6 +118,10 @@ class AppURL {
   static configuration = "/configuration";
   static configurationSla = `${AppURL.configuration}/sla`;
 
+  // Configurations
+  static configurations = "/configurations";
+
+
   // Finance
   static finance = "/finance";
   static financeBilling = `${AppURL.finance}/billing`;

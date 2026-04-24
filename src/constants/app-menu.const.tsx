@@ -573,6 +573,18 @@ class AppMenu {
         },
       ],
     },
+    {
+      name: "Configurations",
+      url: "",
+      submenu: [
+        {
+          name: "Communication Providers",
+          url: AppURL.configurations,
+          icon: renderImageIcon(iconClaim, "Communication Providers"),
+          additionalPages: [],
+        },
+      ],
+    },
   ];
 
   private static renderProductCategoryIcon(
