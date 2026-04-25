@@ -355,6 +355,13 @@ class ApiURL {
 
   static customers = "/customers";
   static v1Customers = `/v1${ApiURL.customers}`;
+
+  // Communication Service - Channel Providers
+  static channelProviders = "/channel-providers";
+  static channelProviderDetails = (channelId: string) => {
+    return `${ApiURL.channelProviders}/${channelId}`;
+  };
+  static channelProviderAvailableProviders = `${ApiURL.channelProviders}/available-providers`;
 }
 
 export default ApiURL;
