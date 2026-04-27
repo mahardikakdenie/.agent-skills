@@ -460,3 +460,32 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current insurance add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /masterdata/insurance/add and /masterdata/insurance/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+## Batch 9 - /masterdata/user/add and /masterdata/user/detail/[id] Route Refactor - 2026-04-27
+
+- Route focus: `/masterdata/user/add`, `/masterdata/user/detail/[id]`
+- Migration intent: `Refactor the user add and detail routes onto the refreshed UserFormWrapper stack, standardizing the page header and form controls while preserving existing user create, detail, group, role, channel, and insurer assignment behavior.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/user/add/page.tsx` now delegates to the refreshed `UserFormWrapper` without redundant `status` prop plumbing and keeps the existing create-user hook flow intact.
+  - `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx` follows the same wrapper contract cleanup while preserving existing detail loading, account channel loading, account insurer loading, and insurance lookup behavior.
+  - `apps/admin-portal/src/components/forms/UserForm/index.tsx` now standardizes the user form shell with the local `PageHeader`, shared `Button` actions, refreshed breadcrumbs, and consistent edit/create title handling.
+  - `apps/admin-portal/src/components/forms/UserForm/components/user-form.tsx` adopts shared `@repo/ui` `Combobox`, `Input`, `Select`, and `Button` composition, derives role/channel/status options locally, and tightens label, grid, password, and phone-code control styling.
+  - `apps/admin-portal/src/components/ui/select-phone-code.tsx` now supports caller-provided wrapper, trigger, and content class names so the user form can align the country-code selector with the refreshed input layout.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/user/add/page.tsx`, `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/UserForm/index.tsx`, `apps/admin-portal/src/components/forms/UserForm/components/user-form.tsx`, `apps/admin-portal/src/components/ui/select-phone-code.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Button, Combobox, Input, and Select primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current user add/detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/user/add and /masterdata/user/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /report/claim Route Refactor - 2026-04-27
+
+- Route focus: `/report/claim`
+- Migration intent: `Migrate the claim report route off the deferred DataTable path and onto the shared DataTable instance API, standardizing filters, pagination, empty states, and dynamic report columns while preserving existing claim report fetching and download behavior.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/report/claim/page.tsx` now renders the route shell with shared `Box`, `Button`, `Select`, `DateRangePicker`, and `DataTable` primitives.
+  - The route replaces the bespoke popover/calendar date range control with shared `DateRangePicker`, keeps the download action gated by a complete date range, and preserves the existing channel filter and report download handlers.
+  - The route now mounts shared `@repo/ui` `DataTable` with manual pagination, compact pagination via `CompactTablePagination`, explicit page-size options, guarded pagination changes during loading, and a no-data image empty state.
+  - `apps/admin-portal/src/components/tableConfig/claimReportTableConfig.tsx` now defines claim report columns against the shared `ColumnDef` contract with explicit sizing, wrapped cell content, scoped loading skeletons, and stable fallback display values.
+  - `apps/admin-portal/next.config.mjs` adds Turbopack aliases for repo config packages needed by the refreshed shared package resolution path.
+- Files changed (route-focused): [`apps/admin-portal/src/app/report/claim/page.tsx`, `apps/admin-portal/src/components/tableConfig/claimReportTableConfig.tsx`, `apps/admin-portal/next.config.mjs`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, DataTable, DateRangePicker, Select, and Skeleton primitives while compact pagination remains app-local.`
+- Verification note: `This logging update is based on the current claim report route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should move /report/claim from DEFERRED_DATA_TABLE to IN_PROGRESS because the DataTable migration work has landed, but explicit route-level smoke or screenshot evidence is still not recorded.`

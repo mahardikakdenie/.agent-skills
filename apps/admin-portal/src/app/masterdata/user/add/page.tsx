@@ -1,8 +1,9 @@
-﻿"use client";
+﻿'use client';
 
-import { useUserForm } from "@/hooks/useUserForm.hooks";
-import { UserFormWrapper } from "@/components/forms/UserForm";
-import iconCopy from "@public/images/icon-copy.svg";
+import iconCopy from '@public/images/icon-copy.svg';
+
+import { UserFormWrapper } from '@/components/forms/UserForm';
+import { useUserForm } from '@/hooks/useUserForm.hooks';
 
 export default function AddUser() {
   const {
@@ -14,7 +15,6 @@ export default function AddUser() {
     channels,
     roleOptions,
     phoneCode,
-    status,
     showPassword,
     isLoadingChannels,
     isSaving,
@@ -26,7 +26,7 @@ export default function AddUser() {
     copyPassword,
     goBack,
     getStatusColor,
-  } = useUserForm("create");
+  } = useUserForm('create');
 
   return (
     <UserFormWrapper
@@ -39,7 +39,6 @@ export default function AddUser() {
       channels={channels}
       roleOptions={roleOptions}
       phoneCode={phoneCode}
-      status={status}
       showPassword={showPassword}
       isLoading={isLoadingChannels || isSaving}
       setPhoneCode={setPhoneCode}
@@ -54,4 +53,3 @@ export default function AddUser() {
     />
   );
 }
-

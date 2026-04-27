@@ -71,7 +71,6 @@ export default function PartnerManagementForm({
   const [showApiKey, setShowApiKey] = React.useState(false);
 
   const breadcrumbs = [
-    { label: 'Masterdata', href: AppURL.masterdata },
     { label: 'Partner Management', href: AppURL.masterdataPartnerManagement },
     { label: isEdit ? 'Edit' : 'Add', isCurrentPage: true },
   ];
@@ -233,10 +232,10 @@ export default function PartnerManagementForm({
                               onValueChange={codeField.onChange}
                               size="lg"
                             >
-                              <SelectTrigger className="w-[140px] border-y-0 border-l-0 border-r rounded-r-none bg-transparent hover:cursor-pointer shadow-none focus:ring-0">
+                              <SelectTrigger className="w-[184px] shrink-0 border-y-0 border-l-0 border-r rounded-r-none bg-transparent hover:cursor-pointer shadow-none focus:ring-0">
                                 <SelectValue placeholder="Code" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="min-w-[184px]">
                                 <SelectGroup>
                                   {PHONE_CODES.map((item) => (
                                     <SelectItem key={item.code} value={item.code}>

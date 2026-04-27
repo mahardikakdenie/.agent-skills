@@ -1,18 +1,20 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useUserForm } from "@/hooks/useUserForm.hooks";
-import { useAccountChannel } from "@/hooks/useAccountChannel.hooks";
-import { useAccountInsurer } from "@/hooks/useAccountInsurer.hooks";
-import { useInsurance } from "@/hooks/useIsurance.hooks"; // ✅ Import useInsurance
-import { UserFormWrapper } from "@/components/forms/UserForm";
-import iconCopy from "@public/images/icon-copy.svg";
-import noData from "@public/images/no-data.webp";
+import iconCopy from '@public/images/icon-copy.svg';
+import noData from '@public/images/no-data.webp';
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+// ✅ Import useInsurance
+import { UserFormWrapper } from '@/components/forms/UserForm';
+import { useAccountChannel } from '@/hooks/useAccountChannel.hooks';
+import { useAccountInsurer } from '@/hooks/useAccountInsurer.hooks';
+import { useInsurance } from '@/hooks/useIsurance.hooks';
+import { useUserForm } from '@/hooks/useUserForm.hooks';
 
 export default function EditUser() {
   const params = useParams();
-  const id = typeof params.id === "string" ? params.id : params.id?.[0] || "";
+  const id = typeof params.id === 'string' ? params.id : params.id?.[0] || '';
 
   const {
     handleSubmit,
@@ -28,7 +30,6 @@ export default function EditUser() {
     availableGroups,
     availableRoles,
     phoneCode,
-    status,
     showPassword,
     isLoadingDetail,
     isLoadingChannels,
@@ -48,7 +49,7 @@ export default function EditUser() {
     handleAddRole,
     handleDeleteRole,
     getStatusColor,
-  } = useUserForm("edit");
+  } = useUserForm('edit');
 
   const {
     accountChannels,
@@ -66,11 +67,7 @@ export default function EditUser() {
     loadAccountInsurers,
   } = useAccountInsurer();
 
-  const {
-    insurances,
-    isLoading: isLoadingInsurances,
-    setRowsPerPage,
-  } = useInsurance();
+  const { insurances, isLoading: isLoadingInsurances, setRowsPerPage } = useInsurance();
 
   useEffect(() => {
     if (id) {
@@ -109,7 +106,6 @@ export default function EditUser() {
       accountInsurers={accountInsurers}
       insurers={insurances} // ✅ Pass insurances from hook
       phoneCode={phoneCode}
-      status={status}
       showPassword={showPassword}
       isLoading={isLoadingDetail || isLoadingChannels || isSaving}
       isLoadingGroups={isLoadingGroups}

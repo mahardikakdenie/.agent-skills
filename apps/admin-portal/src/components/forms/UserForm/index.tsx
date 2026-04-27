@@ -1,33 +1,23 @@
-import React, { useState } from "react";
-import { Check, ChevronLeft } from "react-feather";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@repo/ui";
-import { Button } from "@repo/ui";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@repo/ui";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
+import React, { useState } from 'react';
+import { Check, Save } from 'react-feather';
 
-import { UserForm } from "./components/user-form";
-import { UserGroups } from "./components/user-groups";
-import { UserRoles } from "./components/user-roles";
-import { UserChannels } from "./components/user-channels";
-import { UserInsurers } from "./components/user-insurers";
-import { ChannelModal } from "./components/add-channel-modal";
-import { InsurerModal } from "./components/add-insurer-modal";
+import { Button } from '@repo/ui';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@repo/ui';
+
+import { PageHeader } from '@/components/page-header';
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+import AppURL from '@/constants/app-url.const';
+
+import { ChannelModal } from './components/add-channel-modal';
+import { InsurerModal } from './components/add-insurer-modal';
+import { UserChannels } from './components/user-channels';
+import { UserForm } from './components/user-form';
+import { UserGroups } from './components/user-groups';
+import { UserInsurers } from './components/user-insurers';
+import { UserRoles } from './components/user-roles';
 
 interface UserFormWrapperProps {
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
 
   handleSubmit: any;
   control: any;
@@ -51,7 +41,6 @@ interface UserFormWrapperProps {
   insurers?: any[];
 
   phoneCode: string;
-  status: string;
   showPassword: boolean;
 
   isLoading: boolean;
@@ -106,7 +95,6 @@ export function UserFormWrapper({
   accountInsurers = [],
   insurers = [],
   phoneCode,
-  status,
   showPassword,
   isLoading,
   isLoadingGroups = false,
@@ -134,7 +122,11 @@ export function UserFormWrapper({
   setChannel = () => {},
   noData,
 }: UserFormWrapperProps) {
-  const isEdit = mode === "edit";
+  const isEdit = mode === 'edit';
+  const breadcrumbs = [
+    { label: 'User', href: AppURL.masterdataUser },
+    { label: isEdit ? 'Detail' : 'Add', isCurrentPage: true },
+  ];
 
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
   const [isInsurerModalOpen, setIsInsurerModalOpen] = useState(false);
@@ -148,11 +140,11 @@ export function UserFormWrapper({
   const [channelToDelete, setChannelToDelete] = useState<string | null>(null);
   const [insurerToDelete, setInsurerToDelete] = useState<string | null>(null);
 
-  const [groupFilter, setGroupFilter] = useState("");
+  const [groupFilter, setGroupFilter] = useState('');
   const [pageGroups, setPageGroups] = useState(1);
   const [rowsPerPageGroup, setRowsPerPageGroup] = useState(10);
 
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState('');
   const [pageRoles, setPageRoles] = useState(1);
   const [rowsPerPageRole, setRowsPerPageRole] = useState(10);
 
@@ -200,15 +192,9 @@ export function UserFormWrapper({
     }
   };
 
-  const channelsMapById = channels.reduce(
-    (prev, value) => ({ ...prev, [value.id]: value }),
-    {}
-  );
+  const channelsMapById = channels.reduce((prev, value) => ({ ...prev, [value.id]: value }), {});
 
-  const insurersMapById = insurers.reduce(
-    (prev, value) => ({ ...prev, [value.id]: value }),
-    {}
-  );
+  const insurersMapById = insurers.reduce((prev, value) => ({ ...prev, [value.id]: value }), {});
 
   const handleSelectAllGroups = () => {
     if (selectedGroup.length === availableGroups.length) {
@@ -238,25 +224,22 @@ export function UserFormWrapper({
   };
 
   const filteredGroups = availableGroups.filter((group: any) =>
-    group.name.toLowerCase().includes(groupFilter.toLowerCase())
+    group.name.toLowerCase().includes(groupFilter.toLowerCase()),
   );
 
   const paginatedGroups = filteredGroups.slice(
     (pageGroups - 1) * rowsPerPageGroup,
-    pageGroups * rowsPerPageGroup
+    pageGroups * rowsPerPageGroup,
   );
 
   const totalPagesGroups = Math.ceil(filteredGroups.length / rowsPerPageGroup);
 
   const handleSelectAllRoles = () => {
     const filteredRoles = availableRoles.filter((role: any) =>
-      role.name.toLowerCase().includes(roleFilter.toLowerCase())
+      role.name.toLowerCase().includes(roleFilter.toLowerCase()),
     );
 
-    if (
-      selectRole.length === filteredRoles.length &&
-      filteredRoles.length > 0
-    ) {
+    if (selectRole.length === filteredRoles.length && filteredRoles.length > 0) {
       setSelectRole([]);
     } else {
       setSelectRole(filteredRoles.map((r: any) => r.id));
@@ -283,12 +266,12 @@ export function UserFormWrapper({
   };
 
   const filteredRoles = availableRoles.filter((role: any) =>
-    role.name.toLowerCase().includes(roleFilter.toLowerCase())
+    role.name.toLowerCase().includes(roleFilter.toLowerCase()),
   );
 
   const paginatedRoles = filteredRoles.slice(
     (pageRoles - 1) * rowsPerPageRole,
-    pageRoles * rowsPerPageRole
+    pageRoles * rowsPerPageRole,
   );
 
   const totalPagesRoles = Math.ceil(filteredRoles.length / rowsPerPageRole);
@@ -298,7 +281,7 @@ export function UserFormWrapper({
       await onAddRole(selectRole);
       setIsModalOpenUser(false);
       setSelectRole([]);
-      setRoleFilter("");
+      setRoleFilter('');
       setPageRoles(1);
     }
   };
@@ -306,50 +289,23 @@ export function UserFormWrapper({
   return (
     <ContentLoadingWrapper isLoading={isLoading}>
       <div className="flex flex-col w-full">
-        <div className="bg-white md:px-6 p-4 flex items-center">
-          <div>
-            <Breadcrumb className="sm:block hidden">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink>Masterdata</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink className="cursor-pointer" onClick={onBack}>
-                    User
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{isEdit ? "Detail" : "Add"}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-              {isEdit ? "Detail User" : "Add User"}
-            </h2>
-          </div>
+        <PageHeader
+          title={isEdit ? 'Detail User' : 'Add User'}
+          breadcrumbs={breadcrumbs}
+          showBackButton={true}
+          onBackClick={onBack}
+        >
+          <Button
+            type="submit"
+            form="user-form"
+            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]"
+            leftIcon={isEdit ? <Check className="w-5 h-5" /> : <Save className="w-5 h-5" />}
+          >
+            Save
+          </Button>
+        </PageHeader>
 
-          <div className="flex ml-auto">
-            <div
-              onClick={onBack}
-              className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back
-            </div>
-            <Button
-              type="submit"
-              form="user-form"
-              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-5 rounded-full px-5"
-            >
-              <Check className="mr-2 w-4 h-4" />
-              Save
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex flex-col w-full p-4 md:p-6 gap-4">
+        <div className="flex flex-col w-full p-4 md:p-6 gap-6">
           <UserForm
             control={control}
             handleSubmit={handleSubmit}
@@ -359,7 +315,6 @@ export function UserFormWrapper({
             roles={roleOptions}
             channels={channels}
             phoneCode={phoneCode}
-            status={status}
             getStatusColor={getStatusColor}
             handleChangeStatus={setStatus}
             setPhoneCode={setPhoneCode}
@@ -367,7 +322,7 @@ export function UserFormWrapper({
             setChannel={setChannel}
             showPassword={showPassword}
             setShowPassword={setShowPassword}
-            setPassword={(password) => setValue("password", password)}
+            setPassword={(password) => setValue('password', password)}
             iconCopy={iconCopy}
             copyPassword={onCopyPassword}
             handleGeneratePassword={onGeneratePassword}
@@ -387,8 +342,7 @@ export function UserFormWrapper({
                   setGroupFilter={setGroupFilter}
                   handleFilterGroup={handleFilterGroup}
                   isAllSelected={
-                    selectedGroup.length === filteredGroups.length &&
-                    filteredGroups.length > 0
+                    selectedGroup.length === filteredGroups.length && filteredGroups.length > 0
                   }
                   handleSelectAllChange={handleSelectAllGroups}
                   handleCheckboxChange={handleCheckboxChangeGroup}
@@ -403,11 +357,9 @@ export function UserFormWrapper({
                   page={pageGroups}
                   totalPages={totalPagesGroups}
                   noData={noData}
-                  handleAddSelectedGroups={() =>
-                    handleAddSelectedGroups(selectedGroup)
-                  }
+                  handleAddSelectedGroups={() => handleAddSelectedGroups(selectedGroup)}
                   handleDeleteSelectedGroup={onDeleteGroup}
-                  id={userId || ""}
+                  id={userId || ''}
                 />
               )}
 
@@ -420,8 +372,7 @@ export function UserFormWrapper({
                   userFilter={roleFilter}
                   handleSearch={handleSearchRole}
                   isAllSelectedRole={
-                    selectRole.length === filteredRoles.length &&
-                    filteredRoles.length > 0
+                    selectRole.length === filteredRoles.length && filteredRoles.length > 0
                   }
                   handleSelectAllChangeRole={handleSelectAllRoles}
                   dataRole={paginatedRoles}
@@ -440,7 +391,7 @@ export function UserFormWrapper({
                   totalPages={totalPagesRoles}
                   handleAddSelectedRole={handleAddSelectedRoleWrapper}
                   handleDeleteSelectedRole={onDeleteRole}
-                  id={userId || ""}
+                  id={userId || ''}
                 />
               )}
 
@@ -450,9 +401,7 @@ export function UserFormWrapper({
                   channels={channels}
                   channelsMapById={channelsMapById}
                   setIsChannelModalOpen={setIsChannelModalOpen}
-                  handleDeleteChannel={(channelId) =>
-                    setChannelToDelete(channelId)
-                  }
+                  handleDeleteChannel={(channelId) => setChannelToDelete(channelId)}
                 />
               )}
 
@@ -462,9 +411,7 @@ export function UserFormWrapper({
                   insurers={insurers}
                   insurersMapById={insurersMapById}
                   setIsInsurerModalOpen={setIsInsurerModalOpen}
-                  handleDeleteInsurer={(insurerId) =>
-                    setInsurerToDelete(insurerId)
-                  }
+                  handleDeleteInsurer={(insurerId) => setInsurerToDelete(insurerId)}
                 />
               )}
             </>
@@ -497,23 +444,14 @@ export function UserFormWrapper({
         )}
 
         {isEdit && (
-          <Dialog
-            open={!!channelToDelete}
-            onClose={() => setChannelToDelete(null)}
-          >
+          <Dialog open={!!channelToDelete} onClose={() => setChannelToDelete(null)}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Delete Channel</DialogTitle>
               </DialogHeader>
-              <div className="py-3">
-                Are you sure you want to delete this channel?
-              </div>
+              <div className="py-3">Are you sure you want to delete this channel?</div>
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setChannelToDelete(null)}
-                >
+                <Button type="button" variant="outline" onClick={() => setChannelToDelete(null)}>
                   Cancel
                 </Button>
                 <Button
@@ -529,23 +467,14 @@ export function UserFormWrapper({
         )}
 
         {isEdit && (
-          <Dialog
-            open={!!insurerToDelete}
-            onClose={() => setInsurerToDelete(null)}
-          >
+          <Dialog open={!!insurerToDelete} onClose={() => setInsurerToDelete(null)}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Delete Insurer</DialogTitle>
               </DialogHeader>
-              <div className="py-3">
-                Are you sure you want to delete this insurer?
-              </div>
+              <div className="py-3">Are you sure you want to delete this insurer?</div>
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setInsurerToDelete(null)}
-                >
+                <Button type="button" variant="outline" onClick={() => setInsurerToDelete(null)}>
                   Cancel
                 </Button>
                 <Button

@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 58 |
-| IN_PROGRESS | 1 |
+| PASS | 59 |
+| IN_PROGRESS | 2 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 5 |
-| NOT_STARTED | 50 |
+| DEFERRED_DATA_TABLE | 4 |
+| NOT_STARTED | 49 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -118,8 +118,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/role` | `masterdata-role` | `apps/admin-portal/src/app/masterdata/role/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and add compact pagination and explicit empty-state handling while preserving existing add and detail navigation. |
 | `/masterdata/role/add` | `masterdata-role-add` | `apps/admin-portal/src/app/masterdata/role/add/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/role/add route onto the refactored RoleForm, standardizing the form layout and interaction with shared Box, Button, Input, Combobox, Checkbox, Table, and Textarea primitives. |
 | `/masterdata/role/detail/[id]` | `masterdata-role-detail-id` | `apps/admin-portal/src/app/masterdata/role/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/role/detail/[id] route onto the refactored RoleForm, standardizing the form layout and interaction with shared Box, Button, Input, Combobox, Checkbox, Table, and Textarea primitives. |
-| `/masterdata/user/add` | `masterdata-user-add` | `apps/admin-portal/src/app/masterdata/user/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/user/detail/[id]` | `masterdata-user-detail-id` | `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/user/add` | `masterdata-user-add` | `apps/admin-portal/src/app/masterdata/user/add/page.tsx` | NO | NO | `PASS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the `/masterdata/user/add` route onto the refreshed `UserFormWrapper`, standardizing the page header and form controls on shared primitives while preserving existing create-user behavior. |
+| `/masterdata/user/detail/[id]` | `masterdata-user-detail-id` | `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes keep the detail route on the refreshed `UserFormWrapper`, remove redundant status prop plumbing, and preserve existing user detail, group, role, channel, and insurer workflows. |
 | `/membership/list/detail/[id]` | `membership-list-detail-id` | `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail page to the relocated local `PageHeader` component path; no dedicated route-level stabilization evidence is recorded yet. |
 | `/membership/list/export` | `membership-list-export` | `apps/admin-portal/src/app/membership/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/membership/list/upload` | `membership-list-upload` | `apps/admin-portal/src/app/membership/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -149,7 +149,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/promotion/campaign/edit/[id]` | `promotion-campaign-edit-id` | `apps/admin-portal/src/app/promotion/campaign/edit/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/report/campaign` | `report-campaign` | `apps/admin-portal/src/app/report/campaign/page.tsx` | NO | YES | `IN_PROGRESS` | 2026-04-10 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the date/filter and table chrome on shared primitives, and implement measured amount-column sizing while preserving the existing report flow. PASS evidence is still incomplete because no explicit route-level smoke/screenshots are recorded yet. |
 | `/report/campaign-analytics` | `report-campaign-analytics` | `apps/admin-portal/src/app/report/campaign-analytics/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `IN_PROGRESS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace bespoke date controls with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract. Route-level verification evidence is still incomplete, so this page remains IN_PROGRESS rather than PASS. |
 | `/report/performance` | `report-performance` | `apps/admin-portal/src/app/report/performance/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/sanction/list` | `sanction-list` | `apps/admin-portal/src/app/sanction/list/page.tsx` | NO | YES | `PASS` | 2026-04-14 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/sanction/list/add` | `sanction-list-add` | `apps/admin-portal/src/app/sanction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1223,14 +1223,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-user-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-27`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/user/add` route onto the refreshed `UserFormWrapper`. The update standardizes the page header via the local `PageHeader` component, removes redundant `status` prop plumbing, refreshes form controls with shared `@repo/ui` `Button`, `Combobox`, `Input`, `Select`, and phone-code select composition, and preserves existing user creation behavior.
 
 ### /masterdata/user/detail/[id]
 
@@ -1238,14 +1238,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-user-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-27`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes keep `/masterdata/user/detail/[id]` on the refreshed `UserFormWrapper` while preserving existing user detail loading, group assignment, role assignment, channel assignment, and insurer assignment workflows. The route shares the same PageHeader and shared-primitive form cleanup as `/masterdata/user/add`.
 
 ### /membership/list/detail/[id]
 
@@ -1688,14 +1688,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `report-claim`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `IN_PROGRESS`
+- Last checked: `2026-04-27`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace the bespoke date picker with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract with scoped loading skeletons and wrapped cell content. Route-level verification evidence is still incomplete, so this page remains IN_PROGRESS rather than PASS.
 
 ### /report/performance
 
