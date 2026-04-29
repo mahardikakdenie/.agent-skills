@@ -35,8 +35,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 59 |
-| IN_PROGRESS | 2 |
+| PASS | 60 |
+| IN_PROGRESS | 1 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 4 |
@@ -149,7 +149,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/promotion/campaign/edit/[id]` | `promotion-campaign-edit-id` | `apps/admin-portal/src/app/promotion/campaign/edit/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/report/campaign` | `report-campaign` | `apps/admin-portal/src/app/report/campaign/page.tsx` | NO | YES | `IN_PROGRESS` | 2026-04-10 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the date/filter and table chrome on shared primitives, and implement measured amount-column sizing while preserving the existing report flow. PASS evidence is still incomplete because no explicit route-level smoke/screenshots are recorded yet. |
 | `/report/campaign-analytics` | `report-campaign-analytics` | `apps/admin-portal/src/app/report/campaign-analytics/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `IN_PROGRESS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace bespoke date controls with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract. Route-level verification evidence is still incomplete, so this page remains IN_PROGRESS rather than PASS. |
+| `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `PASS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace bespoke date controls with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/report/performance` | `report-performance` | `apps/admin-portal/src/app/report/performance/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/sanction/list` | `sanction-list` | `apps/admin-portal/src/app/sanction/list/page.tsx` | NO | YES | `PASS` | 2026-04-14 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/sanction/list/add` | `sanction-list-add` | `apps/admin-portal/src/app/sanction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1688,14 +1688,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `report-claim`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `IN_PROGRESS`
+- Status: `PASS`
 - Last checked: `2026-04-27`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace the bespoke date picker with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract with scoped loading skeletons and wrapped cell content. Route-level verification evidence is still incomplete, so this page remains IN_PROGRESS rather than PASS.
+- Notes: Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace the bespoke date picker with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract with scoped loading skeletons and wrapped cell content. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /report/performance
 

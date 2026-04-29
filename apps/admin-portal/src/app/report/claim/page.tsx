@@ -57,7 +57,10 @@ const ReportClaimPage = () => {
   } = useClaimReport();
 
   const hasSelectedDateRange = Boolean(date?.from && date?.to);
-  const claimReportTableColumns = useMemo(() => createClaimReportTableColumns(headers), [headers]);
+  const claimReportTableColumns = useMemo(
+    () => createClaimReportTableColumns({ headers, page, rowsPerPage }),
+    [headers, page, rowsPerPage],
+  );
   const channelOptions = channels as ClaimReportChannelOption[];
 
   if (hasAccess !== true) {
