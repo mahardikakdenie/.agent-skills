@@ -15,6 +15,7 @@ export const usePages = () => {
   const [mailTemplateById, setMailTemplateById] = useState<any[]>([]);
   const [journey, setJourney] = useState<any[]>([]);
   const [emailTag, setEmailTag] = useState<any[]>([]);
+  const [emailTagMeta, setEmailTagMeta] = useState<any>(null);
 
   const fetchProduct = async (
     search: any,
@@ -87,9 +88,10 @@ export const usePages = () => {
     setJourney(response?.data || []);
   };
 
-  const fetchEmailTag = async (search: any) => {
-    const response: any = await productService.getEmailTags(search);
+  const fetchEmailTag = async (params: any) => {
+    const response: any = await productService.getEmailTags(params);
     setEmailTag(response?.data || []);
+    setEmailTagMeta(response?.meta || null);
   };
 
   return {
@@ -117,5 +119,6 @@ export const usePages = () => {
     fetchJourney,
     emailTag,
     fetchEmailTag,
+    emailTagMeta,
   };
 };

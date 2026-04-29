@@ -1,83 +1,147 @@
-"use client";
-import { Button } from "@repo/ui";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@repo/ui";
-import { usePathname, useRouter } from "next/navigation";
-import { Plus, Trash } from "react-feather";
-import { usePages } from "../hooks";
-import { useEffect } from "react";
-import AppURL from "@/constants/app-url.const";
+'use client';
+
+import noData from '@public/images/no-data.webp';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { Plus } from 'react-feather';
+
+import { Box, Button, DataTable } from '@repo/ui';
+
+import { createEmailTagTableColumns } from '@/components/tableConfig/emailTagTableConfig';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import AppURL from '@/constants/app-url.const';
+
+import { usePages } from '../hooks';
 
 export default function EmailTagPage() {
-  const { fetchEmailTag, emailTag } = usePages();
+  const router = useRouter();
+  const { fetchEmailTag, emailTag, emailTagMeta, mailTemplateService } = usePages();
+
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchTags = async (p: number, rpp: number) => {
+    setIsLoading(true);
+    await fetchEmailTag({ page: p, pageSize: rpp });
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    fetchEmailTag({});
+    fetchTags(page, rowsPerPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const router = useRouter();
+  }, [page, rowsPerPage]);
 
-  function handleDelete(id: any): void {
-    throw new Error("Function not implemented.");
-  }
+  const handleEdit = (id: string) => {
+    router.push(`${AppURL.masterdataEmailTemplateTagDetail}/${id}`);
+  };
 
-  const path = usePathname();
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this email tag?')) {
+      try {
+        await mailTemplateService.deleteEmailTag(id);
+        fetchTags(page, rowsPerPage);
+      } catch (error) {
+        console.error('Failed to delete email tag:', error);
+      }
+    }
+  };
+
+  const columns = useMemo(() => {
+    const allColumns = createEmailTagTableColumns({
+      page,
+      rowsPerPage,
+      handleEdit,
+      handleDelete,
+      canEdit: true, // Assuming true as in original, or we can add permission check
+      canDelete: true,
+    });
+
+    // Filter columns to match requested: No., Journey, Tag, Action
+    // In emailTagTableConfig: index (No.), journey (Journey), tag (Tag Name), action (Action)
+    return allColumns
+      .filter((col) => ['index', 'journey', 'tag', 'action'].includes(col.id as string))
+      .map((col) => {
+        if (col.id === 'tag') {
+          return { ...col, header: 'Tag' };
+        }
+        return col;
+      });
+  }, [page, rowsPerPage]);
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex gap-2">
-        <h1 className="text-black font-bold text-2xl mt-2 mb-4">Email Tags</h1>
-        <Button
-          onClick={() => router.push(AppURL.masterdataEmailTemplateTagAdd)}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
-        >
-          <Plus className="w-5 h-5 mr-1 " /> Add New
-        </Button>
-      </div>
-      <div className="w-full p-4 bg-white rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap w-12">No.</TableHead>
-              <TableHead className="min-w-36">Journey</TableHead>
-              <TableHead className="min-w-36">Tag</TableHead>
-              <TableHead className="whitespace-nowrap w-12">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {emailTag?.map((item: any, index: any) => (
-              <TableRow key={item.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{item.journey}</TableCell>
-                <TableCell>{item.tag}</TableCell>
-                <TableCell className="flex gap-2">
-                  <Button
-                    className="btn btn-primary"
-                    onClick={() =>
-                      router.push(`${AppURL.masterdataEmailTemplateTagDetail}/${item.id}`)
-                    }
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleDelete(item.id)}
-                    className="text-red-600 px-0"
-                  >
-                    <Trash />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+    <Box className="flex min-h-0 flex-1 w-full flex-col gap-3 p-4 md:p-6">
+      <Box className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
+        <Box as="h1" className="text-2xl font-bold text-black">
+          Email Tags
+        </Box>
+        <Box className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 xl:w-auto 2xl:flex-nowrap">
+          <Button
+            onClick={() => router.push(AppURL.masterdataEmailTemplateTagAdd)}
+            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d] sm:ml-auto"
+            leftIcon={<Plus className="w-5 h-5" />}
+          >
+            Add New
+          </Button>
+        </Box>
+      </Box>
+
+      <DataTable
+        className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+        loading={isLoading}
+        data={emailTag}
+        columns={columns}
+        defaultState={{
+          columnPinning: {
+            left: ['index'],
+            right: ['action'],
+          },
+        }}
+        pagination={{
+          pageIndex: page - 1,
+          pageSize: rowsPerPage,
+          pageCount: emailTagMeta?.pageTotal || 1,
+          rowCount: emailTagMeta?.total || 0,
+          onPageChange: (pageIndex) => {
+            if (isLoading) return;
+            setPage(pageIndex + 1);
+          },
+          onPageSizeChange: (pageSize) => {
+            if (isLoading) return;
+            setRowsPerPage(pageSize);
+            setPage(1);
+          },
+        }}
+        pageSizeOptions={[10, 20, 30, 50, 100]}
+        emptyState={
+          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Box className="flex flex-col items-center justify-center gap-2">
+              <Image alt="No email tag data" src={noData} width={128} />
+              <Box as="span">No email tag data available</Box>
+            </Box>
+          </Box>
+        }
+        renderPagination={(table) => (
+          <Box className="-mt-1">
+            <CompactTablePagination
+              table={table}
+              pageSizeOptions={[10, 20, 30, 50, 100]}
+              disabled={isLoading}
+            />
+          </Box>
+        )}
+        tableOptions={{
+          manualPagination: true,
+          enableColumnPinning: true,
+          enableColumnResizing: true,
+          defaultColumn: {
+            minSize: 48,
+            size: 96,
+          },
+          getRowId: (row, index) => (row as any)?.id || `email-tag-row-${index}`,
+        }}
+      />
+    </Box>
   );
-};
+}
