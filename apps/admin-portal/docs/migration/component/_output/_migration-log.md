@@ -348,40 +348,57 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
   - The approval and rejection flow is now managed via shared `@repo/ui` `Button` and `Dialog` primitives, including a semantic `Textarea` for rejection reasons.
   - The page header is migrated to the relocated local `PageHeader` path, providing consistent breadcrumbs and back-navigation for the endorsement flow.
 - Files changed (route-focused): [`apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx`]
-- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Dialog, Table, and Textarea primitives while PageHeader remains app-local.`
-- Verification note: `This logging update is based on the current endorsement detail route source changes and the route's current PASS state for Batch 9. No new smoke, lint, or build evidence is added in this documentation entry.`
-- Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Dialog, and Table primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current policy detail route source changes and the route's current PASS state for Batch 9. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /policy/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
- 
- # #   B a t c h   9   -   / m a s t e r d a t a / p r o d u c t / a d d   a n d   / m a s t e r d a t a / p r o d u c t / d e t a i l   R o u t e   R e f a c t o r   -   2 0 2 6 - 0 4 - 2 3  
-  
- -   R o u t e   f o c u s :   ` / m a s t e r d a t a / p r o d u c t / a d d ` ,   ` / m a s t e r d a t a / p r o d u c t / d e t a i l `  
- -   M i g r a t i o n   i n t e n t :   ` R e f a c t o r   t h e   p r o d u c t   a d d   a n d   d e t a i l   r o u t e s   o n t o   t h e   c u r r e n t   s h a r e d   p r i m i t i v e   s t a c k ,   s t a n d a r d i z i n g   t h e   f o r m   l a y o u t   a n d   i n t e r a c t i o n   w h i l e   p r e s e r v i n g   e x i s t i n g   p r o d u c t   c r e a t i o n   a n d   u p d a t e   l o g i c . `  
- -   R o u t e - l o c a l   b e h a v i o r   u p d a t e s :  
-     -   ` a p p s / a d m i n - p o r t a l / s r c / a p p / m a s t e r d a t a / p r o d u c t / a d d / p a g e . t s x `   a n d   ` a p p s / a d m i n - p o r t a l / s r c / a p p / m a s t e r d a t a / p r o d u c t / d e t a i l / p a g e . t s x `   n o w   u s e   t h e   r e f a c t o r e d   ` P r o d u c t F o r m `   c o m p o n e n t .  
-     -   ` a p p s / a d m i n - p o r t a l / s r c / c o m p o n e n t s / f o r m s / p r o d u c t - f o r m / i n d e x . t s x `   r e p l a c e s   t h e   l e g a c y   ` a p p s / a d m i n - p o r t a l / s r c / c o m p o n e n t s / f o r m s / P r o d u c t F o r m / i n d e x . t s x `   a n d   a d o p t s   s h a r e d   ` @ r e p o / u i `   ` B o x ` ,   ` B u t t o n ` ,   ` C o m b o b o x ` ,   ` D i a l o g ` ,   ` I n p u t ` ,   a n d   ` T a b l e `   p r i m i t i v e s .  
-     -   T h e   r e f a c t o r e d   f o r m   u t i l i z e s   ` B o x `   f o r   a l l   l a y o u t   a n d   s e m a n t i c   e l e m e n t s ,   s t a n d a r d i z e s   t h e   p a g e   h e a d e r   v i a   t h e   l o c a l   ` P a g e H e a d e r `   c o m p o n e n t ,   a n d   r e s t r i c t s   l a b e l   c l i c k a b l e   a r e a s   t o   t h e   t e x t   o n l y   u s i n g   ` i n l i n e - b l o c k ` .  
-     -   A d o p t s   ` C o n t e n t L o a d i n g W r a p p e r `   f o r   c o n s i s t e n t   l o a d i n g   s t a t e s   d u r i n g   c a t e g o r y / i n s u r a n c e   f e t c h i n g   a n d   s u b m i s s i o n .  
-     -   I m p l e m e n t s   a   s h a r e d   ` D i a l o g ` - b a s e d   s u c c e s s / e r r o r   f e e d b a c k   f l o w   a n d   i n t e g r a t e s   s t a n d a r d i z e d   b r e a d c r u m b s .  
-     -   R e f i n e d   ` a p p s / a d m i n - p o r t a l / s r c / c o m p o n e n t s / f o r m s / p r o d u c t - c a t e g o r y - f o r m / i n d e x . t s x `   t o   a l i g n   w i t h   t h e   s a m e   ` B o x ` - b a s e d   l a b e l   a n d   i n p u t   s e m a n t i c s .  
- -   F i l e s   c h a n g e d   ( r o u t e - f o c u s e d ) :   [ ` a p p s / a d m i n - p o r t a l / s r c / a p p / m a s t e r d a t a / p r o d u c t / a d d / p a g e . t s x ` ,   ` a p p s / a d m i n - p o r t a l / s r c / a p p / m a s t e r d a t a / p r o d u c t / d e t a i l / p a g e . t s x ` ,   ` a p p s / a d m i n - p o r t a l / s r c / c o m p o n e n t s / f o r m s / p r o d u c t - f o r m / i n d e x . t s x ` ,   ` a p p s / a d m i n - p o r t a l / s r c / c o m p o n e n t s / f o r m s / p r o d u c t - c a t e g o r y - f o r m / i n d e x . t s x ` ]  
- -   L o c a l   f i l e s   d e l e t e d :   [ ` a p p s / a d m i n - p o r t a l / s r c / c o m p o n e n t s / f o r m s / P r o d u c t F o r m / i n d e x . t s x ` ]  
- -   S h a r e d - u i   i m p a c t :   ` N o   n e w   @ r e p o / u i   e x p o r t   i s   i n t r o d u c e d .   T h e   r o u t e s   a d o p t   e x i s t i n g   s h a r e d   B o x ,   B u t t o n ,   C o m b o b o x ,   D i a l o g ,   I n p u t ,   a n d   T a b l e   p r i m i t i v e s   w h i l e   P a g e H e a d e r   r e m a i n s   a p p - l o c a l . `  
- -   V e r i f i c a t i o n   n o t e :   ` T h i s   l o g g i n g   u p d a t e   i s   b a s e d   o n   t h e   c u r r e n t   p r o d u c t   a d d   a n d   d e t a i l   r o u t e   s o u r c e   c h a n g e s   a n d   f o r m   r e f a c t o r .   N o   n e w   s m o k e ,   l i n t ,   o r   b u i l d   e v i d e n c e   i s   a d d e d   i n   t h i s   d o c u m e n t a t i o n   e n t r y . `  
- -   T r a c k e r   i m p a c t :   ` B a t c h   9   p a g e   t r a c k e r   s h o u l d   n o w   t r e a t   b o t h   / m a s t e r d a t a / p r o d u c t / a d d   a n d   / m a s t e r d a t a / p r o d u c t / d e t a i l   a s   P A S S   b e c a u s e   t h e   r o u t e - l o c a l   m i g r a t i o n   w o r k   i s   n o w   c o n s i d e r e d   c o m p l e t e   f o r   t h e   c u r r e n t   B a t c h   9   t r a c k i n g   p a s s . `  
-  
- # #   B a t c h   9   -   / m a s t e r d a t a / c u r r e n c y / a d d   a n d   / m a s t e r d a t a / c u r r e n c y / d e t a i l / [ i d ]   S t a b i l i z a t i o n   -   2 0 2 6 - 0 4 - 2 3  
-  
- -   R o u t e   f o c u s :   ` / m a s t e r d a t a / c u r r e n c y / a d d ` ,   ` / m a s t e r d a t a / c u r r e n c y / d e t a i l / [ i d ] `  
- -   M i g r a t i o n   i n t e n t :   ` S t a b i l i z e   t h e   c u r r e n c y   a d d   a n d   d e t a i l   r o u t e s   b y   r e s o l v i n g   a n   i n f i n i t e   r e n d e r   l o o p   c a u s i n g   a   " M a x i m u m   u p d a t e   d e p t h   e x c e e d e d "   r u n t i m e   e r r o r . `  
- -   R o u t e - l o c a l   b e h a v i o r   u p d a t e s :  
-     -   ` a p p s / a d m i n - p o r t a l / s r c / h o o k s / u s e C u r r e n c y F o r m . h o o k s . t s x `   n o w   i n c l u d e s   a   d a t a - s t a b i l i t y   c h e c k   i n   t h e   ` u s e E f f e c t `   t h a t   u p d a t e s   ` c u r r e n c y F i e l d s ` ,   p r e v e n t i n g   r e d u n d a n t   s t a t e   u p d a t e s   w h e n   t h e   d e r i v e d   d a t a   h a s n ' t   c h a n g e d .  
-     -   ` a p p s / a d m i n - p o r t a l / s r c / a p p / m a s t e r d a t a / c u r r e n c y / d e t a i l / [ i d ] / p a g e . t s x `   n o w   i n c l u d e s   a   g u a r d   i n   i t s   ` u s e E f f e c t `   t o   o n l y   c a l l   ` l o a d C u r r e n c y D e t a i l `   i f   t h e   c u r r e n t   ` i d `   d i f f e r s   f r o m   t h e   ` s e l e c t e d I n s u r a n c e I d `   i n   t h e   h o o k ,   b r e a k i n g   t h e   r e c u r s i v e   u p d a t e   c y c l e .  
-     -   T h e s e   c h a n g e s   e n s u r e   t h e   ` C u r r e n c y F o r m `   c o m p o n e n t   r e m a i n s   s t a b l e   d u r i n g   i n i t i a l   d a t a   l o a d   a n d   s u b s e q u e n t   u s e r   e d i t s .  
- -   F i l e s   c h a n g e d   ( r o u t e - f o c u s e d ) :   [ ` a p p s / a d m i n - p o r t a l / s r c / h o o k s / u s e C u r r e n c y F o r m . h o o k s . t s x ` ,   ` a p p s / a d m i n - p o r t a l / s r c / a p p / m a s t e r d a t a / c u r r e n c y / d e t a i l / [ i d ] / p a g e . t s x ` ]  
- -   S h a r e d - u i   i m p a c t :   ` N o   n e w   @ r e p o / u i   e x p o r t   i s   i n t r o d u c e d .   T h e   f i x   a d d r e s s e s   h o o k - l e v e l   s t a b i l i t y   a n d   d e t a i l - p a g e   l i f e c y c l e   m a n a g e m e n t . `  
- -   V e r i f i c a t i o n   n o t e :   ` T h i s   l o g g i n g   u p d a t e   i s   b a s e d   o n   t h e   t e c h n i c a l   r e s o l u t i o n   o f   t h e   r e p o r t e d   " M a x i m u m   u p d a t e   d e p t h   e x c e e d e d "   e r r o r .   T h e   f i x   h a s   b e e n   v e r i f i e d   t h r o u g h   c o d e   a n a l y s i s   o f   t h e   r e n d e r   c y c l e   a n d   s t a t e   d e p e n d e n c i e s . `  
- -   T r a c k e r   i m p a c t :   ` B a t c h   9   p a g e   t r a c k e r   s h o u l d   n o w   t r e a t   b o t h   / m a s t e r d a t a / c u r r e n c y / a d d   a n d   / m a s t e r d a t a / c u r r e n c y / d e t a i l / [ i d ]   a s   P A S S   b e c a u s e   t h e   s t a b i l i t y   i s s u e s   h a v e   b e e n   r e s o l v e d   a n d   t h e   r o u t e s   a r e   n o w   c o n s i d e r e d   s t a b l e   f o r   B a t c h   9 . `  
+
+## Batch 9 - /product-category Route Refactor - 2026-04-29
+
+- Route focus: `/product-category`
+- Migration intent: `Migrate the product category (catalog) route onto the shared DataTable instance API, standardize the filter and page chrome on shared primitives, and implement dynamic column sizing while preserving the existing category-switching and plan management flow.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/product-category/page.tsx` now renders the route shell and the `Product Categories` sidebar with shared `@repo/ui` `Box` primitives, replacing older native layout tags.
+  - The route now mounts shared `@repo/ui` `DataTable` directly with manual pagination, column pinning, and `CompactTablePagination` integration.
+  - Filters for insurer selection and plan name search now use shared `@repo/ui` `Combobox` and `Input` primitives.
+  - `apps/admin-portal/src/components/tableConfig/productCatalogTableConfig.tsx` now defines the product catalog table against the shared `ColumnDef` contract with explicit sizing, loading skeletons, pinned insurer and action columns, and wrapped cell content.
+  - Action buttons for `View` and `Delete` are standardized on shared `Button` primitives with updated styling.
+- Files changed (route-focused): [`apps/admin-portal/src/app/product-category/page.tsx`, `apps/admin-portal/src/components/tableConfig/productCatalogTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, DataTable, Input, and Skeleton primitives while compact pagination remains app-local.`
+- Verification note: `This logging update is based on the current product category route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /product-category as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
 
 ## Batch 9 - /masterdata/currency/add and /masterdata/currency/detail/[id] Route Refactor and Stabilization - 2026-04-23

@@ -1,46 +1,61 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
-import AppURL from "@/constants/app-url.const";
-import { Button } from "@repo/ui";
-import { Input } from "@repo/ui";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui";
-import { DataTable } from "@/components/ui/DataTable";
-import ExtendedSidemenu from "@/components/extended-sidemenu";
+import { PlusIcon } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { type ChangeEvent, useEffect, useMemo } from 'react';
+
+import { Button, Combobox, DataTable, Input, Box } from '@repo/ui';
+
 import {
   createProductCatalogTableColumns,
   ProductCatalogTableData,
-} from "@/components/tableConfig/productCatalogTableConfig";
-import { useCategories } from "@/services/product/hooks/queries";
-import { useProducts } from "./hooks";
+} from '@/components/tableConfig/productCatalogTableConfig';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import AppURL from '@/constants/app-url.const';
+import { useCategories } from '@/services/product/hooks/queries';
+
+import { useProducts } from './hooks';
+
+interface CategoryListItem {
+  name: string;
+}
+
+type CategoriesResponseShape =
+  | CategoryListItem[]
+  | {
+      data?: CategoryListItem[] | { data?: CategoryListItem[] };
+    };
+
+interface InsuranceListItem {
+  id: string;
+  name: string;
+}
+
+interface CategoryMenuItem {
+  id?: string;
+  url: string;
+  label: string;
+  slug?: string;
+}
 
 export default function ProductCategoryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const category = searchParams.get("category");
+  const category = searchParams.get('category');
 
   const { data: categoriesResponse } = useCategories(
     { limit: 1000 },
     {
       enabled: !category,
       staleTime: 10 * 60 * 1000,
-    }
+    },
   );
 
   const categoriesData = useMemo(() => {
-    const responseData = categoriesResponse as any;
-    const rawCategories =
-      responseData?.data?.data ?? responseData?.data ?? responseData ?? [];
+    const responseData = categoriesResponse as CategoriesResponseShape | undefined;
+    const responseBody = Array.isArray(responseData) ? responseData : responseData?.data;
+    const rawCategories = Array.isArray(responseBody) ? responseBody : (responseBody?.data ?? []);
+
     return Array.isArray(rawCategories) ? rawCategories : [];
   }, [categoriesResponse]);
 
@@ -53,12 +68,14 @@ export default function ProductCategoryPage() {
 
   if (!category) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading categories...</p>
-        </div>
-      </div>
+      <Box centered className="min-h-screen">
+        <Box className="text-center">
+          <Box className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto" />
+          <Box as="p" className="mt-4 text-gray-600">
+            Loading categories...
+          </Box>
+        </Box>
+      </Box>
     );
   }
 
@@ -102,86 +119,204 @@ function ProductCatalogContent({ category }: ProductCatalogContentProps) {
         onDelete: handleDeletePlan,
         canDelete,
       }),
-    [page, rowsPerPage, handleViewDetail, handleDeletePlan, canDelete]
+    [page, rowsPerPage, handleViewDetail, handleDeletePlan, canDelete],
   );
 
+  const insuranceOptions = useMemo(
+    () =>
+      (insurances as InsuranceListItem[]).map((insurance) => ({
+        label: insurance.name,
+        value: insurance.id,
+      })),
+    [insurances],
+  );
+
+  const categoryMenuItems = subMenuItems as CategoryMenuItem[];
+
+  const activeCategoryLabel = useMemo(() => {
+    const activeItem = categoryMenuItems.find(
+      (item) =>
+        item.slug === category || item.url === `${AppURL.productCategory}?category=${category}`,
+    );
+
+    return activeItem?.label || category.split('-').map(capitalizeCategoryWord).join(' ');
+  }, [category, categoryMenuItems]);
+
   return (
-    <div className="flex w-full flex-col md:flex-row md:items-start">
-      <div className="flex flex-col w-full p-4 md:p-6">
-        <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
-          <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-            Product Catalog -{" "}
-            {category
-              .split("-")
-              .map(
-                (item) => item.charAt(0).toUpperCase() + item.slice(1) + " "
-              )}
-          </h1>
+    <Box className="flex w-full flex-col md:flex-row md:items-start min-h-[calc(100vh-var(--fs-navbar-height,64px))]">
+      <Box className="flex flex-col w-full p-4 md:p-6 pb-16 md:pb-20 flex-1">
+        <Box className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
+          <Box as="h1" className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+            Product Catalog - {activeCategoryLabel}
+          </Box>
           <Button
             onClick={() => router.push(AppURL.productCatalogAdd(category))}
             disabled={!canCreate}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d] sm:ml-auto"
+            leftIcon={<PlusIcon className="w-5 h-5" />}
           >
-            <Plus className="w-5 h-5 mr-1 " /> Add Plan
+            Add Plan
           </Button>
-        </div>
+        </Box>
 
-        <div className="flex gap-4">
-          <ExtendedSidemenu
-            title="Product Categories"
-            items={subMenuItems}
-            activeUrl={`${AppURL.productCategory}?category=${category}`}
+        <Box className="flex flex-col gap-4 xl:flex-row xl:items-start flex-1 mb-10">
+          <ProductCategorySection
+            activeCategory={category}
+            items={categoryMenuItems}
+            onSelectCategory={(url) => router.push(url)}
           />
-          <div className="flex-1 min-w-0">
-            <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
-              <div className="flex gap-4 items-center sm:flex-row flex-col">
-                <Select
-                  value={searchInsurer}
-                  onValueChange={handleSearchInsurerOnChange}
-                >
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select Insurer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Select Insurer</SelectLabel>
-                      {insurances.map((insurance: any) => (
-                        <SelectItem key={insurance.id} value={insurance.id}>
-                          {insurance.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="text"
-                  placeholder="Search by Plan Name"
-                  className="p-2 border rounded h-12"
-                  value={searchPlanName}
-                  onChange={(e) => setSearchPlanName(e.target.value)}
-                />
-              </div>
-            </div>
+          <Box className="flex-1 min-w-0">
+            <Box className="flex gap-4 items-center sm:flex-row flex-col mb-4">
+              <Combobox
+                options={insuranceOptions}
+                value={searchInsurer}
+                onValueChange={(v) => handleSearchInsurerOnChange(v || '')}
+                placeholder="Select Insurer"
+                searchPlaceholder="Search Insurer..."
+                triggerClassName="h-12"
+                className="w-full"
+                clearable
+              />
+              <Input
+                type="text"
+                placeholder="Search by Plan Name"
+                className="h-12 rounded border p-2 w-full"
+                value={searchPlanName}
+                onChange={(e) => setSearchPlanName(e.target.value)}
+              />
+            </Box>
 
             <DataTable
+              className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
               loading={isLoadingCatalogPlans}
               data={catalogPlans as ProductCatalogTableData[]}
               columns={productCatalogTableColumns}
-              pagination={{
-                page,
-                totalPages,
-                totalItems,
-                rowsPerPage,
-                onPageChange: setPage,
-                onRowsPerPageChange: handleRowsPerPageChange,
-                rowsPerPageOptions: [10, 20, 30, 50],
+              defaultState={{
+                columnPinning: {
+                  left: ['index', 'insurer'],
+                  right: ['actions'],
+                },
               }}
-              noDataText="No product catalog data available"
-              className="table-product-catalog"
+              enablePagination={true}
+              pagination={{
+                pageIndex: page - 1,
+                pageSize: rowsPerPage,
+                pageCount: totalPages,
+                rowCount: totalItems,
+                onPageChange: (pageIndex) => {
+                  if (isLoadingCatalogPlans) {
+                    return;
+                  }
+
+                  setPage(pageIndex + 1);
+                },
+                onPageSizeChange: (pageSize) => {
+                  if (isLoadingCatalogPlans) {
+                    return;
+                  }
+
+                  handleRowsPerPageChange({
+                    target: { value: String(pageSize) },
+                  } as ChangeEvent<HTMLSelectElement>);
+                },
+              }}
+              pageSizeOptions={[10, 20, 30, 50]}
+              emptyState={
+                <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center py-4 text-sm text-slate-600 md:min-h-[11rem] md:py-5">
+                  No product catalog data available
+                </Box>
+              }
+              renderPagination={(table) => (
+                <Box className="-mt-1">
+                  <CompactTablePagination
+                    table={table}
+                    pageSizeOptions={[10, 20, 30, 50]}
+                    disabled={isLoadingCatalogPlans}
+                  />
+                </Box>
+              )}
+              tableOptions={{
+                manualPagination: true,
+                enableColumnPinning: true,
+                enableColumnResizing: true,
+                defaultColumn: {
+                  minSize: 48,
+                  size: 96,
+                },
+                getRowId: (row, index) => row?.id || `product-catalog-row-${index}`,
+              }}
             />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+function capitalizeCategoryWord(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+interface ProductCategorySectionProps {
+  activeCategory: string;
+  items: CategoryMenuItem[];
+  onSelectCategory: (url: string) => void;
+}
+
+function ProductCategorySection({
+  activeCategory,
+  items,
+  onSelectCategory,
+}: ProductCategorySectionProps) {
+  return (
+    <Box
+      as="aside"
+      aria-label="Product categories"
+      className="flex w-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm xl:sticky xl:w-56 xl:flex-shrink-0"
+      style={{
+        top: '2rem',
+        maxHeight: 'calc(100vh - var(--fs-navbar-height, 64px) - 6rem)',
+      }}
+    >
+      <Box className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3">
+        <Box className="min-w-0">
+          <Box as="h2" className="text-sm font-semibold leading-5 text-slate-900">
+            Product Categories
+          </Box>
+        </Box>
+      </Box>
+
+      <Box className="max-h-32 min-h-0 overflow-x-auto overflow-y-hidden px-2 pb-4 pt-2 xl:max-h-none xl:flex-1 xl:overflow-y-auto xl:overflow-x-hidden">
+        <Box as="nav" className="flex gap-2 xl:flex-col" aria-label="Product category list">
+          {items.length > 0 ? (
+            items.map((item) => {
+              const isActive =
+                item.slug === activeCategory ||
+                item.url === `${AppURL.productCategory}?category=${activeCategory}`;
+
+              return (
+                <button
+                  key={item.id || item.url}
+                  type="button"
+                  aria-current={isActive ? 'page' : undefined}
+                  onClick={() => onSelectCategory(item.url)}
+                  className={`group flex min-w-max cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors lg:min-w-0 ${
+                    isActive
+                      ? 'bg-sky-50 text-[#016DA1] ring-1 ring-sky-200'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
+                >
+                  <span className="min-w-0 truncate font-medium">{item.label}</span>
+                </button>
+              );
+            })
+          ) : (
+            <Box className="flex min-h-20 w-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
+              No matching categories
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Box>
   );
 }
