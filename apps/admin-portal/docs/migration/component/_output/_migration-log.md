@@ -337,19 +337,20 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Tracker impact: `Batch 9 page tracker should now treat both /masterdata/role/add and /masterdata/role/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
 
-## Batch 9 - /masterdata/channel/add and /masterdata/channel/detail/[id] Route Refactor - 2026-04-22
+## Batch 9 - /policy/endorsement/list/detail/[id] Route Refactor - 2026-04-29
 
-- Route focus: `/masterdata/channel/add`, `/masterdata/channel/detail/[id]`
-- Migration intent: `Refactor the channel add and detail routes onto the current shared primitive stack, standardizing the form layout and interaction while preserving existing channel creation and update logic.`
+- Route focus: `/policy/endorsement/list/detail/[id]`
+- Migration intent: `Refactor the endorsement detail route onto the current shared primitive stack, standardizing the insurance/policy cards, update verification tables, and approval/rejection dialogs while preserving existing endorsement review and partner-upload workflows.`
 - Route-local behavior updates:
-  - `apps/admin-portal/src/app/masterdata/channel/add/page.tsx` and `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx` now use the refactored `ChannelForm` component.
-  - `apps/admin-portal/src/components/forms/channel-form/index.tsx` replaces the legacy `apps/admin-portal/src/components/forms/ChannelForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives.
-  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and leverages `ContentLoadingWrapper` for consistent loading states during detail fetching and submission.
-- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/channel/add/page.tsx`, `apps/admin-portal/src/app/masterdata/channel/detail/[id]/page.tsx`, `apps/admin-portal/src/hooks/useChannelForm.hooks.tsx`]
-- Local files deleted: [`apps/admin-portal/src/components/forms/ChannelForm/index.tsx`]
-- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, and Select primitives while PageHeader remains app-local.`
-- Verification note: `This logging update is based on the current channel add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
-- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/channel/add and /masterdata/channel/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+  - `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` now renders the route shell and detail sections with shared `@repo/ui` `Box`, `Button`, `Dialog`, `Table`, and `Textarea` primitives, replacing older native layout and local UI components.
+  - The refactor standardizes the `Insurance Detail`, `Policy Holder Information`, and `Insured Detail` sections using a common `SectionCard` and `DetailRow` composition based on `Box`.
+  - The `Update Verification` section now utilizes a refactored `ComparisonTable` for profile updates and a shared `DataTable` instance for EDSB endorsement details, featuring standardized status colors and row action controls.
+  - The approval and rejection flow is now managed via shared `@repo/ui` `Button` and `Dialog` primitives, including a semantic `Textarea` for rejection reasons.
+  - The page header is migrated to the relocated local `PageHeader` path, providing consistent breadcrumbs and back-navigation for the endorsement flow.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Dialog, Table, and Textarea primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current endorsement detail route source changes and the route's current PASS state for Batch 9. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
  
  # #   B a t c h   9   -   / m a s t e r d a t a / p r o d u c t / a d d   a n d   / m a s t e r d a t a / p r o d u c t / d e t a i l   R o u t e   R e f a c t o r   -   2 0 2 6 - 0 4 - 2 3  
