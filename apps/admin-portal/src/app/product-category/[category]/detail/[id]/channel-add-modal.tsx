@@ -1,22 +1,23 @@
-import { Button } from "@repo/ui";
+import { X } from 'lucide-react';
+import { useState } from 'react';
+
 import {
+  Box,
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@repo/ui";
-import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
-import { X } from "lucide-react";
-import { useState } from "react";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
+} from '@repo/ui';
+
+import { ContentLoadingWrapper } from '@/components/ui/loading';
 
 export default function ChannelAddModal(props: {
   id: string;
@@ -26,10 +27,9 @@ export default function ChannelAddModal(props: {
   assignPlans: Function;
   isLoadingAssignPlans: boolean;
 }) {
-  const { id, open, setOpen, channels, assignPlans, isLoadingAssignPlans } =
-    props;
+  const { id, open, setOpen, channels, assignPlans, isLoadingAssignPlans } = props;
 
-  const [channel, setChannel] = useState<string>("");
+  const [channel, setChannel] = useState<string>('');
   const handleAssignPlans = async () => {
     if (channel) {
       try {
@@ -57,8 +57,8 @@ export default function ChannelAddModal(props: {
               </DialogClose>
             </DialogTitle>
           </DialogHeader>
-          <div className="p-4">
-            <div className="relative">
+          <Box className="p-4">
+            <Box className="relative">
               <Select value={channel} onValueChange={setChannel}>
                 <SelectValue content="Channel" />
                 <SelectTrigger className="w-full h-12 border-gray-300 select-status bg-transparent hover:cursor-pointer py-2">
@@ -67,10 +67,7 @@ export default function ChannelAddModal(props: {
                 <SelectContent>
                   <SelectGroup>
                     {channels.map((channel: any) => (
-                      <SelectItem
-                        key={channel.id}
-                        value={`${channel.id}|${channel.name}`}
-                      >
+                      <SelectItem key={channel.id} value={`${channel.id}|${channel.name}`}>
                         {channel.name}
                       </SelectItem>
                     ))}
@@ -80,8 +77,8 @@ export default function ChannelAddModal(props: {
               <Button className="mt-5" onClick={handleAssignPlans}>
                 Assign
               </Button>
-            </div>
-          </div>
+            </Box>
+          </Box>
         </ContentLoadingWrapper>
       </DialogContent>
     </Dialog>

@@ -1,30 +1,20 @@
-import { Button } from "@repo/ui";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@repo/ui";
-import { useProducts } from "../../../hooks";
-import { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Plus, Trash, Upload } from "react-feather";
-import AppURL from "@/constants/app-url.const";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@repo/ui";
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Plus, Trash, Upload } from 'react-feather';
+
+import { Box, Button } from '@repo/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@repo/ui';
+
+import AppURL from '@/constants/app-url.const';
+
+import { useProducts } from '../../../hooks';
 
 export default function BenefitList(props: { id: string }) {
   const router = useRouter();
 
   const { id } = props;
   const { category } = useParams();
-  const { benefits, deleteBenefit, refetchBenefits } = useProducts({
+  const { benefits, deleteBenefit, refetchBenefits, canEdit, canCreate, canDelete } = useProducts({
     planId: id,
     category: category as string,
   });
@@ -36,35 +26,30 @@ export default function BenefitList(props: { id: string }) {
   }, [id, refetchBenefits]);
 
   return (
-    <>
-      <div className="flex justify-end gap-x-4">
+    <Box>
+      <Box className="flex justify-end gap-x-4 mb-4">
         <Button
-          className="mb-5"
-          onClick={() =>
-            router.push(
-              AppURL.productCatalogUploadBenefit(category as string, id)
-            )
-          }
+          className="bg-[#F5BA41] hover:bg-[#e6a92d] text-black cursor-pointer"
+          disabled={!canEdit}
+          onClick={() => router.push(AppURL.productCatalogUploadBenefit(category as string, id))}
         >
-          <Upload className="w-5 h-5 mr-2" />
-          Upload Benefits
+          <Upload className="w-5 h-5" /> Upload Benefits
         </Button>
         <Button
-          className="bg-[#F5BA41] hover:bg-[#F5BA41]/80 text-black"
-          onClick={() =>
-            router.push(AppURL.productCatalogAddBenefit(category as string, id))
-          }
+          className="bg-[#F5BA41] hover:bg-[#e6a92d] text-black cursor-pointer"
+          disabled={!canCreate}
+          onClick={() => router.push(AppURL.productCatalogAddBenefit(category as string, id))}
         >
-          <Plus className="w-5 h-5 mr-2" /> Add Benefit
+          <Plus className="w-5 h-5" /> Add Benefit
         </Button>
-      </div>
+      </Box>
       <Table className="table-search-params">
         <TableHeader>
           <TableRow>
             <TableHead>Benefit</TableHead>
             <TableHead>Currency</TableHead>
             <TableHead>Value</TableHead>
-            <TableHead>Action</TableHead>
+            <TableHead className="text-center">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,56 +58,29 @@ export default function BenefitList(props: { id: string }) {
               <TableCell>{benefit.name}</TableCell>
               <TableCell>{benefit.currency}</TableCell>
               <TableCell>{benefit.value || benefit.html}</TableCell>
-              <TableCell>
+              <TableCell className="text-center">
                 {benefit.level === 0 && (
-                  <div className="flex gap-x-2">
-                    {/* <Button
-                    type="button"
-                    variant="default"
-                    className="rounded-full"
-                    onClick={() =>
-                      router.push(
-                        AppURL.productCatalogEditPackage(category, id, pkg.id)
-                      )
-                    }
-                  >
-                    Edit
-                  </Button> */}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={async () => {
-                              if (confirm("Are you sure to delete this row?")) {
-                                try {
-                                  await deleteBenefit(benefit.id);
-
-                                  alert("Row deleted successfully.");
-                                } catch (error) {
-                                  console.error(error);
-
-                                  alert("Error while deleting the row.");
-                                }
-                              }
-                            }}
-                          >
-                            <Trash className="w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent sideOffset={4}>
-                          <p className="text-sm">Remove</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
+                  <Box className="flex items-center justify-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      disabled={!canDelete}
+                      onClick={async () => {
+                        if (confirm('Are you sure to delete this row?')) {
+                          await deleteBenefit(benefit.id);
+                        }
+                      }}
+                      className="h-7 w-7 p-0 rounded-md text-red-600 hover:bg-red-50 hover:!text-red-700"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </Box>
                 )}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </>
+    </Box>
   );
 }

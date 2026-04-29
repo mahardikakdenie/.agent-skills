@@ -1,10 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui";
-import PackageList from "./package-list";
-import BenefitList from "./benefit-list";
-import DetailList from "./detail-list";
-import ChannelList from "./channel-list";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@repo/ui';
 
-export default function ProductDetatilTab(props: { id: string; category: string; }) {
+import BenefitList from './benefit-list';
+import ChannelList from './channel-list';
+import DetailList from './detail-list';
+import PackageList from './package-list';
+
+export default function ProductDetatilTab(props: { id: string; category: string }) {
   const { id, category } = props;
 
   return (

@@ -475,6 +475,21 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current user add/detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /masterdata/user/add and /masterdata/user/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+## Batch 9 - /product-category/[category]/detail/[id] Route Refactor - 2026-04-29
+
+- Route focus: `/product-category/[category]/detail/[id]`
+- Migration intent: `Refactor the product category detail route onto the current shared primitive stack, standardizing the detail form, tab chrome, channel/benefit/detail/package lists, and package table configuration while preserving existing product catalog detail workflows.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx` now renders the route shell and product detail form with shared `@repo/ui` `Box`, `Button`, `Combobox`, `Input`, and `Tabs` primitives, replacing the older wrapper and native element-heavy layout while preserving the existing product update flow.
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/package-list.tsx` now mounts shared `DataTable` with compact pagination, dynamic package columns, guarded pagination state, and route-local edit/delete handlers.
+  - `apps/admin-portal/src/components/tableConfig/packageTableConfig.tsx` now defines package columns against the shared `ColumnDef` contract with explicit sizing, loading skeletons, wrapped dynamic search parameter cells, formatted premium output, and standardized edit/delete action controls.
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefit-list.tsx`, `detail-list.tsx`, `channel-list.tsx`, and `channel-add-modal.tsx` now standardize layout and actions on shared `Box`, `Button`, `Table`, `Select`, `Dialog`, and `Tooltip` primitives while honoring the route permission flags for create/edit/delete actions.
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/product-detail-tab.tsx` received import and formatting alignment with the route-local tab/list component structure.
+- Files changed (route-focused): [`apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefit-list.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/channel-add-modal.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/channel-list.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/detail-list.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/package-list.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/product-detail-tab.tsx`, `apps/admin-portal/src/components/tableConfig/packageTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, DataTable, Dialog, Input, Select, Skeleton, Table, Tabs, and Tooltip primitives while compact pagination remains app-local.`
+- Verification note: `This logging update is based on the current product category detail route source changes and the route's current PASS state for Batch 9. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
 ## Batch 9 - /report/claim Route Refactor - 2026-04-27
 
 - Route focus: `/report/claim`

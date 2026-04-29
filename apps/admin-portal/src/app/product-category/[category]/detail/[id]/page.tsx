@@ -1,31 +1,50 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useProducts } from "../../../hooks";
-import { Controller, useForm } from "react-hook-form";
-import { Input } from "@repo/ui";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { ChevronLeft } from 'react-feather';
+import { Controller, useForm } from 'react-hook-form';
+
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui";
-import {
+  Box,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@repo/ui";
-import { ChevronLeft } from "react-feather";
-import ProductDetatilTab from "./product-detail-tab";
-import { useAuth } from "@/context/auth.context";
-import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
+  Button,
+  Combobox,
+  Input,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@repo/ui';
+
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+import AppURL from '@/constants/app-url.const';
+import { useAuth } from '@/context/auth.context';
+
+import { useProducts } from '../../../hooks';
+import BenefitList from './benefit-list';
+import ChannelList from './channel-list';
+import DetailList from './detail-list';
+import PackageList from './package-list';
+
+type ProductCategoryDetailForm = {
+  insuranceId: string;
+  productId: string;
+  name: string;
+  slug: string;
+  active_period: string;
+  active_period_unit: string;
+};
+
+type ProductCategoryOption = {
+  id: string | number;
+  name: string;
+};
 
 export default function DetaildPage({
   params,
@@ -34,36 +53,22 @@ export default function DetaildPage({
 }) {
   const router = useRouter();
   const { category, id } = React.use(params);
-  const [selectedInsurance, setSelectedInsurance] = useState<any>(null);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
-
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [canCreate, setCanCreate] = useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
   const { permissionList } = useAuth();
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = permissionList.includes("Product Category.Read");
-      const editBtn = permissionList.includes("Product Category.Update");
-      const deleteBtn = permissionList.includes("Product Category.Delete");
-      const createBtn = permissionList.includes("Product Category.Create");
+      const access = permissionList.includes('Product Category.Read');
+      const editBtn = permissionList.includes('Product Category.Update');
 
       setCanEdit(editBtn);
-      setCanDelete(deleteBtn);
-      setHasAccess(access);
-      setCanCreate(createBtn);
       if (!access) {
         router.push(AppURL.forbidden);
       }
     };
 
     checkAccess();
-  }, [router]);
+  }, [permissionList, router]);
 
   const {
     isLoadingPlan,
@@ -85,15 +90,15 @@ export default function DetaildPage({
     control,
     formState: { errors },
     setValue,
-  } = useForm({
+  } = useForm<ProductCategoryDetailForm>({
     shouldUnregister: false,
     defaultValues: {
-      insuranceId: selectedInsurance,
-      productId: selectedProduct,
-      name,
-      slug,
-      active_period: "",
-      active_period_unit: "",
+      insuranceId: '',
+      productId: '',
+      name: '',
+      slug: '',
+      active_period: '',
+      active_period_unit: '',
     },
   });
 
@@ -103,12 +108,14 @@ export default function DetaildPage({
     }
 
     if (plan) {
-      fetchProducts({ insuranceId: plan.products.insurances.id });
-      setValue("name", plan.name);
-      setValue("slug", plan.slug);
-      setValue("insuranceId", plan.products.insurances.id);
-      setValue("active_period", plan.active_period || "");
-      setValue("active_period_unit", plan.active_period_unit || "");
+      const insuranceId = plan.products.insurances.id;
+
+      fetchProducts({ insuranceId });
+      setValue('name', plan.name);
+      setValue('slug', plan.slug);
+      setValue('insuranceId', String(insuranceId));
+      setValue('active_period', plan.active_period || '');
+      setValue('active_period_unit', plan.active_period_unit || '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, insurances]);
@@ -119,291 +126,248 @@ export default function DetaildPage({
     }
 
     if (plan) {
-      setValue("productId", plan.product);
+      const productId = typeof plan.product === 'object' ? plan.product?.id : plan.product;
+
+      setValue('productId', productId ? String(productId) : '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, products]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ProductCategoryDetailForm) => {
     try {
       await updatePlan({ data, id });
     } catch (error) {
-      console.log(error, "DY: error update plan");
+      console.log(error, 'DY: error update plan');
     }
   };
 
+  const tabContentClassName = 'rounded-t-none border-t-0 border-slate-200 p-3 sm:px-6 shadow-sm';
+
   return (
-    <>
-      <div className="flex flex-col w-full">
-        <div className="bg-white md:px-6 p-4 flex items-center">
-          <div>
-            <Breadcrumb className="sm:block hidden">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink>Product Catalog</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={AppURL.productCatalogCategoryV2(category)}
+    <Box className="flex flex-col w-full">
+      <Box className="bg-white md:px-6 p-4 flex items-center">
+        <Box>
+          <Breadcrumb className="sm:block hidden">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink>Product Catalog</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={AppURL.productCatalogCategoryV2(category)}>
+                  {category
+                    .split('-')
+                    .map((item) => item.charAt(0).toUpperCase() + item.slice(1) + ' ')}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Detail Product Catalog</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <Box as="h2" className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
+            Detail Product Catalog
+          </Box>
+        </Box>
+        <Box
+          onClick={() => router.back()}
+          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Back
+        </Box>
+      </Box>
+      <Box className="flex flex-col w-full p-4 md:p-6 gap-4">
+        <ContentLoadingWrapper isLoading={isLoadingUpdatePlan || isLoadingPlan}>
+          <Box className="p-4 sm:p-6 bg-white rounded-lg shadow-sm border border-slate-100">
+            <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+              <Box className="grid sm:grid-cols-2 gap-x-6 gap-y-4 mb-4">
+                <Box>
+                  <Box
+                    as="label"
+                    htmlFor="name"
+                    className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
                   >
-                    {category
-                      .split("-")
-                      .map(
-                        (item) =>
-                          item.charAt(0).toUpperCase() + item.slice(1) + " ",
-                      )}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Detail Product Catalog</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-            <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-              Detail Product Catalog
-            </h2>
-          </div>
-          <div
-            onClick={() => router.back()}
-            className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </div>
-        </div>
-        <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <ContentLoadingWrapper
-            isLoading={isLoadingUpdatePlan || isLoadingPlan}
-          >
-            <div className="sm:p-6 p-4 bg-white rounded-lg flex flex-col gap-4">
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Plan Name
-                    </label>
-                    <Controller
-                      name="name"
-                      control={control}
-                      defaultValue=""
-                      rules={{ required: "Plan Name is required" }}
-                      render={({ field }) => (
-                        <Input
-                          type="text"
-                          id="name"
-                          disabled={!canEdit}
-                          placeholder="Plan Name"
-                          {...field}
-                          className={`mt-1 block w-full h-16 ${
-                            errors.name ? "border-red-500" : "border-gray-300"
-                          } rounded-md shadow-sm`}
-                        />
-                      )}
-                    />
-                    {errors.name && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.name.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Slug
-                    </label>
-                    <Controller
-                      name="slug"
-                      control={control}
-                      defaultValue=""
-                      rules={{ required: "Slug is required" }}
-                      render={({ field }) => (
-                        <Input
-                          type="text"
-                          id="slug"
-                          disabled={!canEdit}
-                          placeholder="Slug"
-                          {...field}
-                          className={`mt-1 block w-full h-16 ${
-                            errors.name ? "border-red-500" : "border-gray-300"
-                          } rounded-md shadow-sm`}
-                        />
-                      )}
-                    />
-                    {errors.slug && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.slug.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="insuranceId"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Insurance
-                    </label>
-                    <Controller
-                      name="insuranceId"
-                      disabled={!canEdit}
-                      control={control}
-                      rules={{ required: "Insurance ID is required" }}
-                      render={({ field }) => (
-                        <Select {...field}>
-                          <SelectTrigger className="h-16">
-                            <SelectValue placeholder="Select Insurance" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Insurances</SelectLabel>
-                              {insurances.map((insurance: any) => (
-                                <SelectItem
-                                  key={insurance.id}
-                                  value={insurance.id}
-                                >
-                                  {insurance.name}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.insuranceId && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.insuranceId.message?.toString()}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="productId"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Product
-                    </label>
-                    <Controller
-                      name="productId"
-                      disabled={!canEdit}
-                      control={control}
-                      defaultValue=""
-                      rules={{ required: "Product ID is required" }}
-                      render={({ field }) => (
-                        <Select {...field} onValueChange={field.onChange}>
-                          <SelectTrigger className="h-16">
-                            <SelectValue placeholder="Select Product" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Products</SelectLabel>
-                              {products.map((product: any) => (
-                                <SelectItem key={product.id} value={product.id}>
-                                  {product.name}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.productId && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.productId.message?.toString()}
-                      </p>
-                    )}
-                  </div>
-                  {/* <div>
-                  <label
-                    htmlFor="active_period"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Active Period
-                  </label>
+                    Plan Name <Box as="span" className="text-red-500">*</Box>
+                  </Box>
                   <Controller
-                    name="active_period"
+                    name="name"
                     control={control}
                     defaultValue=""
-                    rules={{ required: "Active Period is required" }}
+                    rules={{ required: 'Plan Name is required' }}
                     render={({ field }) => (
                       <Input
-                        type="number"
-                        id="active_period"
+                        type="text"
+                        id="name"
+                        size="lg"
                         disabled={!canEdit}
-                        placeholder="Active Period"
+                        placeholder="Insert Plan Name"
                         {...field}
-                        className={`mt-1 block w-full h-16 ${
-                          errors.active_period
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md shadow-sm`}
+                        className={`bg-transparent ${
+                          errors.name ? 'border-red-500' : 'border-slate-300'
+                        }`}
                       />
                     )}
                   />
-                  {errors.active_period && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.active_period.message}
-                    </p>
+                  {errors.name && (
+                    <Box as="p" className="text-red-500 text-xs mt-1">{errors.name.message}</Box>
                   )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="active_period_unit"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                </Box>
+                <Box>
+                  <Box
+                    as="label"
+                    htmlFor="slug"
+                    className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
                   >
-                    Active Period Unit
-                  </label>
+                    Slug <Box as="span" className="text-red-500">*</Box>
+                  </Box>
                   <Controller
-                    name="active_period_unit"
+                    name="slug"
                     control={control}
                     defaultValue=""
-                    rules={{ required: "Active Period Unit is required" }}
+                    rules={{ required: 'Slug is required' }}
                     render={({ field }) => (
-                      <Select {...field} onValueChange={field.onChange}>
-                        <SelectTrigger className="h-16">
-                          <SelectValue placeholder="Select Unit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Units</SelectLabel>
-                            <SelectItem value="day">Days</SelectItem>
-                            <SelectItem value="week">Weeks</SelectItem>
-                            <SelectItem value="month">Months</SelectItem>
-                            <SelectItem value="year">Years</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <Input
+                        type="text"
+                        id="slug"
+                        size="lg"
+                        disabled={!canEdit}
+                        placeholder="Slug"
+                        {...field}
+                        className={`bg-transparent ${
+                          errors.slug ? 'border-red-500' : 'border-slate-300'
+                        }`}
+                      />
                     )}
                   />
-                  {errors.active_period_unit && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.active_period_unit.message?.toString()}
-                    </p>
+                  {errors.slug && (
+                    <Box as="p" className="text-red-500 text-xs mt-1">{errors.slug.message}</Box>
                   )}
-                </div> */}
-                </div>
+                </Box>
+                <Box>
+                  <Box
+                    as="label"
+                    htmlFor="insuranceId"
+                    className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
+                  >
+                    Insurance <Box as="span" className="text-red-500">*</Box>
+                  </Box>
+                  <Controller
+                    name="insuranceId"
+                    disabled={!canEdit}
+                    control={control}
+                    rules={{ required: 'Insurance ID is required' }}
+                    render={({ field }) => (
+                      <Combobox
+                        id="insuranceId"
+                        size="lg"
+                        value={field.value || ''}
+                        disabled={!canEdit}
+                        onValueChange={(value) => {
+                          field.onChange(value || '');
+                          setValue('productId', '');
+                          fetchProducts({ insuranceId: value });
+                        }}
+                        options={insurances.map((insurance: ProductCategoryOption) => ({
+                          label: insurance.name,
+                          value: insurance.id.toString(),
+                        }))}
+                        placeholder="Select Insurance"
+                        className="bg-transparent"
+                        triggerClassName="border-slate-300"
+                      />
+                    )}
+                  />
+                  {errors.insuranceId && (
+                    <Box as="p" className="text-red-500 text-xs mt-1">
+                      {errors.insuranceId.message?.toString()}
+                    </Box>
+                  )}
+                </Box>
+                <Box>
+                  <Box
+                    as="label"
+                    htmlFor="productId"
+                    className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
+                  >
+                    Product <Box as="span" className="text-red-500">*</Box>
+                  </Box>
+                  <Controller
+                    name="productId"
+                    disabled={!canEdit}
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Product ID is required' }}
+                    render={({ field }) => (
+                      <Combobox
+                        id="productId"
+                        size="lg"
+                        value={field.value?.toString() || ''}
+                        disabled={!canEdit}
+                        onValueChange={(value) => field.onChange(value || '')}
+                        options={products.map((product: ProductCategoryOption) => ({
+                          label: product.name,
+                          value: product.id.toString(),
+                        }))}
+                        placeholder="Select Product"
+                        className="bg-transparent"
+                        triggerClassName="border-slate-300"
+                      />
+                    )}
+                  />
+                  {errors.productId && (
+                    <Box as="p" className="text-red-500 text-xs mt-1">
+                      {errors.productId.message?.toString()}
+                    </Box>
+                  )}
+                </Box>
+              </Box>
 
-                <button
-                  type="submit"
-                  disabled={!canEdit}
-                  className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
-          </ContentLoadingWrapper>
-          <div className="w-full overflow-auto">
-            <ProductDetatilTab id={id} category={category} />
-          </div>
-        </div>
-      </div>
-    </>
+              <Button
+                type="submit"
+                disabled={!canEdit}
+                className="bg-[#F5BA41] hover:bg-[#e6a92d] text-black cursor-pointer"
+              >
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </ContentLoadingWrapper>
+        <Box className="w-full">
+          <Tabs defaultValue="packages" variant="underline" className="gap-0">
+            <TabsList
+              aria-label="Product detail tabs"
+              className="h-12 w-full justify-start rounded-t-lg border border-b-0 border-slate-200 bg-white px-2"
+            >
+              <TabsTrigger value="packages" className="px-6">
+                Packages
+              </TabsTrigger>
+              <TabsTrigger value="benefits" className="px-6">
+                Benefits
+              </TabsTrigger>
+              <TabsTrigger value="details" className="px-6">
+                Details
+              </TabsTrigger>
+              <TabsTrigger value="channels" className="px-6">
+                Channels
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="packages" className={tabContentClassName}>
+              <PackageList id={id} category={category} />
+            </TabsContent>
+            <TabsContent value="benefits" className={tabContentClassName}>
+              <BenefitList id={id} />
+            </TabsContent>
+            <TabsContent value="details" className={tabContentClassName}>
+              <DetailList id={id} />
+            </TabsContent>
+            <TabsContent value="channels" className={tabContentClassName}>
+              <ChannelList id={id} />
+            </TabsContent>
+          </Tabs>
+        </Box>
+      </Box>
+    </Box>
   );
 }
-

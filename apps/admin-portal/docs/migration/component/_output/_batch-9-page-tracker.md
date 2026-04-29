@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 61 |
+| PASS | 62 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 4 |
-| NOT_STARTED | 49 |
+| NOT_STARTED | 48 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -134,7 +134,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/product-category` | `product-category` | `apps/admin-portal/src/app/product-category/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
 | `/product-category/[category]` | `product-category-category` | `apps/admin-portal/src/app/product-category/[category]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/add` | `product-category-category-add` | `apps/admin-portal/src/app/product-category/[category]/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/product-category/[category]/detail/[id]` | `product-category-category-detail-id` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED. |
+| `/product-category/[category]/detail/[id]` | `product-category-category-detail-id` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx` | NO | YES | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the product category detail route onto shared Box, Button, Combobox, DataTable, Dialog, Input, Select, Table, Tabs, and Tooltip primitives; move package columns onto the shared ColumnDef contract; and preserve existing package, benefit, detail, channel, and product update workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/product-category/[category]/detail/[id]/add-benefit` | `product-category-category-detail-id-add-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/detail/[id]/add-package` | `product-category-category-detail-id-add-package` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-package/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/detail/[id]/benefits` | `product-category-category-detail-id-benefits` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefits/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1463,14 +1463,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `product-category-category-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-29`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: DataTable is present in the page-local tree, but current docs do not prove it is the dominant blocker; classified conservatively as NOT_STARTED.
+- Notes: Current apps/admin-portal/src changes refactor the product category detail route onto shared Box, Button, Combobox, DataTable, Dialog, Input, Select, Table, Tabs, and Tooltip primitives; move package columns onto the shared ColumnDef contract; and preserve existing package, benefit, detail, channel, and product update workflows. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /product-category/[category]/detail/[id]/add-benefit
 
