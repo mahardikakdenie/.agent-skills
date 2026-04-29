@@ -34,13 +34,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | Total discovered page.tsx routes | 115 |
 | In-scope pages | 114 |
 | Smoke routes | 10 |
-| DataTable-dependent pages | 37 |
-| PASS | 62 |
+| DataTable-dependent pages | 36 |
+| PASS | 63 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 4 |
-| NOT_STARTED | 48 |
+| NOT_STARTED | 47 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -127,7 +127,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/policy/endorsement/list/detail/[id]/upload` | `policy-endorsement-list-detail-id-upload` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/endorsement/list/export` | `policy-endorsement-list-export` | `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/endorsement/list/upload` | `policy-endorsement-list-upload` | `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | YES | `NOT_STARTED` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet. |
+| `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the policy detail route onto shared Box, Button, Dialog, and Table primitives; move the benefits list onto the shared Table contract; and preserve existing policy detail and renewal workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/policy/list/export` | `policy-list-export` | `apps/admin-portal/src/app/policy/list/export/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/list/import` | `policy-list-import` | `apps/admin-portal/src/app/policy/list/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/pending-renewals` | `policy-pending-renewals` | `apps/admin-portal/src/app/policy/pending-renewals/page.tsx` | NO | YES | `PASS` | 2026-04-13 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API and standardize the filter and table chrome on shared primitives. |
@@ -1357,15 +1357,15 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Page file: `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`
 - Route label: `policy-list-detail-id`
 - Smoke route: `NO`
-- DataTable dependency: `YES`
-- Status: `NOT_STARTED`
-- Last checked: `2026-04-06`
+- DataTable dependency: `NO`
+- Status: `PASS`
+- Last checked: `2026-04-29`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: Current source changes only realign this detail page to the relocated local `PageHeader` component path; its route-local DataTable usage is still intact and no dedicated route-level stabilization evidence is recorded yet.
+- Notes: Current apps/admin-portal/src changes refactor the policy detail route onto shared Box, Button, Dialog, and Table primitives; move the benefits list onto the shared Table contract; and preserve existing policy detail and renewal workflows. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /policy/list/export
 
