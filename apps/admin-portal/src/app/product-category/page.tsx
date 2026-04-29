@@ -295,7 +295,8 @@ function ProductCategorySection({
                 item.url === `${AppURL.productCategory}?category=${activeCategory}`;
 
               return (
-                <button
+                <Box
+                  as="button"
                   key={item.id || item.url}
                   type="button"
                   aria-current={isActive ? 'page' : undefined}
@@ -306,8 +307,10 @@ function ProductCategorySection({
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                 >
-                  <span className="min-w-0 truncate font-medium">{item.label}</span>
-                </button>
+                  <Box as="span" className="min-w-0 truncate font-medium">
+                    {item.label}
+                  </Box>
+                </Box>
               );
             })
           ) : (
