@@ -555,3 +555,18 @@ o-data image asset.
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and DataTable primitives while PageHeader-style title treatment remains local.`
 - Verification note: `This logging update is based on the current email template tag route source changes and hook updates. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /masterdata/email-template/tag as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+
+## Batch 9 - /masterdata/email-template/tag/add Route Refactor - 2026-04-29
+
+- Route focus: `/masterdata/email-template/tag/add`
+- Migration intent: `Refactor the email template tag add route onto the current shared primitive stack, standardizing the form layout and interaction while preserving the existing email tag creation logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx` now renders the route shell with shared `@repo/ui` `Box`, `Button`, `Combobox`, and `Input` primitives.
+  - The refactor standardizes the form layout using a grid-based composition, standardizes the page header via the local `PageHeader` component, and leverages `ContentLoadingWrapper` for consistent loading states.
+  - The form utilizes `Box` for all layout and semantic elements, including labeled fields and validation error displays.
+  - Standardized breadcrumbs are integrated into the new page layout, pointing back to the email template tag list.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, and Input primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current email template tag add route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /masterdata/email-template/tag/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

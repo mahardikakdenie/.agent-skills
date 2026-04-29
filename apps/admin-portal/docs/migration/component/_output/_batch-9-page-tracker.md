@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 67 |
+| PASS | 68 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 3 |
-| NOT_STARTED | 44 |
+| NOT_STARTED | 43 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -90,7 +90,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/email-template/add` | `masterdata-email-template-add` | `apps/admin-portal/src/app/masterdata/email-template/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/email-template/detail/[id]` | `masterdata-email-template-detail-id` | `apps/admin-portal/src/app/masterdata/email-template/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/email-template/tag` | `masterdata-email-template-tag` | `apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-04-29 updates migrate the route onto the shared DataTable instance API, standardize the page chrome on shared primitives, and implement dynamic column sizing while preserving existing navigation. |
-| `/masterdata/email-template/tag/add` | `masterdata-email-template-tag-add` | `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/email-template/tag/add` | `masterdata-email-template-tag-add` | `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/email-template/tag/add route onto shared Box, Button, Combobox, and Input primitives; adopts ContentLoadingWrapper for consistent loading; and standardizes the page header and form layout. |
 | `/masterdata/group` | `masterdata-group` | `apps/admin-portal/src/app/masterdata/group/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and add compact pagination and explicit empty-state handling while preserving existing add and detail navigation. |
 | `/masterdata/group/add` | `masterdata-group-add` | `apps/admin-portal/src/app/masterdata/group/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/masterdata/group/detail/[id]` | `masterdata-group-detail-id` | `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -817,14 +817,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-email-template-tag-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-04-29`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /masterdata/email-template/tag/add route onto shared Box, Button, Combobox, and Input primitives. The refactor standardizes the form layout and interaction, adopts ContentLoadingWrapper for consistent loading states, and standardizes the page header while preserving existing email tag creation logic.
 
 ### /masterdata/group
 
