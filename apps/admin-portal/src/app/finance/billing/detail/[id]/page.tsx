@@ -1,24 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState, type ChangeEvent } from "react";
 import Link from "next/link";
 import { useBilling } from "@/app/finance/billing/hook";
-import { ChevronLeft, Download, Upload } from "lucide-react";
+import { Download, Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
+  Box,
+  Button,
+  DataTable,
 } from "@repo/ui";
-import { Button } from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
+import { PageHeader } from "@/components/page-header";
 import { BillingDetailInfo } from "./components/BillingDetailInfo";
 import { BillingDetailActions } from "./components/BillingDetailActions";
-import { DataTable } from "@/components/ui/DataTable";
-import { createBillingDetailTableColumns } from "@/components/tableConfig/billingDetailTableConfig";
+import {
+  BillingDetailItem,
+  createBillingDetailTableColumns,
+} from "@/components/tableConfig/billingDetailTableConfig";
+import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
+import { formatDate, formatMoney } from "@/lib/formatter";
+
+let tableMeasureContext: CanvasRenderingContext2D | null = null;
+
+function measureTextWidth(
+  label: string,
+  font: string,
+  fallbackCharWidth: number
+) {
+  if (typeof document === "undefined") {
+    return label.length * fallbackCharWidth;
+  }
+
+  if (!tableMeasureContext) {
+    tableMeasureContext = document.createElement("canvas").getContext("2d");
+  }
+
+  if (!tableMeasureContext) {
+    return label.length * fallbackCharWidth;
+  }
+
+  tableMeasureContext.font = font;
+
+  return tableMeasureContext.measureText(label).width;
+}
 
 export default function DetailBillingPage() {
   const { id } = useParams();
@@ -42,13 +67,13 @@ export default function DetailBillingPage() {
   const isInsurer = billingDetails?.type === "insurer";
   const billingType = isInsurer ? "Billing" : "Listing";
 
-  const transactionItems = billing?.data || [];
+  const transactionItems = (billing?.data as BillingDetailItem[]) || [];
 
   const totalItems = billing?.meta?.total || 0;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   const hasMatchedReconciliation = transactionItems.some(
-    (item: any) => item.status_reconcilliation === "matched"
+    (item) => item.status_reconcilliation === "matched"
   );
 
   const handleUpdateToPaid = async () => {
@@ -90,123 +115,363 @@ export default function DetailBillingPage() {
     }
   };
 
-  const columns = createBillingDetailTableColumns({
-    type: billingDetails?.type || "insurer",
-    currency: billingDetails?.currency || "IDR",
-  });
+  const transactionNumberSize = useMemo(
+    () =>
+      Math.max(
+        160,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Transaction Number", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const label = item?.invoice_no || "-";
+              return Math.max(
+                widest,
+                measureTextWidth(label, "400 12px Arial", 7.5)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const planNameSize = useMemo(
+    () =>
+      Math.max(
+        180,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Plan Name", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const label = item?.details?.plan_name || "-";
+              const lines = label.split("|");
+              const maxLine = lines.reduce(
+                (w, line) =>
+                  Math.max(w, measureTextWidth(line, "400 13px Arial", 8)),
+                0
+              );
+              return Math.max(widest, maxLine);
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const insuranceNameSize = useMemo(
+    () =>
+      Math.max(
+        200,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Insurance Company Name", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const label = item?.details?.insurance_name || "-";
+              return Math.max(
+                widest,
+                measureTextWidth(label, "400 13px Arial", 8)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const transactionDateSize = useMemo(
+    () =>
+      Math.max(
+        140,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Transaction Date", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const label = item?.details?.transaction_date
+                ? formatDate(item?.details?.transaction_date, "YYYY-MM-DD")
+                : "-";
+              return Math.max(
+                widest,
+                measureTextWidth(label, "400 12px Arial", 7.5)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const currencySize = useMemo(
+    () =>
+      Math.max(
+        80,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Currency", "500 14px Arial", 8),
+            measureTextWidth(
+              billingDetails?.currency || "IDR",
+              "400 12px Arial",
+              7.5
+            )
+          ) + 60
+        )
+      ),
+    [billingDetails]
+  );
+
+  const premiumSize = useMemo(
+    () =>
+      Math.max(
+        120,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Premium", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const label = formatMoney(item?.amount || 0);
+              return Math.max(
+                widest,
+                measureTextWidth(label, "400 12px Arial", 7.5)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const percentageSize = useMemo(
+    () =>
+      Math.max(
+        60,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("%", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const label = `${item?.commission_percentage ?? 0}%`;
+              return Math.max(
+                widest,
+                measureTextWidth(label, "400 12px Arial", 7.5)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const commissionAmountSize = useMemo(
+    () =>
+      Math.max(
+        150,
+        Math.ceil(
+          Math.max(
+            measureTextWidth(
+              isInsurer ? "Commission Amount" : "Net Premium",
+              "500 14px Arial",
+              8
+            ),
+            transactionItems.reduce((widest: number, item) => {
+              const amount = isInsurer
+                ? item?.commission_amount || 0
+                : (item?.amount || 0) - (item?.commission_amount || 0);
+              const label = formatMoney(amount);
+              return Math.max(
+                widest,
+                measureTextWidth(label, "400 12px Arial", 7.5)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems, isInsurer]
+  );
+
+  const statusReconciliationSize = useMemo(
+    () =>
+      Math.max(
+        160,
+        Math.ceil(
+          Math.max(
+            measureTextWidth("Status Reconciliation", "500 14px Arial", 8),
+            transactionItems.reduce((widest: number, item) => {
+              const status = item?.status_reconcilliation || "-";
+              const label = status
+                .split("-")
+                .map(
+                  (word: string) =>
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                )
+                .join(" ");
+              return Math.max(
+                widest,
+                measureTextWidth(label, "700 12px Arial", 7.5)
+              );
+            }, 0)
+          ) + 60
+        )
+      ),
+    [transactionItems]
+  );
+
+  const columns = useMemo(
+    () =>
+      createBillingDetailTableColumns({
+        type: billingDetails?.type || "insurer",
+        currency: billingDetails?.currency || "IDR",
+        page,
+        rowsPerPage,
+        transactionNumberSize,
+        planNameSize,
+        insuranceNameSize,
+        transactionDateSize,
+        currencySize,
+        premiumSize,
+        percentageSize,
+        commissionAmountSize,
+        statusReconciliationSize,
+      }),
+    [
+      billingDetails,
+      page,
+      rowsPerPage,
+      transactionNumberSize,
+      planNameSize,
+      insuranceNameSize,
+      transactionDateSize,
+      currencySize,
+      premiumSize,
+      percentageSize,
+      commissionAmountSize,
+      statusReconciliationSize,
+    ]
+  );
 
   if (isLoadingBilling) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading billing details...</div>
-      </div>
+      <Box className="flex items-center justify-center h-screen">
+        <Box className="text-lg">Loading billing details...</Box>
+      </Box>
     );
   }
 
   if (!billing?.data?.length || !billingDetails) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Billing not found</div>
-      </div>
+      <Box className="flex items-center justify-center h-screen">
+        <Box className="text-lg">Billing not found</Box>
+      </Box>
     );
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="bg-white md:px-6 p-4 flex items-center">
-        <div>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href={AppURL.financeBilling}>Billing</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{billingType} Detail</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2 mt-2">
-            {billingType} Detail
-          </h2>
-        </div>
-
-        <div className="flex space-x-4 ml-auto">
-          <div
-            onClick={() => router.push(AppURL.financeBilling)}
-            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </div>
-
-          {billingDetails?.status === "pending-reconcilliation" && (
-            <Button
-              onClick={() =>
-                router.push(
-                  `${AppURL.financeBillingDetail}/${id}/import?type=${billingDetails.type}`
-                )
-              }
-              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
-            >
-              <Upload className="w-5 h-5 mr-1" /> Import Reconciliation
-            </Button>
-          )}
-
+    <Box className="flex min-h-0 flex-1 w-full flex-col">
+      <PageHeader
+        title={`${billingType} Detail`}
+        breadcrumbs={[
+          { label: "Billing", href: AppURL.financeBilling },
+          { label: `${billingType} Detail`, isCurrentPage: true },
+        ]}
+        showBackButton={true}
+        onBackClick={() => router.push(AppURL.financeBilling)}
+      >
+        {billingDetails?.status === 'pending-reconcilliation' && (
           <Button
             onClick={() =>
               router.push(
-                `${AppURL.financeBillingDetail}/${id}/export?type=${billingDetails.type}`
+                `${AppURL.financeBillingDetail}/${id}/import?type=${billingDetails.type}`,
               )
             }
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full"
+            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]"
+            leftIcon={<Upload className="w-5 h-5" />}
           >
-            <Download className="w-5 h-5 mr-1" /> Export
+            Import Reconciliation
           </Button>
-        </div>
-      </div>
-
-      <BillingDetailInfo billing={billingDetails} isInsurer={isInsurer} />
-
-      {billingDetails?.status &&
-        ["waiting-for-payment", "pending-reconcilliation"].includes(
-          billingDetails.status
-        ) && (
-          <BillingDetailActions
-            billing={billingDetails}
-            isInsurer={isInsurer}
-            billingType={billingType}
-            hasMatchedReconciliation={hasMatchedReconciliation}
-            isUpdating={isUpdating}
-            onUpdateToPaid={handleUpdateToPaid}
-            onCancel={handleCancel}
-            onConfirmReconciliation={handleConfirmReconciliation}
-            onViewInvoice={() =>
-              router.push(
-                `${AppURL.financeBillingDetail}/${id}/invoice?type=${billingDetails.type}`
-              )
-            }
-          />
         )}
 
-      <div className="p-4 md:p-6 m-5 bg-white rounded-lg">
+        <Button
+          onClick={() =>
+            router.push(`${AppURL.financeBillingDetail}/${id}/export?type=${billingDetails.type}`)
+          }
+          className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]"
+          leftIcon={<Download className="w-5 h-5" />}
+        >
+          Export
+        </Button>
+      </PageHeader>
+
+      <Box className="flex flex-col flex-1 p-4 md:px-6 md:pt-6 md:pb-3 gap-3">
+        <BillingDetailInfo billing={billingDetails} isInsurer={isInsurer} />
+
+        {billingDetails?.status &&
+          ['waiting-for-payment', 'pending-reconcilliation'].includes(billingDetails.status) && (
+            <BillingDetailActions
+              billing={billingDetails}
+              isInsurer={isInsurer}
+              billingType={billingType}
+              hasMatchedReconciliation={hasMatchedReconciliation}
+              isUpdating={isUpdating}
+              onUpdateToPaid={handleUpdateToPaid}
+              onCancel={handleCancel}
+              onConfirmReconciliation={handleConfirmReconciliation}
+              onViewInvoice={() =>
+                router.push(
+                  `${AppURL.financeBillingDetail}/${id}/invoice?type=${billingDetails.type}`,
+                )
+              }
+            />
+          )}
+
         <DataTable
+          className="!gap-3 pb-2 md:pb-3 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+          loading={isLoadingBilling}
           data={transactionItems}
           columns={columns}
-          loading={isLoadingBilling}
-          pagination={{
-            page,
-            totalPages,
-            rowsPerPage,
-            totalItems,
-            onPageChange: setPage,
-            onRowsPerPageChange: handleRowsPerPageChange,
+          defaultState={{
+            columnPinning: {
+              left: ['index', 'invoice_no'],
+            },
           }}
-          className="table-claims"
+          enablePagination={true}
+          pagination={{
+            pageIndex: page - 1,
+            pageSize: rowsPerPage,
+            pageCount: totalPages,
+            rowCount: totalItems,
+            onPageChange: (pageIndex) => {
+              if (isLoadingBilling) {
+                return;
+              }
+              setPage(pageIndex + 1);
+            },
+            onPageSizeChange: (pageSize) => {
+              if (isLoadingBilling) {
+                return;
+              }
+              handleRowsPerPageChange({
+                target: { value: String(pageSize) },
+              } as ChangeEvent<HTMLSelectElement>);
+            },
+          }}
+          pageSizeOptions={[10, 20, 30, 50, 100]}
+          renderPagination={(table) => (
+            <Box className="-mt-1">
+              <CompactTablePagination
+                table={table}
+                pageSizeOptions={[10, 20, 30, 50, 100]}
+                disabled={isLoadingBilling}
+              />
+            </Box>
+          )}
+          tableOptions={{
+            manualPagination: true,
+            enableColumnPinning: true,
+            enableColumnResizing: true,
+            defaultColumn: {
+              minSize: 48,
+              size: 96,
+            },
+            getRowId: (row, index) => (row as any)?.id || `billing-row-${index}`,
+          }}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
-}
+  }

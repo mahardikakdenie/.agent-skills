@@ -538,20 +538,52 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Breadcrumb, Button, Combobox, DataTable, and Input primitives.`
 - Verification note: `This logging update is based on the current product category route source changes and refactor onto shared primitives. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /product-category and /product-category/[category]/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
-`n## Batch 9 - /policy/list/detail/[id] Route Refactor - 2026-04-29`n`n- Route focus: `/policy/list/detail/[id]``n- Migration intent: ``Refactor the policy detail route onto the current shared primitive stack, standardizing the information cards, benefits table, and renewal dialog while preserving existing policy detail and renewal workflows.``n- Route-local behavior updates:`n  - `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` now renders the route shell with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Table` primitives, replacing the older native layout and local table components.`n  - The refactor standardizes the policy holder, plan, and insured detail sections using a common `SectionCard` and `DetailRow` composition based on `Box`.`n  - The benefits list is now rendered using the shared `@repo/ui` `Table` primitive instead of a bespoke local implementation.`n  - The policy renewal flow now utilizes shared `@repo/ui` `Dialog` and `Button` primitives for the confirmation modal.`n  - The page header is migrated to the relocated local `PageHeader` path, providing consistent breadcrumbs and back-navigation.`n- Files changed (route-focused): [`apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`]`n- Shared-ui impact: ``No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Dialog, and Table primitives while PageHeader remains app-local.``n- Verification note: ``This logging update is based on the current policy detail route source changes and the route's current PASS state for Batch 9. No new smoke, lint, or build evidence is added in this documentation entry.```n- Tracker impact: ``Batch 9 page tracker should now treat /policy/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.``
+
+
+## Batch 9 - /finance/billing/detail/[id] Route Refactor - 2026-04-30
+
+- Route focus: `/finance/billing/detail/[id]`
+- Migration intent: `Refactor the billing detail route onto the current shared primitive stack, standardizing the information cards, action buttons, reconciliation dialogs, and transaction table while migrating the transaction list onto the shared DataTable instance API with dynamic column sizing.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx` now renders the route shell with shared `@repo/ui` `Box`, `Button`, `Breadcrumb`, and `DataTable` primitives, replacing older native layout and local UI components.
+  - The root `Box` now uses `flex min-h-0 flex-1` to align with the standard page layout pattern.
+  - The route now mounts the shared `@repo/ui` `DataTable` directly, featuring manual pagination, column pinning, and `CompactTablePagination` integration.
+  - Maintained the standard `pb-4 md:pb-6` on the `DataTable` `className` to provide consistent spacing at the bottom of the page.
+  - Implemented dynamic column sizing via `measureTextWidth` to ensure visual balance for transaction numbers, plan names, insurance companies, and currency/amount fields based on current dataset content.
+  - `apps/admin-portal/src/app/finance/billing/detail/[id]/components/BillingDetailInfo.tsx` refactored onto shared `@repo/ui` `Box` and `Badge` primitives, standardizing the billing summary and status presentation.
+  - `apps/admin-portal/src/app/finance/billing/detail/[id]/components/BillingDetailActions.tsx` refactored onto shared `@repo/ui` `Box`, `Button`, and `Dialog` primitives, standardizing the payment, cancellation, and reconciliation confirmation flows.
+  - `apps/admin-portal/src/components/tableConfig/billingDetailTableConfig.tsx` defines the transaction list columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, loading skeletons, and right-aligned currency formatting.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/billing/detail/[id]/page.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/components/BillingDetailInfo.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/components/BillingDetailActions.tsx`, `apps/admin-portal/src/components/tableConfig/billingDetailTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Breadcrumb, DataTable, Dialog, Badge, and Skeleton primitives while PageHeader-style title treatment remains local.`
+- Verification note: `This logging update is based on the current billing detail route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /finance/billing/detail/[id] as PASS because the route-local migration has been completed.`
+
+## Batch 9 - /policy/list/detail/[id] Route Refactor - 2026-04-29
+
+- Route focus: `/policy/list/detail/[id]`
+- Migration intent: `Refactor the policy detail route onto the current shared primitive stack, standardizing the information cards, benefits table, and renewal dialog while preserving existing policy detail and renewal workflows.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` now renders the route shell with shared `@repo/ui` `Box`, `Button`, `Dialog`, and `Table` primitives, replacing the older native layout and local table components.
+  - The refactor standardizes the policy holder, plan, and insured detail sections using a common `SectionCard` and `DetailRow` composition based on `Box`.
+  - The benefits list is now rendered using the shared `@repo/ui` `Table` primitive instead of a bespoke local implementation.
+  - The policy renewal flow now utilizes shared `@repo/ui` `Dialog` and `Button` primitives for the confirmation modal.
+  - The page header is migrated to the relocated local `PageHeader` path, providing consistent breadcrumbs and back-navigation.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Dialog, and Table primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current policy detail route source changes and the route's current PASS state for Batch 9. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /policy/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
 ## Batch 9 - /masterdata/email-template/tag Route Refactor - 2026-04-29
 
 - Route focus: /masterdata/email-template/tag
 - Migration intent: `Migrate the masterdata email template tag route onto the shared DataTable instance API, standardize the page chrome on shared primitives, and implement dynamic column sizing while preserving existing add, edit, and delete navigation.`
 - Route-local behavior updates:
-  - pps/admin-portal/src/app/masterdata/email-template/tag/page.tsx now renders the route shell with Box, mounts the shared @repo/ui DataTable directly with manual pagination, column pinning, and CompactTablePagination integration.
-  - The route now uses createEmailTagTableColumns from the existing emailTagTableConfig and filters them to match the required columns: No., Journey, Tag, and Action.
-  - pps/admin-portal/src/app/masterdata/email-template/hooks.tsx was updated to include emailTag and emailTagMeta state management and the etchEmailTag function.
-  - Standardized the "Add New" button using shared Button primitive and Plus icon from eact-feather.
-  - Implemented a clean empty state using shared Box and the 
-o-data image asset.
-- Files changed (route-focused): [pps/admin-portal/src/app/masterdata/email-template/tag/page.tsx, pps/admin-portal/src/app/masterdata/email-template/hooks.tsx]
+  - `apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx` now renders the route shell with `Box`, mounts the shared `@repo/ui` `DataTable` directly with manual pagination, column pinning, and `CompactTablePagination` integration.
+  - The route now uses `createEmailTagTableColumns` from the existing `emailTagTableConfig` and filters them to match the required columns: No., Journey, Tag, and Action.
+  - `apps/admin-portal/src/app/masterdata/email-template/hooks.tsx` was updated to include `emailTag` and `emailTagMeta` state management and the `fetchEmailTag` function.
+  - Standardized the "Add New" button using shared `Button` primitive and Plus icon from `react-feather`.
+  - Implemented a clean empty state using shared `Box` and the `no-data` image asset.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx`, `apps/admin-portal/src/app/masterdata/email-template/hooks.tsx`]
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and DataTable primitives while PageHeader-style title treatment remains local.`
 - Verification note: `This logging update is based on the current email template tag route source changes and hook updates. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /masterdata/email-template/tag as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

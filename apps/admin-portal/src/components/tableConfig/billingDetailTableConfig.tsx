@@ -1,4 +1,4 @@
-import { Column } from "@/components/ui/DataTable";
+import { Box, Skeleton, type ColumnDef } from "@repo/ui";
 import { formatDate, formatMoney } from "@/lib/formatter";
 
 export interface BillingDetailItem {
@@ -19,6 +19,17 @@ export interface BillingDetailItem {
 export interface BillingDetailTableConfigProps {
   type: string;
   currency: string;
+  page: number;
+  rowsPerPage: number;
+  transactionNumberSize?: number;
+  planNameSize?: number;
+  insuranceNameSize?: number;
+  transactionDateSize?: number;
+  currencySize?: number;
+  premiumSize?: number;
+  percentageSize?: number;
+  commissionAmountSize?: number;
+  statusReconciliationSize?: number;
 }
 
 const getReconciliationColor = (status?: string) => {
@@ -29,94 +40,223 @@ const getReconciliationColor = (status?: string) => {
   return colors[status || ""] || "#6B7280";
 };
 
+const formatTableOrdinalNumber = (value: number) =>
+  new Intl.NumberFormat("id-ID").format(value);
+
 export const createBillingDetailTableColumns = ({
   type,
   currency,
-}: BillingDetailTableConfigProps): Column<BillingDetailItem>[] => {
-  const columns: Column<BillingDetailItem>[] = [
+  page,
+  rowsPerPage,
+  transactionNumberSize = 160,
+  planNameSize = 180,
+  insuranceNameSize = 200,
+  transactionDateSize = 140,
+  currencySize = 80,
+  premiumSize = 120,
+  percentageSize = 60,
+  commissionAmountSize = 150,
+  statusReconciliationSize = 160,
+}: BillingDetailTableConfigProps): ColumnDef<BillingDetailItem>[] => {
+  const columns: ColumnDef<BillingDetailItem>[] = [
     {
-      key: "invoice_no",
-      header: "Transaction Number",
+      id: "index",
+      header: "No.",
+      enableSorting: false,
+      enableResizing: false,
+      size: 44,
+      minSize: 44,
+      meta: {
+        headerCellClassName: "whitespace-nowrap",
+        cellClassName: "align-middle text-slate-500",
+        cellContentClassName: "whitespace-nowrap",
+        loadingSkeleton: (
+          <Box className="flex min-w-0 items-center">
+            <Skeleton className="h-4 w-5 rounded-full" />
+          </Box>
+        ),
+      },
+      cell: ({ row }) =>
+        formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
     },
     {
-      key: "plan_name",
+      accessorKey: "invoice_no",
+      header: "Transaction Number",
+      enableSorting: false,
+      size: transactionNumberSize,
+      minSize: 120,
+      meta: {
+        headerCellClassName: "whitespace-nowrap",
+        cellClassName: "align-middle whitespace-nowrap",
+        cellContentClassName: "whitespace-nowrap text-xs text-slate-700",
+      },
+    },
+    {
+      id: "plan_name",
+      accessorFn: (item) => item.details?.plan_name || "-",
       header: "Plan Name",
-      render: (item) => item.details?.plan_name?.split("|").join("\n") || "-",
+      enableSorting: false,
+      size: planNameSize,
+      minSize: 140,
+      meta: {
+        headerCellClassName: "whitespace-nowrap",
+        cellClassName: "align-middle",
+        cellContentClassName: "whitespace-normal break-words",
+      },
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+            {item.details?.plan_name?.split("|").join("\n") || "-"}
+          </Box>
+        );
+      },
     },
   ];
 
   if (type === "partner") {
     columns.push({
-      key: "insurance_name",
+      id: "insurance_name",
+      accessorFn: (item) => item.details?.insurance_name || "-",
       header: "Insurance Company Name",
-      render: (item) => item.details?.insurance_name || "-",
+      enableSorting: false,
+      size: insuranceNameSize,
+      minSize: 160,
+      meta: {
+        headerCellClassName: "whitespace-nowrap",
+        cellClassName: "align-middle",
+        cellContentClassName: "whitespace-normal break-words",
+      },
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
+            {item.details?.insurance_name || "-"}
+          </Box>
+        );
+      },
     });
   }
 
   columns.push(
     {
-      key: "transaction_date",
+      id: "transaction_date",
+      accessorFn: (item) => item.details?.transaction_date || "-",
       header: "Transaction Date",
-
-      render: (item) =>
-        formatDate(item.details?.transaction_date, "YYYY-MM-DD"),
+      enableSorting: false,
+      size: transactionDateSize,
+      minSize: 116,
+      meta: {
+        headerCellClassName: "whitespace-nowrap",
+        cellClassName: "align-middle whitespace-nowrap",
+        cellContentClassName:
+          "whitespace-nowrap text-xs tabular-nums text-slate-700",
+      },
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <Box>
+            {item.details?.transaction_date
+              ? formatDate(item.details?.transaction_date, "YYYY-MM-DD")
+              : "-"}
+          </Box>
+        );
+      },
     },
     {
-      key: "currency",
+      id: "currency",
       header: "Currency",
-
-      render: () => currency,
+      enableSorting: false,
+      size: currencySize,
+      minSize: 60,
+      meta: {
+        headerCellClassName: "whitespace-nowrap",
+        cellClassName: "align-middle whitespace-nowrap",
+        cellContentClassName: "whitespace-nowrap text-xs text-slate-700",
+      },
+      cell: () => currency,
     },
     {
-      key: "premium",
+      id: "premium",
+      accessorFn: (item) => item.amount,
       header: "Premium",
-      className: "text-right",
-      classNameHeading: "text-right",
-
-      render: (item) => formatMoney(item.amount),
+      enableSorting: false,
+      size: premiumSize,
+      minSize: 100,
+      meta: {
+        headerCellClassName: "whitespace-nowrap text-right",
+        cellClassName: "align-middle whitespace-nowrap text-right",
+        cellContentClassName: "whitespace-nowrap text-xs text-slate-700",
+      },
+      cell: ({ row }) => formatMoney(row.original.amount),
     },
     {
-      key: "commission_percentage",
+      id: "commission_percentage",
+      accessorFn: (item) => item.commission_percentage,
       header: "%",
-      className: "text-right",
-      classNameHeading: "text-right",
-
-      render: (item) => `${item.commission_percentage ?? 0}%`,
+      enableSorting: false,
+      size: percentageSize,
+      minSize: 40,
+      meta: {
+        headerCellClassName: "whitespace-nowrap text-right",
+        cellClassName: "align-middle whitespace-nowrap text-right",
+        cellContentClassName: "whitespace-nowrap text-xs text-slate-700",
+      },
+      cell: ({ row }) => `${row.original.commission_percentage ?? 0}%`,
     }
   );
 
   if (type === "insurer") {
     columns.push({
-      key: "commission_amount",
+      id: "commission_amount",
+      accessorFn: (item) => item.commission_amount,
       header: "Commission Amount",
-      className: "text-right",
-      classNameHeading: "text-right",
-
-      render: (item) => formatMoney(item.commission_amount ?? 0),
+      enableSorting: false,
+      size: commissionAmountSize,
+      minSize: 120,
+      meta: {
+        headerCellClassName: "whitespace-nowrap text-right",
+        cellClassName: "align-middle whitespace-nowrap text-right",
+        cellContentClassName: "whitespace-nowrap text-xs text-slate-700",
+      },
+      cell: ({ row }) => formatMoney(row.original.commission_amount ?? 0),
     });
   } else {
     columns.push({
-      key: "net_premium",
+      id: "net_premium",
       header: "Net Premium",
-      className: "text-right",
-      classNameHeading: "text-right",
-
-      render: (item) =>
-        formatMoney(item.amount - (item.commission_amount ?? 0)),
+      enableSorting: false,
+      size: commissionAmountSize,
+      minSize: 120,
+      meta: {
+        headerCellClassName: "whitespace-nowrap text-right",
+        cellClassName: "align-middle whitespace-nowrap text-right",
+        cellContentClassName: "whitespace-nowrap text-xs text-slate-700",
+      },
+      cell: ({ row }) =>
+        formatMoney(row.original.amount - (row.original.commission_amount ?? 0)),
     });
   }
 
   columns.push({
-    key: "status_reconcilliation",
+    id: "status_reconcilliation",
+    accessorFn: (item) => item.status_reconcilliation || "-",
     header: "Status Reconciliation",
-
-    render: (item) => {
-      const status = item.status_reconcilliation;
+    enableSorting: false,
+    size: statusReconciliationSize,
+    minSize: 140,
+    meta: {
+      headerCellClassName: "whitespace-nowrap",
+      cellClassName: "align-middle whitespace-nowrap",
+    },
+    cell: ({ row }) => {
+      const status = row.original.status_reconcilliation;
       if (!status) return "-";
 
       return (
-        <span
-          className="font-bold capitalize"
+        <Box
+          as="span"
+          className="font-bold capitalize text-xs"
           style={{ color: getReconciliationColor(status) }}
         >
           {status
@@ -126,7 +266,7 @@ export const createBillingDetailTableColumns = ({
                 word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             )
             .join(" ")}
-        </span>
+        </Box>
       );
     },
   });
