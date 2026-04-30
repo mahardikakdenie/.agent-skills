@@ -562,7 +562,7 @@ export default function ExportDetailBillingPage() {
                       <Box as="td" style={tableStyles.tdRight}>
                         {data.commission_percentage ?? 0}%
                       </Box>
-                      <Box as="td" style={tableStyles.tdRight} className="font-semibold">
+                      <Box as="td" style={tableStyles.tdRight}>
                         {type === 'insurer'
                           ? formatMoney(data.commission_amount ?? 0)
                           : formatMoney(data.amount - (data.commission_amount ?? 0))}
@@ -572,9 +572,9 @@ export default function ExportDetailBillingPage() {
                 </Box>
               </Box>
             </Box>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
