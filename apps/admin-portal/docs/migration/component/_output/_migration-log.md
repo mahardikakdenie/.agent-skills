@@ -602,3 +602,21 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, and Input primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current email template tag add route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /masterdata/email-template/tag/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /finance/billing/detail/[id]/export Route Refactor - 2026-04-30
+
+- Route focus: `/finance/billing/detail/[id]/export`
+- Migration intent: `Refactor the billing detail export route onto the current shared primitive stack, standardizing the layout, report header, and data table while preserving existing PDF/XLSX generation and data-fetching logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` now adopts shared `@repo/ui` `Box`, `Breadcrumb`, `Badge`, `Spinner`, and `Button` primitives.
+  - Transformed all native HTML elements (`div`, `h2`, `button`, `dl`, `dt`, `dd`, `img`, `table`, `thead`, `tr`, `th`, `tbody`, `td`) into the polymorphic `Box` component with appropriate semantic `as` mapping.
+  - Standardized the page header with `Breadcrumb` and standardized typography.
+  - Replaced the bespoke loading indicator with the shared `Spinner` component.
+  - Standardized status rendering using the shared `Badge` primitive with semantic tone mapping.
+  - Standardized 'Generate PDF' and 'Generate XLSX' actions on shared `Button` primitives with updated styling and icons.
+  - Standardized the back affordance as a semantic button with a left chevron icon.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx`]
+
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Breadcrumb, Badge, Spinner, and Button primitives while the PDF/XLSX generation logic remains local.`
+- Verification note: `This logging update is based on the current billing detail export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /finance/billing/detail/[id]/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
