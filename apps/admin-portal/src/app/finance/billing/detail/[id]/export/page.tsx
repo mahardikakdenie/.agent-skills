@@ -379,11 +379,11 @@ export default function ExportDetailBillingPage() {
           </Box>
         </Box>
 
-        <Box className="flex items-center space-x-3 ml-auto">
+        <Box className="flex items-center gap-4 ml-auto">
           <Box
             as="button"
             onClick={handleBack}
-            className="font-semibold items-center flex gap-1.5 text-red-600 hover:text-red-700 transition-colors text-sm px-3 py-2 cursor-pointer"
+            className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
           >
             <ChevronLeft className="w-4 h-4" />
             Back
@@ -391,16 +391,16 @@ export default function ExportDetailBillingPage() {
 
           <Button
             onClick={handleGeneratePdf}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs px-5 shadow-sm"
+            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
           >
-            <Download className="w-4 h-4 mr-1.5" /> Generate PDF
+            <Download className="w-5 h-5 mr-1" /> Generate PDF
           </Button>
 
           <Button
             onClick={handleGenerateXlsx}
-            className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs px-5 shadow-sm"
+            className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs"
           >
-            <Download className="w-4 h-4 mr-1.5" /> Generate XLSX
+            <Download className="w-5 h-5 mr-1" /> Generate XLSX
           </Button>
         </Box>
       </Box>
