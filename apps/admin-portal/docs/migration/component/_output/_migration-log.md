@@ -620,3 +620,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Breadcrumb, Badge, Spinner, and Button primitives while the PDF/XLSX generation logic remains local.`
 - Verification note: `This logging update is based on the current billing detail export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /finance/billing/detail/[id]/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /finance/billing/detail/[id]/import Route Refactor - 2026-05-04
+
+- Route focus: `/finance/billing/detail/[id]/import`
+- Migration intent: `Refactor the billing detail import route onto the current shared primitive stack, standardizing the layout and file-upload interaction while preserving the existing billing-transaction import logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, and `FileUpload` primitives.
+  - The refactor standardizes the page header via the local `PageHeader` component, featuring consistent breadcrumbs and back-navigation.
+  - Standardized the file-upload flow with `FileUpload` component, including validation for Excel formats and 10MB file size limit.
+  - Standardized the import instructions and status feedback using shared `Box` primitives with semantic styling.
+  - Standardized the primary upload action on a shared `Button` primitive with a loading state.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and FileUpload primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current billing detail import route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /finance/billing/detail/[id]/import as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

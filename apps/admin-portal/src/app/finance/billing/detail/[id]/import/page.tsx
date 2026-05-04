@@ -1,24 +1,22 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { toastPromise } from "@/lib/toast";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@repo/ui";
-import { ChevronLeft, Upload } from "lucide-react";
+import { Upload } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@repo/ui";
-import { useBilling } from "@/app/finance/billing/hook";
-import { useScreen } from "@/context/screen.context";
-import AppURL from "@/constants/app-url.const";
+  Button,
+  Box,
+  FileUpload,
+} from '@repo/ui';
 
-type UploadStatus = "idle" | "uploading" | "success" | "error";
+import { useBilling } from '@/app/finance/billing/hook';
+import { PageHeader } from '@/components/page-header';
+import AppURL from '@/constants/app-url.const';
+import { useScreen } from '@/context/screen.context';
+import { toastPromise } from '@/lib/toast';
+
+type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
 export default function ImportPage() {
   const { id } = useParams();
@@ -26,251 +24,139 @@ export default function ImportPage() {
   const searchParams = useSearchParams();
   const { setLoading } = useScreen();
 
-  const typeBilling = searchParams.get("type") || "";
+  const typeBilling = searchParams.get('type') || '';
+  const billingType = typeBilling === 'insurer' ? 'Billing' : 'Listing';
 
   const { importBillingTransactions } = useBilling();
 
-  const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
-
-  const handleFileSelection = (file: File) => {
-    const validTypes = [
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.ms-excel",
-    ];
-
-    if (validTypes.includes(file.type)) {
-      setSelectedFile(file);
-      setUploadStatus("idle");
-    } else {
-      alert("Please upload an Excel file (.xlsx or .xls)");
-    }
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files?.[0]) {
-      handleFileSelection(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      handleFileSelection(e.target.files[0]);
-    }
-  };
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
 
   const handleUpload = async () => {
     if (!selectedFile || !id) return;
 
-    setUploadStatus("uploading");
+    setUploadStatus('uploading');
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("input", "File");
-    formData.append("idBilling", id as string);
-    formData.append("typeBilling", typeBilling);
+    formData.append('file', selectedFile);
+    formData.append('input', 'File');
+    formData.append('idBilling', id as string);
+    formData.append('typeBilling', typeBilling);
 
     const uploadPromise = importBillingTransactions(formData);
 
     try {
       await toastPromise(uploadPromise, {
-        loading: "Uploading file...",
-        success: <b>File uploaded successfully!</b>,
-        error: "Upload failed!",
+        loading: 'Uploading file...',
+        success: <Box as="b">File uploaded successfully!</Box>,
+        error: 'Upload failed!',
       });
 
-      setUploadStatus("success");
+      setUploadStatus('success');
 
       setTimeout(() => {
         router.push(`${AppURL.financeBillingDetail}/${id}`);
       }, 1500);
     } catch (error) {
-      setUploadStatus("error");
-      console.error("Upload error:", error);
+      setUploadStatus('error');
+      console.error('Upload error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
-    setUploadStatus("idle");
-  };
-
   const handleBack = () => {
-    router.back();
-  };
-
-  const getDropZoneStyles = () => {
-    if (selectedFile) return "border-green-500 bg-green-50";
-    if (dragActive) return "border-[#F5BA41] bg-[#FDF7E9]";
-    return "border-gray-300";
+    router.push(`${AppURL.financeBillingDetail}/${id}`);
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="bg-white md:px-6 p-4 flex items-center">
-        <div>
-          <Breadcrumb className="sm:block hidden">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href={AppURL.financeBilling}>Billing</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href={`${AppURL.financeBillingDetail}/${id}`}>Billing Detail</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Import Reconciliation</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+    <Box className="flex flex-col w-full min-h-screen bg-gray-50/50">
+      <PageHeader
+        title="Import Transactions for Reconciliation Data"
+        breadcrumbs={[
+          { label: 'Billing', href: AppURL.financeBilling },
+          { label: `${billingType} Detail`, href: `${AppURL.financeBillingDetail}/${id}` },
+          { label: 'Import Reconciliation', isCurrentPage: true },
+        ]}
+        showBackButton={true}
+        onBackClick={handleBack}
+      >
+        <Button
+          onClick={handleUpload}
+          disabled={!selectedFile || uploadStatus === 'uploading'}
+          className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d] gap-1.5"
+          leftIcon={<Upload className="w-5 h-5" />}
+          loading={uploadStatus === 'uploading'}
+        >
+          {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload'}
+        </Button>
+      </PageHeader>
 
-          <h2 className="text-black font-bold sm:text-2xl text-lg sm:mt-2">
-            Import Transactions for Reconciliation Data
-          </h2>
-        </div>
+      {/* Content */}
+      <Box className="max-w-[1200px] mx-auto w-full p-5">
+        <Box className="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden p-8">
+          <Box className="flex flex-col gap-6">
+            <FileUpload
+              accept=".xlsx,.xls"
+              maxSize={10 * 1024 * 1024} // 10MB
+              value={selectedFile}
+              onChange={(file) => {
+                setSelectedFile(file as File | null);
+                setUploadStatus('idle');
+              }}
+              clearable
+              onClear={() => setSelectedFile(null)}
+              label="Transaction File"
+            />
 
-        <div className="flex ml-auto gap-4">
-          <div
-            onClick={handleBack}
-            className="font-semibold items-center flex gap-1 text-red-700 text-sm cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" /> Back
-          </div>
-
-          <Button
-            onClick={handleUpload}
-            disabled={!selectedFile || uploadStatus === "uploading"}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-5 disabled:opacity-50"
-          >
-            {uploadStatus === "uploading" ? (
-              <>
-                <Upload className="mr-2 w-4 h-4 animate-pulse" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 w-4 h-4" /> Upload
-              </>
+            {uploadStatus === 'success' && (
+              <Box className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <Box as="p" className="text-green-700 text-center font-medium text-sm">
+                  File uploaded successfully! Redirecting...
+                </Box>
+              </Box>
             )}
-          </Button>
-        </div>
-      </div>
 
-      <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-        <div className="p-4 sm:p-6 bg-white rounded-lg">
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 transition-colors ${getDropZoneStyles()}`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <div className="flex flex-col items-center justify-center gap-4">
-              <Upload
-                className={`w-12 h-12 ${
-                  selectedFile ? "text-green-500" : "text-gray-400"
-                }`}
-              />
+            {uploadStatus === 'error' && (
+              <Box className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <Box as="p" className="text-red-700 text-center font-medium text-sm">
+                  Upload failed. Please try again.
+                </Box>
+              </Box>
+            )}
 
-              <div className="text-center">
-                {selectedFile ? (
-                  <div className="space-y-2">
-                    <p className="text-green-500 font-medium">
-                      Selected: {selectedFile.name}
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Size: {(selectedFile.size / 1024).toFixed(2)} KB
-                    </p>
-                    <Button
-                      onClick={handleRemoveFile}
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                    >
-                      Remove File
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-gray-600">
-                      Drag and drop your file here, or&nbsp;
-                      <label className="text-[#F5BA41] cursor-pointer hover:text-[#e6a92d] font-medium">
-                        browse
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".xlsx,.xls"
-                          onChange={handleFileInput}
-                        />
-                      </label>
-                    </p>
-                    <p className="text-gray-400 text-sm mt-2">
-                      Supported formats: .xlsx, .xls
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {uploadStatus === "success" && (
-            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-700 text-center font-medium">
-                ? File uploaded successfully! Redirecting...
-              </p>
-            </div>
-          )}
-
-          {uploadStatus === "error" && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700 text-center font-medium">
-                ? Upload failed. Please try again.
-              </p>
-            </div>
-          )}
-
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="font-semibold text-blue-900 mb-2">
-              Import Instructions:
-            </h3>
-            <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-              <li>Upload an Excel file containing transaction data</li>
-              <li>
-                Ensure the file format matches the required template structure
-              </li>
-              <li>
-                The system will validate and import transactions for
-                reconciliation
-              </li>
-              <li>Maximum file size: 10MB</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+            {/* Import Instructions */}
+            <Box className="p-6 bg-blue-50/50 border border-blue-100 rounded-xl">
+              <Box as="h3" className="font-bold text-[#1e3a8a] mb-4 text-base">
+                Import Instructions:
+              </Box>
+              <Box as="ul" className="text-sm text-[#3b82f6] space-y-3">
+                <Box as="li" className="flex items-start gap-3">
+                  <Box className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] mt-1.5 shrink-0" />
+                  <Box as="span">Upload an Excel file containing transaction data</Box>
+                </Box>
+                <Box as="li" className="flex items-start gap-3">
+                  <Box className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] mt-1.5 shrink-0" />
+                  <Box as="span">
+                    Ensure the file format matches the required template structure
+                  </Box>
+                </Box>
+                <Box as="li" className="flex items-start gap-3">
+                  <Box className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] mt-1.5 shrink-0" />
+                  <Box as="span">
+                    The system will validate and import transactions for reconciliation
+                  </Box>
+                </Box>
+                <Box as="li" className="flex items-start gap-3">
+                  <Box className="w-1.5 h-1.5 rounded-full bg-[#3b82f6] mt-1.5 shrink-0" />
+                  <Box as="span">Maximum file size: 10MB</Box>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
