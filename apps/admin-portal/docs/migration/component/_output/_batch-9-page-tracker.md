@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 71 |
+| PASS | 72 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 3 |
-| NOT_STARTED | 40 |
+| NOT_STARTED | 39 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -70,7 +70,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 
 | `/finance/billing/detail/[id]/export` | `finance-billing-detail-id-export` | `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx` | NO | NO | `PASS` | 2026-04-30 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the billing detail export route onto shared Box, Breadcrumb, Badge, Spinner, and Button primitives, standardizing the page header and export actions while preserving the existing PDF/XLSX generation logic. |
 | `/finance/billing/detail/[id]/import` | `finance-billing-detail-id-import` | `apps/admin-portal/src/app/finance/billing/detail/[id]/import/page.tsx` | NO | NO | `PASS` | 2026-05-04 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the billing detail import route onto shared Box, Button, and FileUpload primitives, standardizing the page header and file-upload interaction while preserving the existing billing-transaction import logic. |
-| `/finance/billing/detail/[id]/invoice` | `finance-billing-detail-id-invoice` | `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/billing/detail/[id]/invoice` | `finance-billing-detail-id-invoice` | `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` | NO | NO | `PASS` | 2026-05-04 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the billing detail invoice route onto shared Box, Button, and Spinner primitives, standardizing the page header and download action while preserving the existing invoice HTML generation and PDF export logic. |
 | `/finance/broker-fee` | `finance-broker-fee` | `apps/admin-portal/src/app/finance/broker-fee/page.tsx` | NO | YES | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-04-23 updates migrate the route onto the shared DataTable instance API, standardize the search filters on shared primitives, and implement dynamic column sizing while preserving existing navigation. |
 | `/finance/broker-fee/add` | `finance-broker-fee-add` | `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/finance/broker-fee/detail/[id]` | `finance-broker-fee-detail-id` | `apps/admin-portal/src/app/finance/broker-fee/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -503,14 +503,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-billing-detail-id-invoice`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-04`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the billing detail invoice route onto shared Box, Button, and Spinner primitives, standardizing the page header and download action while preserving the existing invoice HTML generation and PDF export logic.
 
 ### /finance/broker-fee
 

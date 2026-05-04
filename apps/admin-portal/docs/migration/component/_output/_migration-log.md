@@ -635,3 +635,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and FileUpload primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current billing detail import route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /finance/billing/detail/[id]/import as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /finance/billing/detail/[id]/invoice Route Refactor - 2026-05-04
+
+- Route focus: `/finance/billing/detail/[id]/invoice`
+- Migration intent: `Refactor the billing detail invoice route onto the current shared primitive stack, standardizing the layout, page header, and download action while preserving the existing invoice HTML generation and PDF export logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, and `Spinner` primitives.
+  - The refactor standardizes the page header via the local `PageHeader` component, featuring consistent breadcrumbs and back-navigation.
+  - Replaced the bespoke loading indicator with the shared `Spinner` component.
+  - Standardized the 'Download PDF' action on a shared `Button` primitive with a Download icon.
+  - The invoice content is rendered inside a shared `Box` primitive, maintaining the existing `dangerouslySetInnerHTML` approach for the generated HTML content.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/billing/detail/[id]/invoice/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and Spinner primitives while the invoice HTML generation and PDF export logic remains local.`
+- Verification note: `This logging update is based on the current billing detail invoice route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /finance/billing/detail/[id]/invoice as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
