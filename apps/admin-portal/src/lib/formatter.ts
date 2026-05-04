@@ -51,6 +51,13 @@ export const formatDate = (
   return moment(date).format(format);
 };
 
+export const formatDateTime = (
+  date: string,
+  format: string = "DD-MM-YYYY HH:mm:ss"
+): string => {
+  return moment(date).format(format);
+};
+
 export const formatDateTimeWithTZ = (dateInput: string | Date) => {
   const date = new Date(dateInput);
   const formatter = new Intl.DateTimeFormat("id-ID", {

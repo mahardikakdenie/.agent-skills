@@ -1,8 +1,36 @@
-"use client";
+'use client';
 
-import { useBilling } from "../billing/hook";
-import { formatMoney } from "@/lib/formatter";
-import { DataTable, Column } from "@/components/ui/DataTable";
+import noData from '@public/images/no-data.webp';
+import Image from 'next/image';
+import { useMemo, type ChangeEvent } from 'react';
+
+import { Box, DataTable } from '@repo/ui';
+
+import { createUnmatchBillingTableColumns } from '@/components/tableConfig/unmatchBillingTableConfig';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { formatDate, formatDateTime } from '@/lib/formatter';
+
+import { useBilling } from '../billing/hook';
+
+let tableMeasureContext: CanvasRenderingContext2D | null = null;
+
+function measureTextWidth(label: string, font: string, fallbackCharWidth: number) {
+  if (typeof document === 'undefined') {
+    return label.length * fallbackCharWidth;
+  }
+
+  if (!tableMeasureContext) {
+    tableMeasureContext = document.createElement('canvas').getContext('2d');
+  }
+
+  if (!tableMeasureContext) {
+    return label.length * fallbackCharWidth;
+  }
+
+  tableMeasureContext.font = font;
+
+  return tableMeasureContext.measureText(label).width;
+}
 
 export default function UnmatchedBillingPage() {
   const {
@@ -19,116 +47,188 @@ export default function UnmatchedBillingPage() {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   const getStatusColor = (status: string) => {
-    if (status === "not-found-in-system") return "red";
-    if (status === "not-found-in-excel") return "orange";
+    if (status === 'not-found-in-system') return 'red';
+    if (status === 'not-found-in-excel') return 'orange';
 
-    return "inherit";
+    return 'inherit';
   };
 
   const formatStatus = (status: string) => {
-    return (status?.split("-") || [])
-      .map(
-        (word: string) =>
-          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-      )
-      .join(" ");
+    return (status?.split('-') || [])
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
-  const columns: Column<any>[] = [
-    {
-      key: "index",
-      header: "No.",
-      render: (_, index) => (page - 1) * rowsPerPage + index + 1,
-    },
-    {
-      key: "billings.billing_no",
-      header: "Billing No.",
-    },
-    {
-      key: "transaction_no",
-      header: "Transaction Number",
-    },
-    {
-      key: "plan_name",
-      header: "Plan Name",
-      render: (item) => item.details?.plan_name || item.plan_name || "-",
-    },
-    {
-      key: "transaction_date",
-      header: "Transaction Date",
-      render: (item) =>
-        item.details?.transaction_date || item.created_at || "-",
-    },
-    {
-      key: "billings.currency",
-      header: "Currency",
-      className: "w-[50px]",
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      classNameHeading: "text-right",
-      className: "text-right w-[50px]",
-      render: (item) => {
-        const status = item.status_reconcilliation;
-        const billingType = item.billings?.type;
-        const amount = parseFloat(item.amount || "0");
-        const commissionAmount = parseFloat(item.commission_amount || "0");
+  const billingNoColumnSize = useMemo(
+    () =>
+      Math.min(
+        240,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Billing No.', '500 14px Arial', 6.8),
+            (unmatchedReconcillBillings || []).reduce((widest, item) => {
+              const label = item.billings?.billing_no || '-';
+              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+            }, 0),
+          ) + 52,
+        ),
+      ),
+    [unmatchedReconcillBillings],
+  );
 
-        let displayAmount = "-";
+  const transactionNoColumnSize = useMemo(
+    () =>
+      Math.min(
+        240,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Transaction Number', '500 14px Arial', 6.8),
+            (unmatchedReconcillBillings || []).reduce((widest, item) => {
+              const label = item.transaction_no || '-';
+              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+            }, 0),
+          ) + 52,
+        ),
+      ),
+    [unmatchedReconcillBillings],
+  );
 
-        if (status === "not-found-in-system") {
-          displayAmount = formatMoney(amount);
-        } else if (status === "not-found-in-excel") {
-          if (billingType === "insurer") {
-            displayAmount = formatMoney(commissionAmount);
-          } else if (billingType === "partner") {
-            displayAmount = formatMoney(amount - commissionAmount);
-          }
-        }
+  const transactionDateColumnSize = useMemo(
+    () =>
+      Math.min(
+        220,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Transaction Date', '500 14px Arial', 6.8),
+            (unmatchedReconcillBillings || []).reduce((widest, item) => {
+              const dateValue = item.details?.transaction_date || item.created_at;
+              const label = dateValue ? formatDateTime(dateValue) : '-';
+              return Math.max(widest, measureTextWidth(label, '400 12px Arial', 6.1));
+            }, 0),
+          ) + 40,
+        ),
+      ),
+    [unmatchedReconcillBillings],
+  );
 
-        return displayAmount;
-      },
-    },
-    {
-      key: "status_reconcilliation",
-      header: "Status",
-      className: "w-[100px]",
-      render: (item) => {
-        const status = item.status_reconcilliation;
-        const formattedStatus = formatStatus(status);
+  const currencyColumnSize = useMemo(
+    () =>
+      Math.min(
+        120,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Currency', '500 14px Arial', 7.2),
+            (unmatchedReconcillBillings || []).reduce((widest, item) => {
+              const label = item.billings?.currency || 'IDR';
+              return Math.max(widest, measureTextWidth(label, '600 12px Arial', 6.2));
+            }, 0),
+          ) + 28,
+        ),
+      ),
+    [unmatchedReconcillBillings],
+  );
 
-        return (
-          <span style={{ color: getStatusColor(status) }}>
-            {formattedStatus}
-          </span>
-        );
-      },
-    },
-  ];
+  const amountColumnSize = useMemo(
+    () =>
+      Math.min(
+        240,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Amount', '500 14px Arial', 6.8),
+            (unmatchedReconcillBillings || []).reduce((widest, item) => {
+              const label = item.amount || '0';
+              return Math.max(widest, measureTextWidth(label, '400 13px Arial', 6.6));
+            }, 0),
+          ) + 28,
+        ),
+      ),
+    [unmatchedReconcillBillings],
+  );
+
+  const statusColumnSize = useMemo(
+    () =>
+      Math.min(
+        160,
+        Math.ceil(
+          Math.max(
+            measureTextWidth('Status', '500 14px Arial', 6.8),
+            (unmatchedReconcillBillings || []).reduce((widest, item) => {
+              const label = formatStatus(item.status_reconcilliation) || '-';
+              return Math.max(widest, measureTextWidth(label, '600 11px Arial', 5.9));
+            }, 0),
+          ) + 60,
+        ),
+      ),
+    [unmatchedReconcillBillings],
+  );
+
+  const columns = createUnmatchBillingTableColumns({
+    page,
+    rowsPerPage,
+    billingNoColumnSize,
+    transactionNoColumnSize,
+    transactionDateColumnSize,
+    currencyColumnSize,
+    amountColumnSize,
+    statusColumnSize,
+    formatStatus,
+    getStatusColor,
+  });
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex flex-wrap justify-start gap-4 pb-4 items-center">
-        <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+    <Box className="flex min-h-0 flex-1 w-full flex-col gap-3 p-4 md:p-6">
+      <Box className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between 2xl:items-center">
+        <Box as="h1" className="text-2xl font-bold text-black">
           Unmatched Reconciliation Billing List
-        </h1>
-      </div>
+        </Box>
+      </Box>
 
       <DataTable
+        className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+        loading={isLoadingUnmatchedReconcillBillings}
         data={unmatchedReconcillBillings || []}
         columns={columns}
-        loading={isLoadingUnmatchedReconcillBillings}
         pagination={{
-          page,
-          totalPages,
-          rowsPerPage,
-          totalItems,
-          onPageChange: setPage,
-          onRowsPerPageChange: (e) => setRowsPerPage(parseInt(e.target.value)),
+          pageIndex: page - 1,
+          pageSize: rowsPerPage,
+          pageCount: totalPages,
+          rowCount: totalItems,
+          onPageChange: (pageIndex) => {
+            setPage(pageIndex + 1);
+          },
+          onPageSizeChange: (pageSize) => {
+            setRowsPerPage(pageSize);
+          },
         }}
-        noDataText="No unmatched transactions found"
+        pageSizeOptions={[10, 20, 30, 50, 100]}
+        emptyState={
+          <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center gap-2 py-4 md:min-h-[11rem] md:py-5">
+            <Box className="flex flex-col items-center justify-center gap-2">
+              <Image alt="No unmatched transactions found" src={noData} width={128} />
+              <Box as="span">No unmatched transactions found</Box>
+            </Box>
+          </Box>
+        }
+        renderPagination={(table) => (
+          <Box className="-mt-1">
+            <CompactTablePagination
+              table={table}
+              pageSizeOptions={[10, 20, 30, 50, 100]}
+              disabled={isLoadingUnmatchedReconcillBillings}
+            />
+          </Box>
+        )}
+        tableOptions={{
+          manualPagination: true,
+          enableColumnPinning: true,
+          enableColumnResizing: true,
+          defaultColumn: {
+            minSize: 48,
+            size: 96,
+          },
+          getRowId: (row, index) => row?.id || `unmatch-billing-row-${index}`,
+        }}
       />
-    </div>
+    </Box>
   );
 }

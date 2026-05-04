@@ -651,3 +651,20 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current billing detail invoice route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /finance/billing/detail/[id]/invoice as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+
+## Batch 9 - /finance/unmatch-billing Route Refactor - 2026-05-04
+
+- Route focus: `/finance/unmatch-billing`
+- Migration intent: `Refactor the unmatched billing reconciliation route onto the shared primitive stack, standardizing the layout and table rendering while migrating onto the shared DataTable instance API with dynamic column sizing.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx` now renders the route shell with shared `@repo/ui` `Box` and `DataTable` primitives, replacing older native layout and local UI components.
+  - The route now mounts the shared `@repo/ui` `DataTable` directly, featuring manual pagination, column pinning, column resizing, and `CompactTablePagination` integration.
+  - Implemented dynamic column sizing via `measureTextWidth` to ensure visual balance for billing numbers, transaction numbers, dates, currency, amounts, and status fields based on current dataset content.
+  - `apps/admin-portal/src/components/tableConfig/unmatchBillingTableConfig.tsx` (new) defines the unmatched billing columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, loading skeletons, and badge-style status rendering.
+  - Standardized the empty state using shared `Box` and the `no-data` image asset.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/unmatch-billing/page.tsx`, `apps/admin-portal/src/components/tableConfig/unmatchBillingTableConfig.tsx`, `apps/admin-portal/src/lib/formatter.ts`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box and DataTable primitives while compact pagination remains app-local.`
+- Verification note: `This logging update is based on the current unmatched billing route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /finance/unmatch-billing as PASS because the route-local migration has been completed.`
+
+
