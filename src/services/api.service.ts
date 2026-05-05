@@ -183,6 +183,9 @@ const communicationService = createApiService(
   process.env.NEXT_PUBLIC_COMMUNICATION_SERVICE_URL as string,
   true
 );
+const thirdPartyService = createApiService(
+  process.env.NEXT_PUBLIC_THIRD_PARTY_SERVICE_URL as string
+);
 const masterdataService = productService;
 const masterdataNotV1Service = masterdataService;
 export {
@@ -201,5 +204,6 @@ export {
   countryService,
   masterdataService,
   communicationService,
+  thirdPartyService,
   masterdataNotV1Service,
 };

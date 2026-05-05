@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { useScreen } from "@/context/screen.context";
 import { getHeaderPage } from "@/helpers/app.helper";
@@ -68,8 +68,27 @@ export const ConfigurationsView = () => {
     isDisabling,
   } = useChannelProviders();
 
+  const channelNameMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    channels.forEach((ch: any) => {
+      map[ch.id] = ch.name || ch.id;
+    });
+    return map;
+  }, [channels]);
+
   const columns: Column<ChannelProvider>[] = [
-    { key: "channelId", header: "Channel ID" },
+    {
+      key: "channelId",
+      header: "Channel",
+      render: (item) => (
+        <div>
+          <span className="font-medium">{channelNameMap[item.channelId] || item.channelId}</span>
+          {channelNameMap[item.channelId] && channelNameMap[item.channelId] !== item.channelId && (
+            <span className="text-xs text-gray-500 ml-2">({item.channelId})</span>
+          )}
+        </div>
+      ),
+    },
     {
       key: "type",
       header: "Type",
@@ -142,18 +161,15 @@ export const ConfigurationsView = () => {
     <div className="grid gap-4 py-4">
       <div className="grid gap-2">
         <Label htmlFor="channel">Channel</Label>
-        {isEdit ? (
-          <Input value={formData.channelId} disabled />
-        ) : (
-          <Select
-            value={formData.channelId}
-            onValueChange={(v) =>
-              setFormData((prev: typeof formData) => ({
-                ...prev,
-                channelId: v,
-              }))
-            }
-          >
+        <Select
+          value={formData.channelId}
+          onValueChange={(v) =>
+            setFormData((prev: typeof formData) => ({
+              ...prev,
+              channelId: v,
+            }))
+          }
+        >
             <SelectTrigger>
               <SelectValue placeholder="Select channel" />
             </SelectTrigger>
@@ -165,7 +181,6 @@ export const ConfigurationsView = () => {
               ))}
             </SelectContent>
           </Select>
-        )}
       </div>
 
       <div className="grid gap-2">

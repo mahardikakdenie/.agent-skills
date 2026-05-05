@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth.context";
 import { CommunicationService } from "@/services/communication.service";
+import { channelService } from "@/services/api.service";
+import ApiURL from "@/constants/api-url.const";
 import { toastNotification } from "@/lib/toast";
 
 interface ChannelProvider {
@@ -81,7 +83,9 @@ export function useChannelProviders() {
   const { data: channelsResponse } = useQuery({
     queryKey: ["channels-list"],
     queryFn: async () => {
-      const res: any = await CommunicationService.getChannels();
+      const res: any = await channelService.get(ApiURL.v1Channels, {
+        params: { page: 1, limit: 1000 },
+      });
       return res.data;
     },
     staleTime: 60000,

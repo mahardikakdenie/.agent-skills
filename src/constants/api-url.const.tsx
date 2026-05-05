@@ -356,6 +356,21 @@ class ApiURL {
   static customers = "/customers";
   static v1Customers = `/v1${ApiURL.customers}`;
 
+  // Third Party Configuration (CRM Providers)
+  static v1Configuration = "/v1/configuration";
+  static v1ConfigurationDetails = (id: string) => {
+    return `${ApiURL.v1Configuration}/${id}`;
+  };
+  static v1ConfigurationByCode = (code: string) => {
+    return `${ApiURL.v1Configuration}/code/${code}`;
+  };
+
+  // Channel Mapping (CRM Routing)
+  static v1ChannelMapping = "/v1/channel-mapping";
+  static v1ChannelMappingDetails = (id: string) => {
+    return `${ApiURL.v1ChannelMapping}/${id}`;
+  };
+
   // Communication Service - Channel Providers
   static channelProviders = "/channel-providers";
   static channelProviderDetails = (channelId: string) => {
