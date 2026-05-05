@@ -583,6 +583,18 @@ class AppMenu {
           icon: renderImageIcon(iconClaim, "Communication Providers"),
           additionalPages: [],
         },
+        {
+          name: "Third Party Config",
+          url: AppURL.configurationsThirdParty,
+          icon: renderImageIcon(iconClaim, "Third Party Config"),
+          additionalPages: [],
+        },
+        {
+          name: "Channel Mapping",
+          url: AppURL.configurationsChannelMapping,
+          icon: renderImageIcon(iconClaim, "Channel Mapping"),
+          additionalPages: [],
+        },
       ],
     },
   ];

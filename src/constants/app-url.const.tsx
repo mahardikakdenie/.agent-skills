@@ -120,6 +120,8 @@ class AppURL {
 
   // Configurations
   static configurations = "/configurations";
+  static configurationsThirdParty = "/configurations/third-party";
+  static configurationsChannelMapping = "/configurations/channel-mapping";
 
 
   // Finance
