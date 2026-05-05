@@ -1,6 +1,6 @@
 class ApiURL {
   static maxRetries = 3;
-  static maxTimeout = 300000; //5 min
+  static maxTimeout = 1800000; //30 min
   static timeoutInterval = 1000;
   static errorStatusCodeToGetToken = [401, 403];
 
