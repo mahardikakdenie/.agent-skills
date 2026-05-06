@@ -842,3 +842,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current performance report route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /report/performance as PASS because the route-local migration has been completed.`
 
+## Batch 9 - /transaction/list/export Route Refactor - 2026-05-06
+
+- Route focus: `/transaction/list/export`
+- Migration intent: `Refactor the transaction list export page onto the current shared primitive stack, standardizing the report-generation layout and table rendering while preserving the existing data fetching, filtering, and PDF/XLSX export logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/transaction/list/export/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, `Spinner`, and `Table` primitives.
+  - Transformed native HTML layout and table tags into the polymorphic `Box` component with appropriate semantic mapping.
+  - Standardized the 'Generate PDF' and 'Generate XLSX' actions on shared `Button` primitives with updated styling and Download icons.
+  - Replaced the bespoke loading indicator with the shared `Spinner` component.
+  - Standardized the back affordance as a semantic `Box` (as a button) with a `ChevronLeft` icon.
+  - Preserves existing `localStorage` integration for export parameters and maintains the `jsPDF` and `xlsx` generation logic for report output.
+- Files changed (route-focused): [`apps/admin-portal/src/app/transaction/list/export/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Spinner, and Table primitives while the PDF/XLSX generation logic remains local.`
+- Verification note: `This logging update is based on the current transaction export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /transaction/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+

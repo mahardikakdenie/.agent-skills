@@ -5,7 +5,17 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Download } from 'react-feather';
 
-import { Box, Button, Spinner } from '@repo/ui';
+import {
+  Box,
+  Button,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@repo/ui';
 
 import useExportPolicy from '@/hooks/useExportPolicy.hooks';
 
@@ -35,6 +45,7 @@ export default function ExportPage() {
       height: 'auto',
       background: '#e7e7e7',
       verticalAlign: 'middle',
+      color: '#333333',
     },
     td: {
       padding: '10px',
@@ -50,10 +61,10 @@ export default function ExportPage() {
   return (
     <Box className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
       <Box className="flex gap-4 mb-5">
-        <Box as="h1" className="text-black font-bold text-2xl mt-2">Policy List</Box>
+        <Box as="h1" className="text-black font-bold text-2xl mt-2">
+          Policy List
+        </Box>
         <Box
-          as="button"
-          type="button"
           onClick={() => router.back()}
           className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
         >
@@ -62,28 +73,28 @@ export default function ExportPage() {
 
         <Button
           onClick={handleGeneratePdf}
-          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs gap-1"
+          leftIcon={<Download className="w-5 h-5" />}
         >
-          <Download className="w-5 h-5 mr-1 " /> Generate PDF
+          Generate PDF
         </Button>
 
         <Button
           onClick={handleGenerateXlsx}
           disabled={isGeneratingXlsx}
-          className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs disabled:opacity-50 disabled:cursor-not-allowed gap-1"
+          leftIcon={!isGeneratingXlsx ? <Download className="w-5 h-5" /> : undefined}
         >
           {isGeneratingXlsx ? (
             <>
               <Spinner
                 inline
-                className="mr-2 [&_[data-slot=spinner-icon]]:size-6 [&_[data-slot=spinner-icon]]:text-blue-500"
+                className="[&_[data-slot=spinner-icon]]:size-4 [&_[data-slot=spinner-icon]]:text-blue-500"
               />
               Generating...
             </>
           ) : (
-            <>
-              <Download className="w-5 h-5 mr-1 " /> Generate XLSX
-            </>
+            'Generate XLSX'
           )}
         </Button>
       </Box>
@@ -97,115 +108,85 @@ export default function ExportPage() {
             Loading...
           </Box>
         ) : (
-          <Box as="table" style={styles.table} ref={reportTemplateRef}>
-            <Box as="thead">
-              <Box as="tr">
-                <Box as="td" style={styles.th} valign="middle">
-                  No.
-                </Box>
-                <Box as="td" style={styles.th} valign="middle">
-                  Customer Name
-                </Box>
-                <Box as="td" style={styles.th} valign="middle">
-                  Policy Number
-                </Box>
-                <Box as="td" style={styles.th} valign="middle">
-                  Plan Name
-                </Box>
-                <Box as="td" style={styles.th} valign="middle">
-                  Status
-                </Box>
-                {isShowPremi && (
-                  <Box as="td" style={styles.th} valign="middle">
-                    Premium
-                  </Box>
-                )}
+          <Table style={styles.table} ref={reportTemplateRef}>
+            <TableHeader>
+              <TableRow>
+                <TableHead style={styles.th}>No.</TableHead>
+                <TableHead style={styles.th}>Customer Name</TableHead>
+                <TableHead style={styles.th}>Policy Number</TableHead>
+                <TableHead style={styles.th}>Plan Name</TableHead>
+                <TableHead style={styles.th}>Status</TableHead>
+                {isShowPremi && <TableHead style={styles.th}>Premium</TableHead>}
                 {isShowDanaInfo && (
                   <>
-                    <Box as="td" style={styles.th} valign="middle">
-                      Order Id
-                    </Box>
-                    <Box as="td" style={styles.th} valign="middle">
-                      Request Id
-                    </Box>
-                    <Box as="td" style={styles.th} valign="middle">
-                      License Plate
-                    </Box>
+                    <TableHead style={styles.th}>Order Id</TableHead>
+                    <TableHead style={styles.th}>Request Id</TableHead>
+                    <TableHead style={styles.th}>License Plate</TableHead>
                   </>
                 )}
-              </Box>
-            </Box>
-            <Box as="tbody">
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {data.length > 0 ? (
                 data.map((item, index) => (
-                  <Box as="tr" key={item.id}>
-                    <Box as="td" style={styles.td} valign="middle">
-                      {index + 1}
-                    </Box>
-                    <Box as="td" style={styles.td} valign="middle">
+                  <TableRow key={item.id}>
+                    <TableCell style={styles.td}>{index + 1}</TableCell>
+                    <TableCell style={styles.td}>
                       <Box className="flex gap-2 items-center">
                         {item.policy_holder?.name || '-'}
                       </Box>
-                    </Box>
-                    <Box as="td" style={styles.td} valign="middle">
-                      {item?.number || '-'}
-                    </Box>
-                    <Box as="td" style={styles.td} valign="middle">
+                    </TableCell>
+                    <TableCell style={styles.td}>{item?.number || '-'}</TableCell>
+                    <TableCell style={styles.td}>
                       {item?.policy_products?.plan_data?.name.split('|').join(' - ') || '-'}
-                    </Box>
-                    <Box as="td" style={styles.td} valign="middle" className="whitespace-nowrap">
+                    </TableCell>
+                    <TableCell style={styles.td} className="whitespace-nowrap">
                       {item.status || '-'}
-                    </Box>
+                    </TableCell>
                     {isShowPremi && (
-                      <Box as="td" style={styles.td} valign="middle">
+                      <TableCell style={styles.td}>
                         {item.declarations?.transaction_data?.insurance?.premium || '-'}
-                      </Box>
+                      </TableCell>
                     )}
                     {isShowDanaInfo &&
                       (item.declarations?.transaction_data?.third_party?.provider === 'DANA' ? (
                         <>
-                          <Box as="td" style={styles.td} valign="middle">
+                          <TableCell style={styles.td}>
                             {item.declarations?.transaction_data?.third_party?.identifiers
                               ?.order_id || '-'}
-                          </Box>
-                          <Box as="td" style={styles.td} valign="middle">
+                          </TableCell>
+                          <TableCell style={styles.td}>
                             {item.declarations?.transaction_data?.third_party?.identifiers
                               ?.request_id || '-'}
-                          </Box>
-                          <Box as="td" style={styles.td} valign="middle">
+                          </TableCell>
+                          <TableCell style={styles.td}>
                             {item.declarations?.transaction_data?.participants[0]?.data
                               ?.licensePlate ||
                               item.declarations?.transaction_data?.participants[0]?.data
                                 ?.plat_number ||
                               '-'}
-                          </Box>
+                          </TableCell>
                         </>
                       ) : (
                         <>
-                          <Box as="td" style={styles.td} valign="middle">
-                            -
-                          </Box>
-                          <Box as="td" style={styles.td} valign="middle">
-                            -
-                          </Box>
-                          <Box as="td" style={styles.td} valign="middle">
-                            -
-                          </Box>
+                          <TableCell style={styles.td}>-</TableCell>
+                          <TableCell style={styles.td}>-</TableCell>
+                          <TableCell style={styles.td}>-</TableCell>
                         </>
                       ))}
-                  </Box>
+                  </TableRow>
                 ))
               ) : (
-                <Box as="tr" className="hover:!bg-white">
-                  <Box as="td" colSpan={totalCols}>
+                <TableRow className="hover:!bg-white">
+                  <TableCell colSpan={totalCols}>
                     <Box className="flex flex-col gap-4 items-center justify-center py-14">
                       <Image alt="no data" src={noData} width={200} /> No transaction data available
                     </Box>
-                  </Box>
-                </Box>
+                  </TableCell>
+                </TableRow>
               )}
-            </Box>
-          </Box>
+            </TableBody>
+          </Table>
         )}
       </Box>
     </Box>
