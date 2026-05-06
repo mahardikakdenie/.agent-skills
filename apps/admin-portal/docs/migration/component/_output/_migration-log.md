@@ -735,3 +735,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current membership export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /membership/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+## Batch 9 - /source/list Route Refactor - 2026-05-06
+
+- Route focus: `/source/list`
+- Migration intent: `Migrate the source list route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement a source details drawer while preserving existing add and detail navigation.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/source/list/page.tsx` now renders the route shell with shared `Box`, mounts the shared `@repo/ui` `DataTable` directly with manual pagination, column pinning, and `CompactTablePagination` integration.
+  - Implemented a details drawer using shared `@repo/ui` `Drawer` primitives, standardizing the information display for selected sources with a grid-based layout.
+  - Standardized the "Add Source" action on a shared `Button` primitive with a Plus icon.
+  - `apps/admin-portal/src/components/tableConfig/sourceTableConfig.tsx` defines columns against the shared `ColumnDef` contract with explicit sizing/alignment hooks, loading skeletons, and standardized row actions (View and Delete).
+  - Implemented `DebouncedSearchInput` for consistent search interaction by Source Name.
+- Files changed (route-focused): [`apps/admin-portal/src/app/source/list/page.tsx`, `apps/admin-portal/src/components/tableConfig/sourceTableConfig.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, DataTable, Drawer, Skeleton, and Input primitives.`
+- Verification note: `This logging update is based on the current source list route source changes and table configuration refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /source/list as PASS because the route-local migration has been completed.`
+
+
