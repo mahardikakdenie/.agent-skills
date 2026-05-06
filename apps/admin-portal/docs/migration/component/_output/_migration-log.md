@@ -718,3 +718,20 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, DataTable, Select, and Skeleton primitives while PageHeader-style title treatment remains local.`
 - Verification note: `This logging update is based on the current partner communication route source changes, table configuration refactor, and hook updates. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /finance/partner-comm as PASS because the route-local migration has been completed.`
+
+
+## Batch 9 - /membership/list/export Route Refactor - 2026-05-06
+
+- Route focus: `/membership/list/export`
+- Migration intent: `Refactor the membership list export page onto the current shared primitive stack, standardizing the report-generation layout and table rendering while preserving the existing data fetching, localStorage state, and PDF/XLSX export logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/membership/list/export/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, `Table`, and `Spinner` primitives.
+  - Transformed native HTML layout tags into the polymorphic `Box` component and replaced the bespoke loading indicator with the shared `Spinner`.
+  - Standardized the 'Generate PDF' and 'Generate XLSX' actions on shared `Button` primitives with updated styling and icons.
+  - The refactor preserves the existing `localStorage` integration for export parameters and maintains the `jsPDF` and `xlsx` generation logic for report output.
+  - Standardized the back affordance as a semantic `Box` (as a button) with a left chevron icon.
+- Files changed (route-focused): [`apps/admin-portal/src/app/membership/list/export/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Table, and Spinner primitives while the PDF/XLSX generation logic remains local.`
+- Verification note: `This logging update is based on the current membership export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /membership/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+

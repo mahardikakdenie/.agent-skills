@@ -1,28 +1,40 @@
-"use client";
-import * as XLSX from "xlsx";
-import Image from "next/image";
-import { Spinner } from "@repo/ui";
-import noData from "@public/images/no-data.webp";
-import { useRouter } from "next/navigation";
-import { Button } from "@repo/ui";
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Download } from "react-feather";
-import { useInsuredParties } from "@/services/policy/hooks/queries";
+'use client';
+
+import noData from '@public/images/no-data.webp';
+import jsPDF from 'jspdf';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronLeft, Download } from 'react-feather';
+import * as XLSX from 'xlsx';
+
+import {
+  Spinner,
+  Box,
+  Button,
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@repo/ui';
+
+import { useInsuredParties } from '@/services/policy/hooks/queries';
 
 export default function ExportPage() {
   const router = useRouter();
-  const [ page, setPage ] = useState(1);
-  const [ listParams, setListParams ] = useState<Record<string, unknown> | undefined>(undefined);
+  const [page, setPage] = useState(1);
+  const [listParams, setListParams] = useState<Record<string, unknown> | undefined>(undefined);
   const rowsPerPage = 100;
-  const { data: insuredPartiesResponse, isFetching: isLoading } = useInsuredParties(
-    listParams,
-    { enabled: !!listParams }
-  );
+  const { data: insuredPartiesResponse, isFetching: isLoading } = useInsuredParties(listParams, {
+    enabled: !!listParams,
+  });
   const data = ((insuredPartiesResponse as any)?.data ?? []) as any[];
 
   useEffect(() => {
     try {
-      const savedData = localStorage.getItem("exportMembershipData");
+      const savedData = localStorage.getItem('exportMembershipData');
       if (!savedData) return;
 
       const parsedData = JSON.parse(savedData);
@@ -34,160 +46,243 @@ export default function ExportPage() {
         channel: parsedData.channel || undefined,
       });
     } catch (error) {
-      console.error("Error preparing export params: ", error);
+      console.error('Error preparing export params: ', error);
     }
   }, []);
 
   const reportTemplateRef = useRef(null);
 
+  const handleGeneratePdf = () => {
+    if (!reportTemplateRef.current) {
+      console.error('Template element is not found.');
+      return;
+    }
+
+    const doc = new jsPDF({
+      format: 'a1',
+      unit: 'px',
+    });
+    doc.setFontSize(10);
+    doc.setFont('Inter-Regular', 'normal');
+    doc.html(reportTemplateRef.current, {
+      async callback(doc) {
+        await doc.save('MembershipList.pdf');
+      },
+      x: 30,
+      y: 30,
+    });
+  };
+
   const handleGenerateXlsx = () => {
     if (data.length === 0) {
-      console.error("No data to export.");
+      console.error('No data to export.');
       return;
     }
 
     const sheetData = data.map((item, index) => ({
       No: (page - 1) * rowsPerPage + index + 1,
-      "Policy Number" : item?.number || "-",
-      "Subsidiary / Entity" : item?.profile?.subsidiary || "-",
-      "Employee ID" : item?.profile?.employee_id || "-",
-      "Employee Name" : item?.profile?.employee_name || "-",
-      "Member Name" : item?.profile?.member_name || "-",
-      "Gender" : item?.profile?.gender || "-",
-      "Date of birtd" : item?.profile?.date_of_birth || "-",
-      "Member Status" : item?.profile?.member_status || "-",
-      "Marital Status" : item?.profile?.marital_status || "-",
-      "Plan" : item?.profile?.plan || "-",
-      "Effective Date" : item?.profile?.effective_date || "-",
-      "Remarks" : item?.profile?.remarks || "-",
-      "Bank Name" : item?.profile?.bank_name || "-",
-      "Branch" : item?.profile?.branch || "-",
-      "Bank Number" : item?.profile?.bank_account_number || "-",
-      "Bank Account Name" : item?.profile?.bank_account_name || "-",
-      "Email" : item?.profile?.email || "-",
-      "Membership ID" : item?.profile?.tpa_member_id || "-",
-      "Submission Date" : item?.profile?.submission_date || "-",
-      "Status" : item?.status || "-",
+      'Policy Number': item?.number || '-',
+      'Subsidiary / Entity': item?.profile?.subsidiary || '-',
+      'Employee ID': item?.profile?.employee_id || '-',
+      'Employee Name': item?.profile?.employee_name || '-',
+      'Member Name': item?.profile?.member_name || '-',
+      Gender: item?.profile?.gender || '-',
+      'Date of Birth': item?.profile?.date_of_birth || '-',
+      'Member Status': item?.profile?.member_status || '-',
+      'Marital Status': item?.profile?.marital_status || '-',
+      Plan: item?.profile?.plan || '-',
+      'Effective Date': item?.profile?.effective_date || '-',
+      Remarks: item?.profile?.remarks || '-',
+      'Bank Name': item?.profile?.bank_name || '-',
+      Branch: item?.profile?.branch || '-',
+      'Bank Number': item?.profile?.bank_account_number || '-',
+      'Bank Account Name': item?.profile?.bank_account_name || '-',
+      Email: item?.profile?.email || '-',
+      'Membership ID': item?.profile?.tpa_member_id || '-',
+      'Submission Date': item?.profile?.submission_date || '-',
+      Status: item?.status || '-',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(sheetData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "MembershipList");
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'MembershipList');
 
-    XLSX.writeFile(workbook, "MembershipList.xlsx");
-  };
-
-  const styles = {
-    table: {
-      width: "100%",
-      border: "0.5px solid #cccccc",
-    },
-    th: {
-      padding: "10px",
-      border: "0.5px solid #cccccc",
-      fontWeight: "bold",
-      fontSize: "12px",
-      height: "auto",
-      background: "#e7e7e7",
-      verticalAlign: "middle",
-    },
-    td: {
-      padding: "10px",
-      height: "auto",
-      border: "0.5px solid #cccccc",
-      fontSize: "12px",
-      verticalAlign: "middle",
-    },
+    XLSX.writeFile(workbook, 'MembershipList.xlsx');
   };
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
-      <div className="flex gap-4 mb-5">
+    <Box className="flex flex-col w-full p-4 md:p-6 h-screen overflow-auto">
+      <Box className="flex gap-4 mb-5">
         <h1 className="text-black font-bold text-2xl mt-2">Membership List</h1>
-        <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4">
+        <Box
+          onClick={() => router.back()}
+          className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4"
+        >
           <ChevronLeft className="w-4 h-4" /> Back
-        </div>
-        <Button onClick={handleGenerateXlsx} className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs">
+        </Box>
+
+        <Button
+          onClick={handleGeneratePdf}
+          className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
+        >
+          <Download className="w-5 h-5 mr-1 " /> Generate PDF
+        </Button>
+
+        <Button
+          onClick={handleGenerateXlsx}
+          className="bg-[#41BAF5] text-black hover:bg-[#2d9ae6] rounded-full text-xs"
+        >
           <Download className="w-5 h-5 mr-1 " /> Generate XLSX
         </Button>
-      </div>
-      <div className="w-full bg-white rounded-lg overflow-auto">
+      </Box>
+      <Box className="w-full bg-white rounded-lg overflow-auto">
         {isLoading ? (
-          <div className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
+          <Box className="flex gap-2 flex-col justify-center items-center py-20 text-sm">
             <Spinner
               inline
               className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
-            /> Loading...
-          </div>
+            />{' '}
+            Loading...
+          </Box>
         ) : (
-          <table style={styles.table} ref={reportTemplateRef} border={1}>
-            <tbody>
-            <tr>
-              <td style={styles.th} valign="middle">No.</td>
-              <td style={styles.th} valign="middle">Policy Number</td>
-              <td style={styles.th} valign="middle">Subsidiary / Entity</td>
-              <td style={styles.th} valign="middle">Employee ID</td>
-              <td style={styles.th} valign="middle">Employee Name</td>
-              <td style={styles.th} valign="middle">Member Name</td>
-              <td style={styles.th} valign="middle">Gender</td>
-              <td style={styles.th} valign="middle">Date of birtd</td>
-              <td style={styles.th} valign="middle">Member Status</td>
-              <td style={styles.th} valign="middle">Marital Status</td>
-              <td style={styles.th} valign="middle">Plan</td>
-              <td style={styles.th} valign="middle">Effective Date</td>
-              <td style={styles.th} valign="middle">Remarks</td>
-              <td style={styles.th} valign="middle">Bank Name</td>
-              <td style={styles.th} valign="middle">Branch</td>
-              <td style={styles.th} valign="middle">Bank Number</td>
-              <td style={styles.th} valign="middle">Bank Account Name</td>
-              <td style={styles.th} valign="middle">Email</td>
-              <td style={styles.th} valign="middle">Membership ID</td>
-              <td style={styles.th} valign="middle">Submission Date</td>
-              <td style={styles.th} valign="middle">Status</td>
-            </tr>
-            </tbody>
-            {data.length > 0 ? ( 
-              data.map((item, index) => (
-                <tbody key={item.id}>
-                  <tr>
-                    <td style={styles.td} valign="middle">{(page - 1) * rowsPerPage + index + 1}</td>
-                    <td style={styles.td} valign="middle">{item?.number || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.subsidiary || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.employee_id || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.employee_name || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.member_name || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.gender || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.date_of_birth || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.member_status || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.marital_status || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.plan || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.effective_date || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.remarks || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.bank_name || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.branch || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.bank_account_number || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.bank_account_name || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.email || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.other_info?.tpa_member_id || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.profile?.submission_date || "-"}</td>
-                    <td style={styles.td} valign="middle">{item?.status || "-"}</td>
-                  </tr>
-                </tbody>
-              ))
-            ) : (
-              <tbody>
-                <tr className="hover:!bg-white">
-                  <td colSpan={5}>
-                    <div className="flex flex-col gap-4 items-center justify-center py-14">
-                      <Image alt="no data" src={noData} width={200} /> No transaction data available
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            )}
-          </table>
+          <Table ref={reportTemplateRef} className="border">
+            <TableHeader>
+              <TableRow className="bg-gray-100">
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  No.
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Policy Number
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Subsidiary / Entity
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Employee ID
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Employee Name
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Member Name
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Gender
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Date of Birth
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Member Status
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Marital Status
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Plan
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Effective Date
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Remarks
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Bank Name
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Branch
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Bank Number
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Bank Account Name
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Email
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Membership ID
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Submission Date
+                </TableHead>
+                <TableHead className="font-bold text-xs text-black border whitespace-nowrap">
+                  Status
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.length > 0 ? (
+                data.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="text-xs border">
+                      {(page - 1) * rowsPerPage + index + 1}
+                    </TableCell>
+                    <TableCell className="text-xs border">{item?.number || '-'}</TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.subsidiary || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.employee_id || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.employee_name || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.member_name || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">{item?.profile?.gender || '-'}</TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.date_of_birth || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.member_status || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.marital_status || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">{item?.profile?.plan || '-'}</TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.effective_date || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.remarks || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.bank_name || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">{item?.profile?.branch || '-'}</TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.bank_account_number || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.bank_account_name || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">{item?.profile?.email || '-'}</TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.other_info?.tpa_member_id || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">
+                      {item?.profile?.submission_date || '-'}
+                    </TableCell>
+                    <TableCell className="text-xs border">{item?.status || '-'}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="hover:!bg-white">
+                  <TableCell colSpan={21}>
+                    <Box className="flex flex-col gap-4 items-center justify-center py-14">
+                      <Image alt="no data" src={noData} width={200} /> No membership data available
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
-};
+}
