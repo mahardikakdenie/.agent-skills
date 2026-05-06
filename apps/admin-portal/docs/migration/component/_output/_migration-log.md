@@ -668,3 +668,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Tracker impact: `Batch 9 page tracker can now treat /finance/unmatch-billing as PASS because the route-local migration has been completed.`
 
 
+
+
+## Batch 9 - /finance/broker-fee/add Route Refactor - 2026-05-06
+
+- Route focus: `/finance/broker-fee/add`
+- Migration intent: `Refactor the broker fee add route onto the current shared primitive stack, standardizing the form layout and interaction while preserving existing broker fee creation logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx` now uses the refactored `BrokerFeeForm` component.
+  - `apps/admin-portal/src/components/forms/broker-fee-form/index.tsx` replaces the legacy `BrokerFeeForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Input`, and `Combobox` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and leverages `ContentLoadingWrapper` for consistent loading states during data fetching and submission.
+  - Standardized breadcrumbs and a `Box`-based back affordance are integrated into the new page layout.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/broker-fee/add/page.tsx`, `apps/admin-portal/src/components/forms/broker-fee-form/index.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/BrokerFeeForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Input, and Combobox primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current broker fee add route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /finance/broker-fee/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

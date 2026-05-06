@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useBrokerFeeForm } from "@/hooks/useBrokerFeeForm.hooks";
-import { BrokerFeeForm } from "@/components/forms/BrokerFeeForm";
+import { BrokerFeeForm } from "@/components/forms/broker-fee-form";
 
 export default function EditBrokerFeePage() {
   const { id } = useParams();

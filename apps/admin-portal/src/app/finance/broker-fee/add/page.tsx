@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useBrokerFeeForm } from "@/hooks/useBrokerFeeForm.hooks";
-import { BrokerFeeForm } from "@/components/forms/BrokerFeeForm";
+import { BrokerFeeForm } from '@/components/forms/broker-fee-form';
+import { useBrokerFeeForm } from '@/hooks/useBrokerFeeForm.hooks';
 
 export default function CreateBrokerFeePage() {
   const {
@@ -25,7 +25,7 @@ export default function CreateBrokerFeePage() {
     handleSave,
     setShowAlert,
     goBack,
-  } = useBrokerFeeForm("create");
+  } = useBrokerFeeForm('create');
 
   return (
     <BrokerFeeForm
