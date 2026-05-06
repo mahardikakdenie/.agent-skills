@@ -1,6 +1,19 @@
-"use client";
+'use client';
 
-import React, { useRef, useState } from "react";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import {
+  Mail,
+  Eye,
+  MousePointer,
+  UserMinus,
+  AlertTriangle,
+  Download,
+  Upload,
+  Target,
+} from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { BiMoney } from 'react-icons/bi';
 import {
   BarChart,
   Bar,
@@ -20,31 +33,13 @@ import {
   FunnelChart,
   LabelList,
   Funnel,
-} from "recharts";
-import {
-  Mail,
-  Eye,
-  MousePointer,
-  UserMinus,
-  AlertTriangle,
-  Download,
-  Upload,
-  Target,
-} from "lucide-react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import { Button } from "@repo/ui";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui";
-import { BiMoney } from "react-icons/bi";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
-import { useCampaignAnalytics } from "@/hooks/useCampaignAnalytics.hooks";
+} from 'recharts';
+
+import { cn } from '@repo/helper';
+import { Box, Button, Combobox } from '@repo/ui';
+
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { useCampaignAnalytics } from '@/hooks/useCampaignAnalytics.hooks';
 
 const CampaignAnalyticsPage = () => {
   const {
@@ -66,6 +61,11 @@ const CampaignAnalyticsPage = () => {
     handleExcelUpload,
   } = useCampaignAnalytics();
 
+  const campaignOptions = campaignList.map((item: any) => ({
+    label: item.name,
+    value: item.id,
+  }));
+
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const reportTemplateRef = useRef<HTMLDivElement>(null);
 
@@ -74,87 +74,70 @@ const CampaignAnalyticsPage = () => {
   const totalOpens = campaignData.reduce((sum, i) => sum + i.openCount, 0);
   const totalClicks = campaignData.reduce((sum, i) => sum + i.clickCount, 0);
   const totalBounces = campaignData.filter((i) => i.bounce > 0).length;
-  const totalUnsubscribes = campaignData.filter(
-    (i) => i.unsubscribes > 0
-  ).length;
+  const totalUnsubscribes = campaignData.filter((i) => i.unsubscribes > 0).length;
   const totalSpam = campaignData.filter((i) => i.spam > 0).length;
   const uniqueOpens = campaignData.filter((i) => i.openCount > 0).length;
   const uniqueClicks = campaignData.filter((i) => i.clickCount > 0).length;
 
-  const openRate = totalSent
-    ? (((uniqueOpens + uniqueClicks) / totalSent) * 100).toFixed(1)
-    : "0";
-  const clickRate = totalSent
-    ? ((uniqueClicks / totalSent) * 100).toFixed(1)
-    : "0";
-  const bounceRate = totalSent
-    ? ((totalBounces / totalSent) * 100).toFixed(1)
-    : "0";
-  const contactRate = totalSent
-    ? ((totalSent / totalLeads) * 100).toFixed(1)
-    : "0";
-  const purchaseRate = totalClicks
-    ? ((totalPurchased / totalClicks) * 100).toFixed(1)
-    : "0";
-  const conversionRate = totalLeads
-    ? ((totalPurchased / totalLeads) * 100).toFixed(1)
-    : "0";
+  const openRate = totalSent ? (((uniqueOpens + uniqueClicks) / totalSent) * 100).toFixed(1) : '0';
+  const clickRate = totalSent ? ((uniqueClicks / totalSent) * 100).toFixed(1) : '0';
+  const bounceRate = totalSent ? ((totalBounces / totalSent) * 100).toFixed(1) : '0';
+  const contactRate = totalSent ? ((totalSent / totalLeads) * 100).toFixed(1) : '0';
+  const purchaseRate = totalClicks ? ((totalPurchased / totalClicks) * 100).toFixed(1) : '0';
+  const conversionRate = totalLeads ? ((totalPurchased / totalLeads) * 100).toFixed(1) : '0';
 
   const statusData = [
     {
-      name: "Engaged",
-      value: campaignData.filter((i) => i.status === "engaged").length,
-      color: "#10B981",
+      name: 'Engaged',
+      value: campaignData.filter((i) => i.status === 'engaged').length,
+      color: '#10B981',
     },
     {
-      name: "Opened",
-      value: campaignData.filter((i) => i.status === "opened").length,
-      color: "#3B82F6",
+      name: 'Opened',
+      value: campaignData.filter((i) => i.status === 'opened').length,
+      color: '#3B82F6',
     },
     {
-      name: "Unopened",
-      value: campaignData.filter((i) => i.status === "unopened").length,
-      color: "#6B7280",
+      name: 'Unopened',
+      value: campaignData.filter((i) => i.status === 'unopened').length,
+      color: '#6B7280',
     },
     {
-      name: "Bounced",
-      value: campaignData.filter((i) => i.status === "bounced").length,
-      color: "#EF4444",
+      name: 'Bounced',
+      value: campaignData.filter((i) => i.status === 'bounced').length,
+      color: '#EF4444',
     },
     // { name: "Unsubscribed", value: campaignData.filter(i => i.status === "unsubscribed").length, color: "#F59E0B" },
     // { name: "Spam", value: campaignData.filter(i => i.status === "spam").length, color: "#8B5CF6" }
   ];
 
   const engagementData = [
-    { name: "Opens", value: totalOpens, color: "#10B981" },
-    { name: "Clicks", value: totalClicks, color: "#3B82F6" },
+    { name: 'Opens', value: totalOpens, color: '#10B981' },
+    { name: 'Clicks', value: totalClicks, color: '#3B82F6' },
     // { name: "Bounces", value: totalBounces, color: "#EF4444" },
     // { name: "Unsubscribes", value: totalUnsubscribes, color: "#F59E0B" },
     // { name: "Spam", value: totalSpam, color: "#8B5CF6" }
   ];
 
   const funnelData = [
-    { name: "Total Leads", value: totalLeads, color: "#6B7280" },
-    { name: "Total Contacted", value: totalSent, color: "#3B82F6" },
-    { name: "Total Clicked", value: totalClicks, color: "#8B5CF6" },
+    { name: 'Total Leads', value: totalLeads, color: '#6B7280' },
+    { name: 'Total Contacted', value: totalSent, color: '#3B82F6' },
+    { name: 'Total Clicked', value: totalClicks, color: '#8B5CF6' },
     {
-      name: "Total Purchased with voucher",
+      name: 'Total Purchased with voucher',
       value: totalPurchased,
-      color: "#10B981",
+      color: '#10B981',
     },
   ];
 
   const topPerformers = campaignData
     .filter((i) => i.openCount > 0 || i.clickCount > 0)
-    .sort(
-      (a, b) =>
-        b.openCount + b.clickCount * 2 - (a.openCount + a.clickCount * 2)
-    )
+    .sort((a, b) => b.openCount + b.clickCount * 2 - (a.openCount + a.clickCount * 2))
     .slice(0, 5);
 
   const handleGeneratePdf = async () => {
     if (!reportTemplateRef.current) {
-      console.error("Template element is not found.");
+      console.error('Template element is not found.');
       return;
     }
 
@@ -165,14 +148,14 @@ const CampaignAnalyticsPage = () => {
         scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: "#ffffff",
+        backgroundColor: '#ffffff',
       });
 
-      const imgData = canvas.toDataURL("image/png");
+      const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4",
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4',
       });
 
       const imgWidth = 280;
@@ -182,89 +165,75 @@ const CampaignAnalyticsPage = () => {
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
 
-      pdf.save("CampaignReport.pdf");
+      pdf.save('CampaignReport.pdf');
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Failed to generate PDF. Please try again.");
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
     } finally {
       setIsGeneratingPdf(false);
     }
   };
 
   return (
-    <div className="flex flex-col w-full p-4 md:p-6">
-      <div className="flex flex-wrap justify-start pb-4 items-center">
-        <h1 className="text-black font-bold text-2xl mt-2 sm:w-auto w-full">
+    <Box className="flex flex-col w-full p-4 md:p-6 gap-3">
+      <Box className="flex items-center justify-between">
+        <Box as="h1" className="text-2xl font-bold text-black">
           Campaign Analytics
-        </h1>
-        <div className="flex space-x-4 ml-auto">
-          <Button
-            disabled={isGeneratingPdf || campaignData.length < 1}
-            onClick={handleGeneratePdf}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs"
-          >
-            <Download className="w-5 h-5 mr-1 " />{" "}
-            {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
-          </Button>
-        </div>
-      </div>
+        </Box>
+        <Button
+          disabled={isGeneratingPdf || campaignData.length < 1}
+          onClick={handleGeneratePdf}
+          className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]"
+          leftIcon={<Download className="w-5 h-5" />}
+        >
+          {isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}
+        </Button>
+      </Box>
 
-      <div className="flex bg-white rounded-xl gap-4 mb-3 p-6">
-        <div className="flex w-full flex-col">
-          <div className="text-xs mb-1.5 font-medium whitespace-nowrap">
+      <Box className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm sm:flex-row sm:items-end">
+        <Box className="flex flex-1 flex-col gap-1.5">
+          <Box as="label" className="text-xs font-medium text-slate-500">
             Campaign
-          </div>
-          <div className="relative mb-1.5">
-            <div className="min-w-48">
-              <Select
-                value={selectedCampaign}
-                onValueChange={(value) => setSelectedCampaign(value)}
-              >
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Select Campaign" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {campaignList.map((item: any, index: number) => (
-                      <SelectItem key={index} value={item.id}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-        <div className="pt-4 flex w-[40%] flex-col items-center justify-center">
-          <div className="flex items-center justify-between">
-            <Button
-              disabled={!selectedCampaign || isLoadingAnalytics}
-              onClick={handleViewAnalytics}
-              className="bg-[#016DA1] text-white hover:bg-[#2d9ae6] rounded-full text-xs"
-            >
-              {isLoadingAnalytics ? "Loading..." : "View Analytics"}
-            </Button>
-            <label
-              htmlFor="excel-upload"
-              className={`ml-3 px-4 py-3 flex items-center gap-2 bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full text-xs ${
-                selectedCampaign && !isUpdatingCampaign
-                  ? "cursor-pointer"
-                  : "opacity-50 cursor-not-allowed"
-              }`}
-            >
-              <Upload size={18} />
-              {isUpdatingCampaign ? "Updating..." : "Update Campaign"}
+          </Box>
+          <Box className="w-full sm:max-w-md">
+            <Combobox
+              value={selectedCampaign}
+              onValueChange={setSelectedCampaign}
+              options={campaignOptions}
+              placeholder="Select Campaign"
+              searchPlaceholder="Search campaign..."
+            />
+          </Box>
+        </Box>
+        <Box className="flex flex-wrap items-center gap-3">
+          <Button
+            disabled={!selectedCampaign || isLoadingAnalytics}
+            onClick={handleViewAnalytics}
+            className="h-10 rounded-full bg-[#016DA1] px-5 text-white hover:bg-[#2d9ae6]"
+          >
+            {isLoadingAnalytics ? 'Loading...' : 'View Analytics'}
+          </Button>
+          <Button
+            asChild
+            disabled={!selectedCampaign || isUpdatingCampaign}
+            className={cn(
+              'h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]',
+              (!selectedCampaign || isUpdatingCampaign) && 'opacity-50 cursor-not-allowed'
+            )}
+            leftIcon={<Upload size={18} />}
+          >
+            <label htmlFor="excel-upload">
+              {isUpdatingCampaign ? 'Updating...' : 'Update Campaign'}
               <input
                 disabled={!selectedCampaign || isUpdatingCampaign}
                 id="excel-upload"
@@ -274,79 +243,108 @@ const CampaignAnalyticsPage = () => {
                 className="hidden"
               />
             </label>
-          </div>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Box>
 
-      <ContentLoadingWrapper
-        isLoading={isLoadingAnalytics}
-        loadingText="Loading analytics..."
-      >
+      <ContentLoadingWrapper isLoading={isLoadingAnalytics} loadingText="Loading analytics...">
         {campaignData.length > 0 && (
-          <div ref={reportTemplateRef} className="bg-white p-6 rounded-lg mb-5">
-            <div className="mb-5">
-              <h1 className="text-center text-2xl font-bold">
+          <Box ref={reportTemplateRef} className="bg-white p-6 rounded-lg mb-5">
+            <Box className="mb-5">
+              <Box as="h1" className="text-center text-2xl font-bold">
                 Travel Annual Plan Campaign
-              </h1>
+              </Box>
 
-              <h1 className="hidden text-center text-2xl font-bold">
+              <Box as="h1" className="hidden text-center text-2xl font-bold">
                 {campaignSummary.campaign_name}
-              </h1>
-              <p className="hidden text-center text-base font-semibold">
+              </Box>
+              <Box as="p" className="hidden text-center text-base font-semibold">
                 {campaignSummary.subject}
-              </p>
-            </div>
+              </Box>
+            </Box>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-                <p className="text-sm text-gray-600">Contact Rate</p>
-                <p className="text-3xl font-bold">{contactRate}%</p>
+            <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <Box className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Contact Rate
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {contactRate}%
+                </Box>
                 <Mail className="h-8 w-8 text-blue-500" />
-              </div>
+              </Box>
 
-              <div className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
-                <p className="text-sm text-gray-600">Total Transaction</p>
-                <p className="text-3xl font-bold">{totalTransaction}</p>
+              <Box className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Total Transaction
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {totalTransaction}
+                </Box>
                 <BiMoney className="h-8 w-8 text-orange-500" />
-              </div>
-              <div className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-                <p className="text-sm text-gray-600">Total Sent</p>
-                <p className="text-3xl font-bold">{totalSent}</p>
+              </Box>
+              <Box className="hidden bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Total Sent
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {totalSent}
+                </Box>
                 <Mail className="h-8 w-8 text-blue-500" />
-              </div>
+              </Box>
 
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-                <p className="text-sm text-gray-600">Open Rate</p>
-                <p className="text-3xl font-bold">{openRate}%</p>
+              <Box className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Open Rate
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {openRate}%
+                </Box>
                 <Eye className="h-8 w-8 text-green-500" />
-              </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
-                <p className="text-sm text-gray-600">Click Rate</p>
-                <p className="text-3xl font-bold">{clickRate}%</p>
+              </Box>
+              <Box className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Click Rate
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {clickRate}%
+                </Box>
                 <MousePointer className="h-8 w-8 text-purple-500" />
-              </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
-                <p className="text-sm text-gray-600">Purchase Rate</p>
-                <p className="text-3xl font-bold">{purchaseRate}%</p>
+              </Box>
+              <Box className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Purchase Rate
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {purchaseRate}%
+                </Box>
                 <BiMoney className="h-8 w-8 text-orange-500" />
-              </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#10B981]">
-                <p className="text-sm text-gray-600">Conversion Rate</p>
-                <p className="text-3xl font-bold">{conversionRate}%</p>
+              </Box>
+              <Box className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#10B981]">
+                <Box as="p" className="text-sm text-gray-600">
+                  Conversion Rate
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {conversionRate}%
+                </Box>
                 <Target className="h-8 w-8 text-[#10B981]" />
-              </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
-                <p className="text-sm text-gray-600">Bounce Rate</p>
-                <p className="text-3xl font-bold">{bounceRate}%</p>
+              </Box>
+              <Box className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
+                <Box as="p" className="text-sm text-gray-600">
+                  Bounce Rate
+                </Box>
+                <Box as="p" className="text-3xl font-bold">
+                  {bounceRate}%
+                </Box>
                 <AlertTriangle className="h-8 w-8 text-red-500" />
-              </div>
-            </div>
+              </Box>
+            </Box>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">
+            <Box className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <Box className="bg-white rounded-xl shadow-lg p-6">
+                <Box as="h3" className="text-xl font-semibold mb-4">
                   ?? Campaign Status
-                </h3>
+                </Box>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -364,24 +362,23 @@ const CampaignAnalyticsPage = () => {
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="grid grid-cols-2 gap-2 mt-4">
+                <Box className="grid grid-cols-2 gap-2 mt-4">
                   {statusData.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center text-sm text-gray-600"
-                    >
-                      <div
+                    <Box key={index} className="flex items-center text-sm text-gray-600">
+                      <Box
                         className="w-3 h-3 rounded-full mr-2"
                         style={{ backgroundColor: item.color }}
-                      ></div>
+                      ></Box>
                       {item.name}: {item.value}
-                    </div>
+                    </Box>
                   ))}
-                </div>
-              </div>
+                </Box>
+              </Box>
 
-              <div className="hidden bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">?? Engagement</h3>
+              <Box className="hidden bg-white rounded-xl shadow-lg p-6">
+                <Box as="h3" className="text-xl font-semibold mb-4">
+                  ?? Engagement
+                </Box>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart
                     data={engagementData}
@@ -399,24 +396,23 @@ const CampaignAnalyticsPage = () => {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <div className="grid grid-cols-2 gap-2 mt-4">
+                <Box className="grid grid-cols-2 gap-2 mt-4">
                   {engagementData.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center text-sm text-gray-600"
-                    >
-                      <div
+                    <Box key={index} className="flex items-center text-sm text-gray-600">
+                      <Box
                         className="w-3 h-3 rounded-full mr-2"
                         style={{ backgroundColor: item.color }}
-                      ></div>
+                      ></Box>
                       {item.name}: {item.value}
-                    </div>
+                    </Box>
                   ))}
-                </div>
-              </div>
+                </Box>
+              </Box>
 
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">?? Funnel</h3>
+              <Box className="bg-white rounded-xl shadow-lg p-6">
+                <Box as="h3" className="text-xl font-semibold mb-4">
+                  ?? Funnel
+                </Box>
                 <ResponsiveContainer width="100%" height={400}>
                   <FunnelChart>
                     <Tooltip />
@@ -424,22 +420,17 @@ const CampaignAnalyticsPage = () => {
                       {funnelData.map((entry, idx) => (
                         <Cell key={`cell-${idx}`} fill={entry.color} />
                       ))}
-                      <LabelList
-                        position="right"
-                        fill="#111827"
-                        stroke="none"
-                        dataKey="name"
-                      />
+                      <LabelList position="right" fill="#111827" stroke="none" dataKey="name" />
                     </Funnel>
                   </FunnelChart>
                 </ResponsiveContainer>
-              </div>
-            </div>
+              </Box>
+            </Box>
 
-            <div className="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-4">
+            <Box className="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
+              <Box as="h3" className="text-xl font-semibold mb-4">
                 ?? Performance Over Time
-              </h3>
+              </Box>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={timeData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -465,28 +456,28 @@ const CampaignAnalyticsPage = () => {
                 </AreaChart>
               </ResponsiveContainer>
 
-              <div className="flex items-center gap-6 justify-center mt-4">
-                <div className="flex items-center text-sm text-gray-600">
-                  <div
+              <Box className="flex items-center gap-6 justify-center mt-4">
+                <Box className="flex items-center text-sm text-gray-600">
+                  <Box
                     className="w-3 h-3 rounded-full mr-2"
-                    style={{ backgroundColor: "#3B82F6" }}
-                  ></div>
+                    style={{ backgroundColor: '#3B82F6' }}
+                  ></Box>
                   Opens
-                </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <div
+                </Box>
+                <Box className="flex items-center text-sm text-gray-600">
+                  <Box
                     className="w-3 h-3 rounded-full mr-2"
-                    style={{ backgroundColor: "#10B981" }}
-                  ></div>
+                    style={{ backgroundColor: '#10B981' }}
+                  ></Box>
                   Clicks
-                </div>
-              </div>
-            </div>
+                </Box>
+              </Box>
+            </Box>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-4">
+            <Box className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              <Box as="h3" className="text-xl font-semibold mb-4">
                 ?? Opens & Clicks Trends
-              </h3>
+              </Box>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={openClickTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -494,179 +485,179 @@ const CampaignAnalyticsPage = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="opens"
-                    stroke="#3B82F6"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="clicks"
-                    stroke="#10B981"
-                    strokeWidth={2}
-                  />
+                  <Line type="monotone" dataKey="opens" stroke="#3B82F6" strokeWidth={2} />
+                  <Line type="monotone" dataKey="clicks" stroke="#10B981" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
+            </Box>
 
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">?? Top Performers</h3>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Contact</th>
-                    <th className="text-center py-2">Opens</th>
-                    <th className="text-center py-2">Clicks</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <Box className="bg-white rounded-xl shadow-lg p-6">
+              <Box as="h3" className="text-xl font-semibold mb-4">
+                ?? Top Performers
+              </Box>
+              <Box as="table" className="w-full text-sm">
+                <Box as="thead">
+                  <Box as="tr" className="border-b">
+                    <Box as="th" className="text-left py-2">
+                      Contact
+                    </Box>
+                    <Box as="th" className="text-center py-2">
+                      Opens
+                    </Box>
+                    <Box as="th" className="text-center py-2">
+                      Clicks
+                    </Box>
+                  </Box>
+                </Box>
+                <Box as="tbody">
                   {topPerformers.map((c, idx) => (
-                    <tr key={idx} className="border-b">
-                      <td className="py-2">
-                        <p className="font-medium">
+                    <Box as="tr" key={idx} className="border-b">
+                      <Box as="td" className="py-2">
+                        <Box as="p" className="font-medium">
                           {c.firstName} {c.lastName}
-                        </p>
-                        <p className="text-xs text-gray-500">{c.email}</p>
-                      </td>
-                      <td className="text-center">{c.openCount}</td>
-                      <td className="text-center">{c.clickCount}</td>
-                    </tr>
+                        </Box>
+                        <Box as="p" className="text-xs text-gray-500">
+                          {c.email}
+                        </Box>
+                      </Box>
+                      <Box as="td" className="text-center">
+                        {c.openCount}
+                      </Box>
+                      <Box as="td" className="text-center">
+                        {c.clickCount}
+                      </Box>
+                    </Box>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </Box>
+              </Box>
+            </Box>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-              <h3 className="text-xl font-semibold mb-4">
+            <Box className="bg-white rounded-xl shadow-lg p-6 mt-8">
+              <Box as="h3" className="text-xl font-semibold mb-4">
                 ?? Issues & Actions
-              </h3>
-              <div className="space-y-4">
+              </Box>
+              <Box className="space-y-4">
                 {totalBounces > 0 && (
-                  <div className="flex items-start p-3 bg-red-50 rounded-lg">
+                  <Box className="flex items-start p-3 bg-red-50 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-red-500 mr-3 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-red-900">
+                    <Box>
+                      <Box as="p" className="font-medium text-red-900">
                         Bounces ({totalBounces})
-                      </p>
-                      <p className="text-sm text-red-700">
+                      </Box>
+                      <Box as="p" className="text-sm text-red-700">
                         Remove bounced emails from future campaigns
-                      </p>
-                    </div>
-                  </div>
+                      </Box>
+                    </Box>
+                  </Box>
                 )}
                 {totalUnsubscribes > 0 && (
-                  <div className="flex items-start p-3 bg-yellow-50 rounded-lg">
+                  <Box className="flex items-start p-3 bg-yellow-50 rounded-lg">
                     <UserMinus className="h-5 w-5 text-yellow-500 mr-3 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-yellow-900">
+                    <Box>
+                      <Box as="p" className="font-medium text-yellow-900">
                         Unsubscribes ({totalUnsubscribes})
-                      </p>
-                      <p className="text-sm text-yellow-700">
+                      </Box>
+                      <Box as="p" className="text-sm text-yellow-700">
                         Update subscriber preferences
-                      </p>
-                    </div>
-                  </div>
+                      </Box>
+                    </Box>
+                  </Box>
                 )}
                 {totalSpam > 0 && (
-                  <div className="flex items-start p-3 bg-purple-50 rounded-lg">
+                  <Box className="flex items-start p-3 bg-purple-50 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-purple-500 mr-3 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-purple-900">
+                    <Box>
+                      <Box as="p" className="font-medium text-purple-900">
                         Spam Reports ({totalSpam})
-                      </p>
-                      <p className="text-sm text-purple-700">
+                      </Box>
+                      <Box as="p" className="text-sm text-purple-700">
                         Review content and sender reputation
-                      </p>
-                    </div>
-                  </div>
+                      </Box>
+                    </Box>
+                  </Box>
                 )}
-                {campaignData.filter((i) => i.status === "unopened").length >
-                  0 && (
-                  <div className="flex items-start p-3 bg-gray-50 rounded-lg">
+                {campaignData.filter((i) => i.status === 'unopened').length > 0 && (
+                  <Box className="flex items-start p-3 bg-gray-50 rounded-lg">
                     <Mail className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        Unopened (
-                        {
-                          campaignData.filter((i) => i.status === "unopened")
-                            .length
-                        }
-                        )
-                      </p>
-                      <p className="text-sm text-gray-700">
+                    <Box>
+                      <Box as="p" className="font-medium text-gray-900">
+                        Unopened ({campaignData.filter((i) => i.status === 'unopened').length})
+                      </Box>
+                      <Box as="p" className="text-sm text-gray-700">
                         Consider follow-up campaign or subject line optimization
-                      </p>
-                    </div>
-                  </div>
+                      </Box>
+                    </Box>
+                  </Box>
                 )}
-              </div>
-            </div>
+              </Box>
+            </Box>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-              <h3 className="text-xl font-semibold mb-4">
+            <Box className="bg-white rounded-xl shadow-lg p-6 mt-8">
+              <Box as="h3" className="text-xl font-semibold mb-4">
                 ?? Campaign Summary
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <h4 className="font-medium mb-2">
+              </Box>
+              <Box className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Box>
+                  <Box as="h4" className="font-medium mb-2">
                     ?? Performance Highlights
-                  </h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Open rate {openRate}%</li>
-                    <li>• Click rate {clickRate}%</li>
-                    <li>
+                  </Box>
+                  <Box as="ul" className="text-sm text-gray-600 space-y-1">
+                    <Box as="li">• Open rate {openRate}%</Box>
+                    <Box as="li">• Click rate {clickRate}%</Box>
+                    <Box as="li">
                       • {totalOpens} total opens from {uniqueOpens} recipients
-                    </li>
-                    <li>
-                      • {totalClicks} total clicks from {uniqueClicks}{" "}
-                      recipients
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">?? Key Metrics</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Bounce rate: {bounceRate}%</li>
+                    </Box>
+                    <Box as="li">
+                      • {totalClicks} total clicks from {uniqueClicks} recipients
+                    </Box>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box as="h4" className="font-medium mb-2">
+                    ?? Key Metrics
+                  </Box>
+                  <Box as="ul" className="text-sm text-gray-600 space-y-1">
+                    <Box as="li">• Bounce rate: {bounceRate}%</Box>
 
-                    <li className="hidden">
-                      • Unsubscribe rate:{" "}
-                      {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%
-                    </li>
-                    <li className="hidden">
-                      • Spam complaint rate:{" "}
-                      {((totalSpam / totalSent) * 100).toFixed(1)}%
-                    </li>
+                    <Box as="li" className="hidden">
+                      • Unsubscribe rate: {((totalUnsubscribes / totalSent) * 100).toFixed(1)}%
+                    </Box>
+                    <Box as="li" className="hidden">
+                      • Spam complaint rate: {((totalSpam / totalSent) * 100).toFixed(1)}%
+                    </Box>
 
-                    <li>
-                      • Delivery rate:{" "}
-                      {(((totalSent - totalBounces) / totalSent) * 100).toFixed(
-                        1
-                      )}
+                    <Box as="li">
+                      • Delivery rate: {(((totalSent - totalBounces) / totalSent) * 100).toFixed(1)}
                       %
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">?? Click Details</h4>
+                    </Box>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box as="h4" className="font-medium mb-2">
+                    ?? Click Details
+                  </Box>
                   {clickLinks.length > 0 ? (
-                    <div className="text-sm">
-                      <p className="mb-1">Top clicked link:</p>
-                      <p className="bg-blue-50 p-2 rounded text-xs break-all">
+                    <Box className="text-sm">
+                      <Box as="p" className="mb-1">
+                        Top clicked link:
+                      </Box>
+                      <Box as="p" className="bg-blue-50 p-2 rounded text-xs break-all">
                         {clickLinks[0].url}
-                      </p>
-                      <p>{clickLinks[0].count} unique clicks</p>
-                    </div>
+                      </Box>
+                      <Box as="p">{clickLinks[0].count} unique clicks</Box>
+                    </Box>
                   ) : (
-                    <p className="text-sm text-gray-500">No clicks recorded</p>
+                    <Box as="p" className="text-sm text-gray-500">
+                      No clicks recorded
+                    </Box>
                   )}
-                </div>
-              </div>
-            </div>
-          </div>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         )}
       </ContentLoadingWrapper>
-    </div>
+    </Box>
   );
 };
 

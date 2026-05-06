@@ -813,4 +813,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current policy export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /policy/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
-$newEntry
+## Batch 9 - /report/campaign-analytics Route Refactor - 2026-05-06
+
+- Route focus: `/report/campaign-analytics`
+- Migration intent: `Refactor the campaign analytics report route onto the current shared primitive stack, standardizing the analytics dashboard, filters, and PDF export while preserving the existing data fetching, recharts visualization, and analytics logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/report/campaign-analytics/page.tsx` now renders the route shell and dashboard with shared `@repo/ui` `Box`, `Button`, and `Combobox` primitives.
+  - Standardized the campaign selection filter using the shared `Combobox` primitive and standardized primary actions on shared `Button` primitives.
+  - Replaced native HTML layout tags with the polymorphic `Box` component for design-system alignment and semantic mapping.
+  - Integrated `ContentLoadingWrapper` for consistent loading states during analytics data fetching.
+  - Preserved existing `recharts` integration for complex data visualization (Pie, Bar, Funnel, Area, and Line charts) while wrapping chart containers in `Box` primitives.
+  - Standardized the 'Download PDF' action and preserved the `html2canvas`/`jsPDF` report generation logic.
+- Files changed (route-focused): [`apps/admin-portal/src/app/report/campaign-analytics/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and Combobox primitives while analytics visualization remains local.`
+- Verification note: `This logging update is based on the current campaign analytics route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /report/campaign-analytics as PASS because the route-local migration has been completed.`
+

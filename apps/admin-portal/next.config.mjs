@@ -8,6 +8,7 @@ const nextConfig = {
       '@repo/ui': '../../packages/ui/src/index.ts',
       '@repo/config': '../../packages/config/src/index.ts',
       '@repo/eslint-config': '../../packages/eslint-config/src/index.ts',
+      '@repo/helper': '../../packages/helper/src/index.ts',
       '@repo/typescript-config': '../../packages/typescript-config/src/index.ts',
     },
   },
