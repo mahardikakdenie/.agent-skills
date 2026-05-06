@@ -303,7 +303,7 @@ export default function UploadEndorsement() {
                   Object.keys(xlsxData[0]).map((item, i) => (
                     <TableHead
                       key={i}
-                      className="whitespace-nowrap font-bold text-slate-700 py-3.5 px-4 text-xs uppercase tracking-wider"
+                      className="whitespace-nowrap font-bold text-slate-700 py-3.5 px-4 text-xs tracking-wider"
                     >
                       {item}
                     </TableHead>

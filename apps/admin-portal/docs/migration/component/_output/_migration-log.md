@@ -783,4 +783,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current endorsement export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+## Batch 9 - /policy/list/import Route Refactor - 2026-05-06
+
+- Route focus: `/policy/list/import`
+- Migration intent: `Refactor the policy list import page onto the current shared primitive stack, standardizing the layout, file-upload, and table interaction while preserving the existing policy-import submission logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/policy/list/import/page.tsx` now renders the route shell with shared `@repo/ui` `Box`, `Button`, `Combobox`, and `Table` primitives.
+  - The refactor standardizes the page header via a local `Box`-based implementation, featuring consistent back-navigation.
+  - Standardized the file-upload and preview interaction, using `XLSX` to parse and display data in a shared `Table` component.
+  - Standardized the channel selection using the shared `Combobox` primitive.
+  - Replaced native HTML layout tags with the polymorphic `Box` component for design-system alignment.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/list/import/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, and Table primitives.`
+- Verification note: `This logging update is based on the current policy import route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /policy/list/import as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
 $newEntry

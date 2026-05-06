@@ -1,30 +1,49 @@
-"use client";
-import * as XLSX from "xlsx";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronLeft, X } from "react-feather";
-import { Input } from "@repo/ui";
-import { Button } from "@repo/ui";
-import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@repo/ui";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
-import {useScreen} from "@/context/screen.context";
-import AppURL from "@/constants/app-url.const";
-import { useChannelsV1 } from "@/services/channel/hooks/queries";
-import { useUploadPoliciesDrGadget } from "@/services/policy/hooks/mutations";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { ChevronLeft, X, Upload, Eye, FileText } from 'react-feather';
+import * as XLSX from 'xlsx';
+
+import {
+  Input,
+  Button,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  Box,
+  Combobox,
+} from '@repo/ui';
+
+import AppURL from '@/constants/app-url.const';
+import { useScreen } from '@/context/screen.context';
+import { useChannelsV1 } from '@/services/channel/hooks/queries';
+import { useUploadPoliciesDrGadget } from '@/services/policy/hooks/mutations';
 
 export default function ImportPolicyPage() {
   const router = useRouter();
   const { setLoading } = useScreen();
   const [file, setFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [channel, setChannel] = useState("");
+  const [channel, setChannel] = useState<string | undefined>(undefined);
   const [xlsxData, setXlsxData] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const { data: channelsResponse, isFetching: isChannelsFetching } = useChannelsV1({
     page: 1,
     limit: 100,
   });
-  const channels = ((channelsResponse as any)?.data ?? []) as any[];
+
+  const channels = useMemo(() => {
+    const data = ((channelsResponse as any)?.data ?? []) as any[];
+    return data.map((c: any) => ({
+      label: c.name,
+      value: c.id,
+    }));
+  }, [channelsResponse]);
+
   const { mutateAsync: uploadPoliciesDrGadget, isPending: isUploadPending } =
     useUploadPoliciesDrGadget();
 
@@ -34,20 +53,23 @@ export default function ImportPolicyPage() {
     }
   };
 
+  const triggerFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
   useEffect(() => {
     setLoading(isChannelsFetching || isUploadPending);
   }, [isChannelsFetching, isUploadPending, setLoading]);
-
 
   const handlePreview = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
+        const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const parsedData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+        const parsedData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
         setXlsxData(parsedData);
       };
       reader.readAsArrayBuffer(file);
@@ -61,7 +83,6 @@ export default function ImportPolicyPage() {
       fileInputRef.current.value = ''; // ? this clears the file name
     }
   };
-
 
   const convertCSV = async (f: any) => {
     return new Promise((resolve, reject) => {
@@ -81,11 +102,9 @@ export default function ImportPolicyPage() {
 
           const blob = new Blob([csvData], { type: 'text/csv' });
 
-          const csvFile = new File(
-            [blob],
-            f.name.replace(/\.(xlsx|xls)$/i, ".csv"),
-            { type: "text/csv" }
-          );
+          const csvFile = new File([blob], f.name.replace(/\.(xlsx|xls)$/i, '.csv'), {
+            type: 'text/csv',
+          });
 
           // ? Trigger download
           // const url = URL.createObjectURL(csvFile);
@@ -110,118 +129,192 @@ export default function ImportPolicyPage() {
 
   const handleUpload = async () => {
     if (!channel) {
-      alert("Please select a channel before uploading.");
+      alert('Please select a channel before uploading.');
       return;
     }
-    const fileCSV: File | null = await convertCSV(file) as File | null;
+    const fileCSV: File | null = (await convertCSV(file)) as File | null;
     try {
-      // const transformedData = xlsxData.map((row) => {
-      //   const newRow: Record<string, any> = {};
-
-      //   const getExcelColumnName = (index: number) => {
-      //     let result = "";
-      //     while (index >= 0) {
-      //       result = String.fromCharCode((index % 26) + 97) + result;
-      //       index = Math.floor(index / 26) - 1;
-      //     }
-      //     return `column_${result}`;
-      //   };
-
-      //   const values = Object.values(row);
-      //   const MAX_COLUMNS = 66;
-
-      //   for (let i = 0; i < MAX_COLUMNS; i++) {
-      //     const colKey = getExcelColumnName(i);
-      //     const rawValue = values[i];
-      //     const stringValue = rawValue === "-" ? "" : String(rawValue || "");
-      //     newRow[colKey] = stringValue;
-      //   }
-
-      //   return newRow;
-      // });
-
-      // const payload = {
-      //   is_master_policy: true,
-      //   data: transformedData,
-      // };
-
       const formData = new FormData();
       formData.append('file', fileCSV!);
 
       try {
-        var c = channels.filter((x) => x.id == channel)[0];
+        const c = channels.find((x) => x.value === channel);
         if (!c) {
-          alert("Selected channel not found.");
+          alert('Selected channel not found.');
           return;
         }
-        if (c.name == "drgadget") {
+        if (c.label === 'drgadget') {
           const response: any = await uploadPoliciesDrGadget(formData);
-          const successMessage = response?.data?.message || response?.message || "Data uploaded successfully!";
+          const successMessage =
+            response?.data?.message || response?.message || 'Data uploaded successfully!';
           alert(successMessage);
           router.push(AppURL.policyList);
         } else {
-          alert("Fitur Import untuk Partner ini belum didukung");
+          alert('Fitur Import untuk Partner ini belum didukung');
         }
       } catch (error) {
         console.log(error);
       }
     } catch (error: any) {
-      console.error("Upload error:", error);
-      const errorMessage = error?.response?.data?.message || "Upload failed.";
+      console.error('Upload error:', error);
+      const errorMessage = error?.response?.data?.message || 'Upload failed.';
       alert(errorMessage);
     }
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-      <div className="flex gap-4 mb-5">
-        <h1 className="text-black font-bold text-2xl mt-2">Upload Data</h1>
-        <div onClick={() => router.back()} className="font-semibold ml-auto items-center flex gap-1 text-red-700 text-sm cursor-pointer mr-4" ><ChevronLeft className="w-4 h-4" /> Back</div>
-      </div>
-      <div className="flex gap-3 items-center mb-4">
-        <Select value={channel} onValueChange={(value) => setChannel(value)}>
-          <SelectTrigger className="min-w-[180px] w-[180px] ml-auto">
-            <SelectValue placeholder="Select Channel" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {channels.map((channel, index) => (
-                <SelectItem key={index} value={channel.id}>{channel.name}</SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+    <Box className="p-6 bg-white rounded-lg shadow-sm border border-slate-200 w-full h-full overflow-auto">
+      <Box className="flex items-center justify-between mb-8">
+        <Box as="h1" className="text-slate-900 font-bold text-2xl">
+          Upload Data
+        </Box>
+        <Box
+          onClick={() => router.back()}
+          className="font-semibold items-center flex gap-1 text-red-700 hover:text-red-800 text-sm cursor-pointer transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" /> Back
+        </Box>
+      </Box>
 
-        <div className="w-full relative">
-          <Input type="file" ref={fileInputRef} accept=".xlsx" onChange={handleChooseFile} />
-          <Button type="button" variant="secondary" className="rounded-full absolute right-0 top-0 bg-transparent text-red-500 px-2" onClick={handleClearFile} disabled={!file}>
-            <X className="w-5 h-5" />
+      <Box className="bg-slate-50/50 p-5 rounded-xl border border-slate-100 flex flex-wrap gap-5 items-end mb-8">
+        <Box className="flex-1 min-w-[200px] space-y-1.5">
+          <Box as="label" className="text-xs font-semibold text-slate-600 ml-1">
+            Channel
+          </Box>
+          <Combobox
+            placeholder="Select Channel"
+            searchPlaceholder="Search channel..."
+            options={channels}
+            value={channel}
+            onValueChange={setChannel}
+            triggerClassName="w-full h-10 shadow-none border-slate-200"
+          />
+        </Box>
+
+        <Box className="flex-[3] min-w-[320px] space-y-1.5">
+          <Box as="label" className="text-xs font-semibold text-slate-600 ml-1">
+            File Upload (.xlsx, .xls)
+          </Box>
+          <Box className="flex items-center h-10 bg-white border border-slate-200 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+            <Box className="flex-1 flex items-center h-full min-w-0">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleChooseFile}
+                className="hidden"
+              />
+              <Box
+                as="button"
+                type="button"
+                onClick={triggerFileSelect}
+                className="h-full px-4 bg-slate-50 border-r border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-100 transition-colors whitespace-nowrap shrink-0"
+              >
+                Choose File
+              </Box>
+              <Box className="px-3 flex-1 min-w-0 flex items-center justify-between">
+                <Box as="span" className="text-slate-600 text-sm truncate">
+                  {file ? file.name : 'No file chosen'}
+                </Box>
+                {file && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-400 hover:text-red-500 h-6 w-6 p-0 shrink-0"
+                    onClick={handleClearFile}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </Box>
+            </Box>
+            <Button
+              disabled={!file || xlsxData.length > 0}
+              variant="ghost"
+              className="h-full rounded-none border-l border-slate-200 px-6 text-primary/80 hover:text-primary hover:bg-slate-50 flex items-center gap-2 disabled:opacity-30 disabled:bg-slate-50/50 transition-colors text-sm font-medium shrink-0"
+              onClick={handlePreview}
+            >
+              <Eye className="w-4 h-4" /> Preview
+            </Button>
+          </Box>
+        </Box>
+
+        <Box className="mb-[1px]">
+          <Button
+            disabled={xlsxData.length === 0}
+            className="btn-primary h-10 px-8 flex items-center gap-2 shadow-sm font-semibold"
+            onClick={handleUpload}
+          >
+            <Upload className="w-4 h-4" /> Upload
           </Button>
-        </div>
-        <Button disabled={!file || xlsxData.length > 0} className="btn-primary rounded-full px-5" onClick={handlePreview} >Preview</Button>
-        <Button disabled={xlsxData.length === 0} className="btn-primary rounded-full px-5" onClick={handleUpload} >Upload</Button>
-      </div>
+        </Box>
+      </Box>
 
-      <div className="mt-5 overflow-auto">
-        <Table className="min-w-full">
-          <TableHeader>
-            <TableRow>
-              {xlsxData.length > 0 && Object.keys(xlsxData[0]).map((item, i) => (
-                <TableHead key={i} className="whitespace-nowrap">{item}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {xlsxData.length > 0 && xlsxData.map((item, i) => (
-              <TableRow key={i}>
-                {Object.keys(item).map((key, j) => (
-                  <TableCell key={j}>{item[key] !== undefined && item[key] !== null ? item[key] : ""}</TableCell>
-                ))}
+      <Box className="space-y-4">
+        <Box className="flex items-center gap-2 px-1">
+          <FileText className="w-5 h-5 text-primary" />
+          <Box as="h2" className="text-slate-800 font-semibold">
+            Data Preview
+          </Box>
+          {xlsxData.length > 0 && (
+            <Box
+              as="span"
+              className="text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold"
+            >
+              {xlsxData.length} Rows
+            </Box>
+          )}
+        </Box>
+
+        <Box className="overflow-auto border border-slate-200 rounded-xl bg-white shadow-sm">
+          <Table className="min-w-full">
+            <TableHeader className="bg-slate-50/80 border-b border-slate-200">
+              <TableRow>
+                {xlsxData.length > 0 ? (
+                  Object.keys(xlsxData[0]).map((item, i) => (
+                    <TableHead
+                      key={i}
+                      className="whitespace-nowrap font-bold text-slate-700 py-3.5 px-4 text-xs tracking-wider"
+                    >
+                      {item}
+                    </TableHead>
+                  ))
+                ) : (
+                  <TableHead className="py-3.5 px-4">No data available</TableHead>
+                )}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+            </TableHeader>
+            <TableBody>
+              {xlsxData.length > 0 ? (
+                xlsxData.map((item, i) => (
+                  <TableRow
+                    key={i}
+                    className="hover:bg-slate-50/30 transition-colors border-b border-slate-100 last:border-0"
+                  >
+                    {Object.keys(item).map((key, j) => (
+                      <TableCell key={j} className="py-3 px-4 text-slate-600 text-sm">
+                        {item[key] !== undefined && item[key] !== null ? String(item[key]) : '-'}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell className="text-center py-24" colSpan={100}>
+                    <Box className="flex flex-col items-center gap-3 text-slate-400">
+                      <FileText className="w-12 h-12 opacity-10" />
+                      <Box as="p" className="text-sm font-medium">
+                        No records to preview. Select an excel file to begin.
+                      </Box>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Box>
+      </Box>
+    </Box>
   );
-};
+}
