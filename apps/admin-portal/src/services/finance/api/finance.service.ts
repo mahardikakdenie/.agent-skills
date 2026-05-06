@@ -24,7 +24,7 @@ export const financeService = {
   getBillings: (params?: Record<string, unknown>) =>
     get(withQuery(FINANCE_ENDPOINTS.billings, params)),
   getBillingById: (id: string, params?: Record<string, unknown>) =>
-    get(withQuery(FINANCE_ENDPOINTS.billingDetail(id), params)),
+    get(withQuery(FINANCE_ENDPOINTS.billings, { id, ...params })),
   createBilling: (payload: unknown) => post(FINANCE_ENDPOINTS.billings, payload),
   updateBilling: (id: string, payload: unknown) =>
     put(FINANCE_ENDPOINTS.billingDetail(id), payload),
@@ -41,7 +41,8 @@ export const financeService = {
     get(withQuery(FINANCE_ENDPOINTS.feesBroker, params)),
   getBrokerFeesFilter: (params?: Record<string, unknown>) =>
     get(withQuery(FINANCE_ENDPOINTS.feesBrokerFilter, params)),
-  getBrokerFeeById: (id: string) => get(FINANCE_ENDPOINTS.feesBrokerDetail(id)),
+  getBrokerFeeById: (id: string) =>
+    get(withQuery(FINANCE_ENDPOINTS.feesBroker, { id })),
   createBrokerFee: (payload: unknown) =>
     post(FINANCE_ENDPOINTS.feesBroker, payload),
   updateBrokerFee: (id: string, payload: unknown) =>
@@ -53,7 +54,7 @@ export const financeService = {
   getChannelFeesFilter: (params?: Record<string, unknown>) =>
     get(withQuery(FINANCE_ENDPOINTS.feesChannelFilter, params)),
   getChannelFeeById: (id: string) =>
-    get(FINANCE_ENDPOINTS.feesChannelDetail(id)),
+    get(withQuery(FINANCE_ENDPOINTS.feesChannel, { id })),
   createChannelFee: (channelId: string, payload: unknown) =>
     post(FINANCE_ENDPOINTS.feesChannelByChannel(channelId), payload),
   updateChannelFee: (channelId: string, payload: unknown) =>

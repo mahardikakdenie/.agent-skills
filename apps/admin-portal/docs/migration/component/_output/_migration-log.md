@@ -684,3 +684,5 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Input, and Combobox primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current broker fee add route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /finance/broker-fee/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+$content
+$content

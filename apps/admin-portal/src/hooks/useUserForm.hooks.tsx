@@ -178,7 +178,10 @@ export function useUserForm(
     }
   );
 
-  const normalizedUserDetail = (userDetail as any)?.data || userDetail;
+  const normalizedUserDetailResponse = (userDetail as any)?.data;
+  const normalizedUserDetail = Array.isArray(normalizedUserDetailResponse)
+    ? normalizedUserDetailResponse[0]
+    : normalizedUserDetailResponse ?? userDetail;
 
   useEffect(() => {
     if (normalizedUserDetail && isEdit) {

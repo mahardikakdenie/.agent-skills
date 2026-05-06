@@ -24,7 +24,8 @@ const del = async <T>(url: string) => (await productApi.delete<T>(url)).data;
 export const productService = {
   getProducts: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.products, params)),
-  getProductById: (id: string) => get(PRODUCT_ENDPOINTS.productDetail(id)),
+  getProductById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.products, { id })),
   createProduct: (payload: unknown) => post(PRODUCT_ENDPOINTS.products, payload),
   updateProduct: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.productDetail(id), payload),
@@ -32,7 +33,8 @@ export const productService = {
 
   getCategories: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.categories, params)),
-  getCategoryById: (id: string) => get(PRODUCT_ENDPOINTS.categoryDetail(id)),
+  getCategoryById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.categories, { id })),
   getCategoriesByChannelId: (channelId: string) =>
     get(PRODUCT_ENDPOINTS.categoriesByChannel(channelId)),
   createCategory: (payload: unknown) => post(PRODUCT_ENDPOINTS.categories, payload),
@@ -42,7 +44,8 @@ export const productService = {
 
   getInsurances: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.insurances, params)),
-  getInsuranceById: (id: string) => get(PRODUCT_ENDPOINTS.insuranceDetail(id)),
+  getInsuranceById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.insurances, { id })),
   createInsurance: (payload: unknown) => post(PRODUCT_ENDPOINTS.insurances, payload),
   updateInsurance: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.insuranceDetail(id), payload),
@@ -51,7 +54,7 @@ export const productService = {
   getInsurancesLegacy: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.insurancesLegacy, params)),
   getInsuranceLegacyById: (id: string) =>
-    get(PRODUCT_ENDPOINTS.insuranceLegacyDetail(id)),
+    get(withQuery(PRODUCT_ENDPOINTS.insurancesLegacy, { id })),
 
   getInsuranceCurrencies: (
     insuranceId: string,
@@ -97,12 +100,14 @@ export const productService = {
         category,
       })
     ),
-  getPlanById: (id: string) => get(PRODUCT_ENDPOINTS.planDetail(id)),
+  getPlanById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.plans, { id })),
   createPlan: (payload: unknown) => post(PRODUCT_ENDPOINTS.plans, payload),
   updatePlan: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.planDetail(id), payload),
   deletePlan: (id: string) => del(PRODUCT_ENDPOINTS.planDetail(id)),
-  getPlanLegacyById: (id: string) => get(PRODUCT_ENDPOINTS.planLegacyDetail(id)),
+  getPlanLegacyById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.plans, { id })),
 
   getPlanBenefits: (planId: string) => get(PRODUCT_ENDPOINTS.planBenefits(planId)),
   getPlanDetails: (planId: string, type: string) =>
@@ -120,7 +125,8 @@ export const productService = {
 
   getPackages: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.packages, params)),
-  getPackageById: (id: string) => get(PRODUCT_ENDPOINTS.packageDetail(id)),
+  getPackageById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.packages, { id })),
   createPackage: (payload: unknown) => post(PRODUCT_ENDPOINTS.packages, payload),
   updatePackage: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.packageDetail(id), payload),
@@ -151,7 +157,8 @@ export const productService = {
 
   getEmailTags: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.emailTags, params)),
-  getEmailTagById: (id: string) => get(PRODUCT_ENDPOINTS.emailTagDetail(id)),
+  getEmailTagById: (id: string) =>
+    get(withQuery(PRODUCT_ENDPOINTS.emailTags, { id })),
   createEmailTag: (payload: unknown) => post(PRODUCT_ENDPOINTS.emailTags, payload),
   updateEmailTag: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.emailTagDetail(id), payload),
@@ -160,7 +167,7 @@ export const productService = {
   getEmailTemplatesJourney: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.emailTemplatesJourney, params)),
   getEmailTemplateJourneyById: (id: string) =>
-    get(PRODUCT_ENDPOINTS.emailTemplateJourneyDetail(id)),
+    get(withQuery(PRODUCT_ENDPOINTS.emailTemplatesJourney, { id })),
   createEmailTemplateJourney: (payload: unknown) =>
     post(PRODUCT_ENDPOINTS.emailTemplatesJourney, payload),
   updateEmailTemplateJourney: (id: string, payload: unknown) =>

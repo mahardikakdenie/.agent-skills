@@ -157,7 +157,10 @@ export function useGroupForm(
     },
   });
 
-  const normalizedGroupDetail = (groupDetail as any)?.data ?? groupDetail;
+  const normalizedGroupDetailResponse = (groupDetail as any)?.data;
+  const normalizedGroupDetail = Array.isArray(normalizedGroupDetailResponse)
+    ? normalizedGroupDetailResponse[0]
+    : normalizedGroupDetailResponse ?? groupDetail;
   const rolesList = (rolesData as any)?.data ?? rolesData ?? [];
   const usersList = (usersData as any)?.data ?? usersData ?? [];
 

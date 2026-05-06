@@ -20,7 +20,8 @@ const del = async <T>(url: string) => (await sanctionApi.delete<T>(url)).data;
 export const sanctionService = {
   getSources: (params?: Record<string, unknown>) =>
     get(withQuery(SANCTION_ENDPOINTS.sourcesPaging, params)),
-  getSourceById: (id: string) => get(SANCTION_ENDPOINTS.sourceDetail(id)),
+  getSourceById: (id: string) =>
+    get(withQuery(SANCTION_ENDPOINTS.sources, { id })),
   createSource: (payload: unknown) => post(SANCTION_ENDPOINTS.sources, payload),
   updateSource: (id: string, payload: unknown) =>
     put(SANCTION_ENDPOINTS.sourceUpdate(id), payload),
@@ -28,7 +29,8 @@ export const sanctionService = {
 
   getBlacklist: (params?: Record<string, unknown>) =>
     get(withQuery(SANCTION_ENDPOINTS.blacklist, params)),
-  getBlacklistById: (id: string) => get(SANCTION_ENDPOINTS.blacklistDetail(id)),
+  getBlacklistById: (id: string) =>
+    get(withQuery(SANCTION_ENDPOINTS.blacklist, { id })),
   createBlacklist: (payload: unknown) => post(SANCTION_ENDPOINTS.blacklist, payload),
   updateBlacklist: (id: string, payload: unknown) =>
     put(SANCTION_ENDPOINTS.blacklistUpdate(id), payload),

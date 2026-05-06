@@ -95,8 +95,10 @@ export function useInsuranceForm(
     refetchOnMount: "always",
   });
 
-  const insuranceDetailData: any = insuranceDetailResponse;
-  const insuranceDetail = insuranceDetailData?.data ?? insuranceDetailData;
+  const normalizedInsuranceDetail = (insuranceDetailResponse as any)?.data;
+  const insuranceDetail = Array.isArray(normalizedInsuranceDetail)
+    ? normalizedInsuranceDetail[0]
+    : normalizedInsuranceDetail ?? insuranceDetailResponse;
 
   useEffect(() => {
     if (insuranceDetail && isEdit) {

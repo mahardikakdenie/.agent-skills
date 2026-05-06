@@ -85,9 +85,10 @@ export function useChannelForm(
       refetchOnMount: "always",
     });
 
-  const channelDetail: any = channelDetailResponse
-    ? (channelDetailResponse as any)?.data ?? channelDetailResponse
-    : null;
+  const normalizedChannelDetail = (channelDetailResponse as any)?.data;
+  const channelDetail = Array.isArray(normalizedChannelDetail)
+    ? normalizedChannelDetail[0]
+    : normalizedChannelDetail ?? channelDetailResponse;
 
   useEffect(() => {
     if (channelDetail && isEdit) {

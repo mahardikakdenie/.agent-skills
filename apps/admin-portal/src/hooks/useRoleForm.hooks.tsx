@@ -128,7 +128,10 @@ export function useRoleForm(
 
   const deletePermissionMutation = useDeleteRolePermission();
 
-  const normalizedRoleDetail = (roleDetail as any)?.data ?? roleDetail;
+  const normalizedRoleDetailResponse = (roleDetail as any)?.data;
+  const normalizedRoleDetail = Array.isArray(normalizedRoleDetailResponse)
+    ? normalizedRoleDetailResponse[0]
+    : normalizedRoleDetailResponse ?? roleDetail;
   const menus = (menusData as any)?.data ?? menusData ?? [];
 
   useEffect(() => {

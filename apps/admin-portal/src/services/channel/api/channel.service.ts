@@ -26,7 +26,8 @@ export const channelService = {
 
   getChannelsV1: (params?: Record<string, unknown>) =>
     get(withQuery(CHANNEL_ENDPOINTS.channelsV1, params)),
-  getChannelByIdV1: (id: string) => get(CHANNEL_ENDPOINTS.channelDetailV1(id)),
+  getChannelByIdV1: (id: string) =>
+    get(withQuery(CHANNEL_ENDPOINTS.channelsV1, { id })),
   createChannel: (payload: unknown) => post(CHANNEL_ENDPOINTS.channelsV1, payload),
   updateChannel: (id: string, payload: unknown) =>
     put(CHANNEL_ENDPOINTS.channelDetailV1(id), payload),

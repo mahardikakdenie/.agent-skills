@@ -90,8 +90,10 @@ export function useEmailTagForm(
     staleTime: 300000,
   });
 
-  const tagDetailData: any = tagDetailResponse;
-  const tagDetail = tagDetailData?.data ?? tagDetailData;
+  const normalizedTagDetail = (tagDetailResponse as any)?.data;
+  const tagDetail = Array.isArray(normalizedTagDetail)
+    ? normalizedTagDetail[0]
+    : normalizedTagDetail ?? tagDetailResponse;
 
   const journeysData: any = journeysResponse;
   const journeys = journeysData?.data ?? journeysData ?? [];

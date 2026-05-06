@@ -24,7 +24,8 @@ export const authService = {
 
   getAccounts: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.accounts, params)),
-  getAccountById: (id: string) => get(AUTH_ENDPOINTS.accountDetail(id)),
+  getAccountById: (id: string) =>
+    get(withQuery(AUTH_ENDPOINTS.accounts, { id })),
   createAccount: (payload: unknown) => post(AUTH_ENDPOINTS.accounts, payload),
   updateAccount: (id: string, payload: unknown) =>
     put(AUTH_ENDPOINTS.accountDetail(id), payload),
@@ -33,7 +34,7 @@ export const authService = {
   getAccountAllDataPagination: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.accountAllDataPagination, params)),
   getAccountAllDataById: (id: string) =>
-    get(AUTH_ENDPOINTS.accountAllDataDetail(id)),
+    get(withQuery(AUTH_ENDPOINTS.accountAllDataPagination, { id })),
   updateAccountAllData: (id: string, payload: unknown) =>
     put(AUTH_ENDPOINTS.accountAllDataDetail(id), payload),
 
@@ -69,7 +70,8 @@ export const authService = {
 
   getGroups: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.groups, params)),
-  getGroupById: (id: string) => get(AUTH_ENDPOINTS.groupDetail(id)),
+  getGroupById: (id: string) =>
+    get(withQuery(AUTH_ENDPOINTS.groups, { id })),
   createGroup: (payload: unknown) => post(AUTH_ENDPOINTS.groups, payload),
   updateGroup: (id: string, payload: unknown) =>
     put(AUTH_ENDPOINTS.groupDetail(id), payload),
@@ -81,7 +83,8 @@ export const authService = {
 
   getRoles: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.roles, params)),
-  getRoleById: (id: string) => get(AUTH_ENDPOINTS.roleDetail(id)),
+  getRoleById: (id: string) =>
+    get(withQuery(AUTH_ENDPOINTS.roles, { id })),
   createRole: (payload: unknown) => post(AUTH_ENDPOINTS.roles, payload),
   updateRole: (id: string, payload: unknown) =>
     put(AUTH_ENDPOINTS.roleDetail(id), payload),
@@ -89,7 +92,8 @@ export const authService = {
 
   getPages: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.pages, params)),
-  getPageById: (id: string) => get(AUTH_ENDPOINTS.pageDetail(id)),
+  getPageById: (id: string) =>
+    get(withQuery(AUTH_ENDPOINTS.pages, { id })),
   createPage: (payload: unknown) => post(AUTH_ENDPOINTS.pages, payload),
   updatePage: (id: string, payload: unknown) =>
     put(AUTH_ENDPOINTS.pageDetail(id), payload),

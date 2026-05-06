@@ -141,7 +141,10 @@ export function usePageManagementForm(
     },
   });
 
-  const normalizedPageDetail = (pageDetail as any)?.data ?? pageDetail;
+  const normalizedPageDetailResponse = (pageDetail as any)?.data;
+  const normalizedPageDetail = Array.isArray(normalizedPageDetailResponse)
+    ? normalizedPageDetailResponse[0]
+    : normalizedPageDetailResponse ?? pageDetail;
   const normalizedPermissionsData =
     (permissionsData as any)?.data ?? permissionsData ?? [];
 

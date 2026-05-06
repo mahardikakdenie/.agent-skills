@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useBrokerFeeForm } from "@/hooks/useBrokerFeeForm.hooks";
-import { BrokerFeeForm } from "@/components/forms/broker-fee-form";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { BrokerFeeForm } from '@/components/forms/broker-fee-form';
+import { useBrokerFeeForm } from '@/hooks/useBrokerFeeForm.hooks';
 
 export default function EditBrokerFeePage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = typeof params.id === 'string' ? params.id : params.id?.[0] || '';
 
   const {
     handleSubmit,
@@ -18,6 +20,7 @@ export default function EditBrokerFeePage() {
     products,
     plans,
 
+    hasAccess,
     showAlert,
     errorMessage,
 
@@ -31,13 +34,17 @@ export default function EditBrokerFeePage() {
     setShowAlert,
     goBack,
     loadBrokerFeeDetail,
-  } = useBrokerFeeForm("edit");
+  } = useBrokerFeeForm('edit');
 
   useEffect(() => {
     if (id) {
-      loadBrokerFeeDetail(id as string);
+      loadBrokerFeeDetail(id);
     }
   }, [id, loadBrokerFeeDetail]);
+
+  if (hasAccess === false) {
+    return null;
+  }
 
   return (
     <BrokerFeeForm
