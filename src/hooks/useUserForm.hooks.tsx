@@ -77,7 +77,7 @@ interface UseUserFormProps {
 }
 
 export function useUserForm(
-  mode: "create" | "edit" = "create"
+  mode: "create" | "edit" = "create",
 ): UseUserFormProps {
   const router = useRouter();
   const { permissionList } = useAuth();
@@ -225,7 +225,7 @@ export function useUserForm(
     },
     onSuccess: (data) => {
       toast.success(
-        isEdit ? "User Updated Successfully!" : "User Created Successfully!"
+        isEdit ? "User Updated Successfully!" : "User Created Successfully!",
       );
 
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -241,7 +241,7 @@ export function useUserForm(
       console.error("Failed to save user:", error);
       toast.error(
         error?.response?.data?.message ||
-          "Failed to save user. Please try again."
+          "Failed to save user. Please try again.",
       );
     },
   });
@@ -339,13 +339,13 @@ export function useUserForm(
         phone_number: `${phoneCode}${formData.phone_number}`,
       };
 
-      if (payload.role !== "Admin" && !payload.password?.trim()) {
+      if (payload.role !== "Admin" || !payload.password?.trim()) {
         delete payload.password;
       }
 
       saveMutation.mutate(payload);
     },
-    [saveMutation, phoneCode]
+    [saveMutation, phoneCode],
   );
 
   const handleGeneratePassword = useCallback(() => {
@@ -402,7 +402,7 @@ export function useUserForm(
     async (groupIds: string[]) => {
       await addGroupMutation.mutateAsync(groupIds);
     },
-    [addGroupMutation]
+    [addGroupMutation],
   );
 
   const handleDeleteGroup = useCallback(
@@ -411,14 +411,14 @@ export function useUserForm(
         await deleteGroupMutation.mutateAsync(groupId);
       }
     },
-    [deleteGroupMutation]
+    [deleteGroupMutation],
   );
 
   const handleAddRole = useCallback(
     async (roleIds: string[]) => {
       await addRoleMutation.mutateAsync(roleIds);
     },
-    [addRoleMutation]
+    [addRoleMutation],
   );
 
   const handleDeleteRole = useCallback(
@@ -427,7 +427,7 @@ export function useUserForm(
         await deleteRoleMutation.mutateAsync(roleId);
       }
     },
-    [deleteRoleMutation]
+    [deleteRoleMutation],
   );
 
   const getStatusColor = useCallback((status: string) => {

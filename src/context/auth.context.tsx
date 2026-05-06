@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       try {
-        const token = await getCookie(AUTH_TOKEN);
+        const token = authToken.token || await getCookie(AUTH_TOKEN);
         if (token) {
           await getUserInformation(token);
         }
