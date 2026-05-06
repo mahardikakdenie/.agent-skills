@@ -798,4 +798,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current policy import route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /policy/list/import as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+## Batch 9 - /policy/list/export Route Refactor - 2026-05-06
+
+- Route focus: `/policy/list/export`
+- Migration intent: `Refactor the policy list export page onto the current shared primitive stack, standardizing the report-generation layout and table rendering while preserving the existing data fetching and PDF/XLSX export logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/policy/list/export/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, and `Spinner` primitives.
+  - Transformed native HTML layout and table tags into the polymorphic `Box` component with appropriate semantic mapping.
+  - Standardized the 'Generate PDF' and 'Generate XLSX' actions on shared `Button` primitives with updated styling and Download icons.
+  - Replaced the bespoke loading indicator with the shared `Spinner` component.
+  - Standardized the report table rendering using `Box` composition while preserving the existing report template ref and data mapping.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/list/export/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and Spinner primitives while the PDF/XLSX generation logic remains local.`
+- Verification note: `This logging update is based on the current policy export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /policy/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
 $newEntry
