@@ -8,7 +8,7 @@ import { useChannelsV1 } from "@/services/channel/hooks/queries";
 import { useChannelFees } from "@/services/finance/hooks/queries";
 import { useDeleteChannelFee } from "@/services/finance/hooks/mutations";
 
-interface PartnerCommItem {
+export interface PartnerCommItem {
   id: string;
   channel: string;
   channel_name: string;

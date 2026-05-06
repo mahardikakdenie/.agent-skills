@@ -1,84 +1,189 @@
-import { Column } from "@/components/ui/DataTable";
-import { Button } from "@repo/ui";
-import { EditIcon, TrashIcon } from "lucide-react";
-import { formatMoney } from "@/lib/formatter";
+import { Trash } from 'react-feather';
+
+import { Box, Button, Skeleton, type ColumnDef } from '@repo/ui';
+
+import { formatMoney } from '@/lib/formatter';
+import { type PartnerCommItem } from '@/hooks/usePartnerComm.hooks';
 
 interface PartnerCommTableConfigProps {
+  page: number;
+  rowsPerPage: number;
   handleEdit: (id: string) => void;
   handleDelete: (id: string) => void;
   canEdit: boolean;
   canDelete: boolean;
 }
 
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);
+
+const capitalizeWords = (str: string) => {
+  if (!str) return '-';
+  return str
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export const createPartnerCommTableColumns = ({
+  page,
+  rowsPerPage,
   handleEdit,
   handleDelete,
   canEdit,
   canDelete,
-}: PartnerCommTableConfigProps): Column<any>[] => [
+}: PartnerCommTableConfigProps): ColumnDef<PartnerCommItem>[] => [
   {
-    key: "index",
-    header: "No",
-    render: (_, index) => index + 1,
+    id: 'id',
+    header: 'No.',
+    enableSorting: false,
+    enableResizing: false,
+    size: 44,
+    minSize: 44,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-5 rounded-full" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
-    key: "channel_name",
-    header: "Channel Name",
-  },
-  {
-    key: "insurance_name",
-    header: "Insurance Company Name",
-  },
-  {
-    key: "fee_type",
-    header: "Fee Type",
-  },
-  {
-    key: "fee",
-    header: "Fee",
-    render: (item) => {
-      if (item.fee_type !== "percentage") {
-        return formatMoney(item.fee);
-      }
-      return item.fee;
+    id: 'channel_name',
+    accessorFn: (item) => item?.channel_name || '-',
+    header: 'Channel Name',
+    enableSorting: false,
+    size: 192,
+    minSize: 168,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-600">
+          {item?.channel_name || '-'}
+        </Box>
+      );
     },
   },
   {
-    key: "action",
-    header: "Action",
-    render: (item) => (
-      <div className="flex">
-        {canEdit && (
-          <div className="relative group">
-            <Button
-              variant="ghost"
-              size="md"
-              className="w-9 px-0"
-              onClick={() => handleEdit(item.id)}
-            >
-              <EditIcon className="h-4 w-4" />
-            </Button>
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-              Edit
-            </span>
-          </div>
-        )}
-        {canDelete && (
-          <div className="relative group">
-            <Button
-              variant="ghost"
-              size="md"
-              className="w-9 px-0"
-              onClick={() => handleDelete(item.id)}
-            >
-              <TrashIcon className="h-4 w-4 text-red-600" />
-            </Button>
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-              Delete
-            </span>
-          </div>
-        )}
-      </div>
-    ),
+    id: 'insurance_name',
+    accessorFn: (item) => item?.insurance_name || '-',
+    header: 'Insurance Company Name',
+    enableSorting: false,
+    size: 192,
+    minSize: 168,
+    meta: {
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-600">
+          {item?.insurance_name || '-'}
+        </Box>
+      );
+    },
+  },
+  {
+    id: 'fee_type',
+    accessorFn: (item) => item?.fee_type || '-',
+    header: 'Fee Type',
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 92,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName:
+        'align-middle whitespace-nowrap text-xs font-semibold tracking-[0.04em] text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeleton: (
+        <Box className="flex min-w-0 items-center">
+          <Skeleton className="h-4 w-16 rounded-full [tr:nth-child(2n)_&]:w-24 [tr:nth-child(3n)_&]:w-20" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      return <Box>{item?.fee_type ? capitalizeWords(item.fee_type) : '-'}</Box>;
+    },
+  },
+  {
+    id: 'fee',
+    accessorFn: (item) => item?.fee || 0,
+    header: 'Fee',
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 120,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap !px-1.5 text-right',
+      cellClassName: 'align-middle whitespace-nowrap !px-1.5 text-right',
+      cellContentClassName: 'w-full whitespace-nowrap text-right',
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <Box className="w-full whitespace-nowrap text-right text-[13px] tabular-nums text-slate-900">
+          {item?.fee_type !== 'percentage'
+            ? formatMoney(Number(item?.fee) || 0, 'IDR') || '-'
+            : item?.fee || '-'}
+        </Box>
+      );
+    },
+  },
+  {
+    id: 'action',
+    header: 'Action',
+    enableSorting: false,
+    enableResizing: false,
+    size: 120,
+    minSize: 120,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
+      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      cellContentClassName: 'whitespace-nowrap flex justify-center',
+      loadingSkeleton: (
+        <Box className="flex items-center justify-center gap-2">
+          <Skeleton className="h-7 w-[60px] rounded-full" />
+          <Skeleton className="h-7 w-7 rounded-md" />
+        </Box>
+      ),
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <Box className="flex items-center justify-center gap-2">
+          <Button
+            size="xs"
+            disabled={!canEdit}
+            onClick={() => handleEdit(item.id)}
+            className="h-7 rounded-full bg-[#016DA1] px-4 text-[13px] font-medium text-white shadow-none hover:bg-[#015a85]"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            disabled={!canDelete}
+            onClick={() => handleDelete(item.id)}
+            className="h-7 w-7 rounded-md p-0 text-red-600 hover:bg-red-50 hover:!text-red-700"
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </Box>
+      );
+    },
   },
 ];

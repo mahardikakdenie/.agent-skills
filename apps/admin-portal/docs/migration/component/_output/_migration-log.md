@@ -702,3 +702,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, and Combobox primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current partner communication add and detail route source changes, form refactor, and supporting service updates. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /finance/partner-comm/add and /finance/partner-comm/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+
+## Batch 9 - /finance/partner-comm Route Refactor - 2026-05-06
+
+- Route focus: `/finance/partner-comm`
+- Migration intent: `Migrate the partner communication list route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add, edit, and delete navigation.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/partner-comm/page.tsx` now renders the route shell with `Box`, mounts the shared `@repo/ui` `DataTable` directly with manual pagination, column pinning, and `CompactTablePagination` integration.
+  - The route now uses `createPartnerCommTableColumns` which defines columns against the shared `ColumnDef` contract with explicit sizing, loading skeletons, and standardized shared `Button`-based row actions.
+  - Implemented dynamic column sizing via `size` and `minSize` to ensure visual balance for channel names and insurance company names.
+  - Standardized the "Create Partner Comm" button using shared `Button` primitive and Plus icon.
+  - `apps/admin-portal/src/hooks/usePartnerComm.hooks.tsx` now manages table state (page, limit) with explicit URL synchronization using a local `updateURL` helper.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/partner-comm/page.tsx`, `apps/admin-portal/src/components/tableConfig/partnerCommTableConfig.tsx`, `apps/admin-portal/src/hooks/usePartnerComm.hooks.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, DataTable, Select, and Skeleton primitives while PageHeader-style title treatment remains local.`
+- Verification note: `This logging update is based on the current partner communication route source changes, table configuration refactor, and hook updates. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /finance/partner-comm as PASS because the route-local migration has been completed.`

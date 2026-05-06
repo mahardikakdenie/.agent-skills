@@ -35,11 +35,11 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 77 |
+| PASS | 78 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
-| DEFERRED_DATA_TABLE | 2 |
+| DEFERRED_DATA_TABLE | 1 |
 | NOT_STARTED | 35 |
 | OUT_OF_SCOPE | 1 |
 
@@ -74,7 +74,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/finance/broker-fee` | `finance-broker-fee` | `apps/admin-portal/src/app/finance/broker-fee/page.tsx` | NO | YES | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-04-23 updates migrate the route onto the shared DataTable instance API, standardize the search filters on shared primitives, and implement dynamic column sizing while preserving existing navigation. |
 | `/finance/broker-fee/add` | `finance-broker-fee-add` | `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/broker-fee/add route onto the refactored BrokerFeeForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives. |
 | `/finance/broker-fee/detail/[id]` | `finance-broker-fee-detail-id` | `apps/admin-portal/src/app/finance/broker-fee/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/broker-fee/detail/[id] route onto the refactored BrokerFeeForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives while ensuring robust ID handling. |
-| `/finance/partner-comm` | `finance-partner-comm` | `apps/admin-portal/src/app/finance/partner-comm/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
+| `/finance/partner-comm` | `finance-partner-comm` | `apps/admin-portal/src/app/finance/partner-comm/page.tsx` | NO | YES | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/finance/partner-comm/add` | `finance-partner-comm-add` | `apps/admin-portal/src/app/finance/partner-comm/add/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/partner-comm/add route onto the refactored PartnerCommForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives. |
 | `/finance/partner-comm/detail/[id]` | `finance-partner-comm-detail-id` | `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/partner-comm/detail/[id] route onto the refactored PartnerCommForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives. |
 | `/finance/unmatch-billing` | `finance-unmatch-billing` | `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx` | NO | YES | `PASS` | 2026-05-04 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the unmatched billing reconciliation route onto the shared DataTable instance API, standardize the layout and table chrome on shared primitives, and implement dynamic column sizing while preserving existing data fetching and pagination. |
@@ -563,14 +563,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-partner-comm`
 - Smoke route: `NO`
 - DataTable dependency: `YES`
-- Status: `DEFERRED_DATA_TABLE`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-06`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
-- Blocker type: `DataTable`
-- Notes: Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path.
+- Blocker type: `none`
+- Notes: Current apps/admin-portal/src changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation.
 
 ### /finance/partner-comm/add
 
