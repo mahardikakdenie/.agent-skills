@@ -38,6 +38,13 @@ export const createTransactionTableColumns = ({
     render: (_, index) => (page - 1) * rowsPerPage + index + 1,
   },
   {
+    key: "invoice",
+    header: "Invoice Number",
+    render: (transaction) => {
+      return <p className="whitespace-nowrap">{transaction?.invoice || "-"}</p>;
+    },
+  },
+  {
     key: "insurance.insurance.id.name",
     header: "Insurance Name",
     render: (transaction) => {
