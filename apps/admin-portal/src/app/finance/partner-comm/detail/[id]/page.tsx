@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { usePartnerCommForm } from "@/hooks/usePartnerCommForm.hooks";
-import { PartnerCommForm } from "@/components/forms/PartnerCommForm";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { PartnerCommForm } from '@/components/forms/partner-comm-form';
+import { usePartnerCommForm } from '@/hooks/usePartnerCommForm.hooks';
 
 export default function EditPartnerCommPage() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ export default function EditPartnerCommPage() {
     setShowAlert,
     goBack,
     loadPartnerCommDetail,
-  } = usePartnerCommForm("edit");
+  } = usePartnerCommForm('edit');
 
   useEffect(() => {
     if (id) {

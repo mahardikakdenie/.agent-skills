@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { usePartnerCommForm } from "@/hooks/usePartnerCommForm.hooks";
-import { PartnerCommForm } from "@/components/forms/PartnerCommForm";
+import { PartnerCommForm } from '@/components/forms/partner-comm-form';
+import { usePartnerCommForm } from '@/hooks/usePartnerCommForm.hooks';
 
 export default function CreatePartnerCommPage() {
   const {
@@ -24,7 +24,7 @@ export default function CreatePartnerCommPage() {
     handleSave,
     setShowAlert,
     goBack,
-  } = usePartnerCommForm("create");
+  } = usePartnerCommForm('create');
 
   return (
     <PartnerCommForm

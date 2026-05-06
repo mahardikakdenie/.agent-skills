@@ -2555,7 +2555,7 @@
 
 ### PartnerCommForm
 
-- **File:** src/components/forms/PartnerCommForm/index.tsx
+- **File:** src/components/forms/partner-comm-form/index.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** N/A
 - **@repo/ui status:** missing

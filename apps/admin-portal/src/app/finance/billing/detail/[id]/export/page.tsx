@@ -96,7 +96,7 @@ export default function ExportDetailBillingPage() {
   };
 
   const handleGeneratePdf = async () => {
-    if (!billing?.data?.[0]) {
+    if (!billing?.data?.length) {
       console.error('No data to export.');
       return;
     }
@@ -104,7 +104,7 @@ export default function ExportDetailBillingPage() {
     setLoading(true);
 
     try {
-      const billingDetails = billing.data[0].billings;
+      const billingDetails = billing.data[0].billings ?? billing.data[0];
       const doc = new jsPDF({
         format: 'a4',
         unit: 'px',
@@ -114,27 +114,33 @@ export default function ExportDetailBillingPage() {
       doc.setFont('Inter-Regular', 'normal');
 
       doc.text('Billing No.', 30, 30);
-      doc.text(`: ${billingDetails.billing_no}`, 120, 30);
+      doc.text(`: ${billingDetails.billing_no || '-'}`, 120, 30);
 
       doc.text(type === 'insurer' ? 'Total Amount' : 'Total Net Premium', 30, 42);
       const totalAmount =
-        type === 'insurer' ? billingDetails.amount : billingDetails.total - billingDetails.amount;
-      doc.text(`: ${billingDetails.currency} ${formatMoney(totalAmount)}`, 120, 42);
+        type === 'insurer'
+          ? billingDetails.amount ?? 0
+          : (billingDetails.total ?? 0) - (billingDetails.amount ?? 0);
+      doc.text(`: ${billingDetails.currency || 'IDR'} ${formatMoney(totalAmount)}`, 120, 42);
 
       doc.text('Created Date', 30, 54);
-      doc.text(`: ${new Date(billingDetails.created_at).toDateString()}`, 120, 54);
+      doc.text(
+        `: ${billingDetails.created_at ? new Date(billingDetails.created_at).toDateString() : '-'}`,
+        120,
+        54,
+      );
 
       doc.text('Status', 30, 66);
-      doc.text(`: ${getStatusConfig(billingDetails.status).label}`, 120, 66);
+      doc.text(`: ${getStatusConfig(billingDetails.status || '').label}`, 120, 66);
 
       doc.text('Type', 30, 78);
-      doc.text(`: ${billingDetails.type}`, 120, 78);
+      doc.text(`: ${billingDetails.type || '-'}`, 120, 78);
 
       doc.text('Company Name', 30, 90);
-      doc.text(`: ${billingDetails.company_name}`, 120, 90);
+      doc.text(`: ${billingDetails.company_name || '-'}`, 120, 90);
 
       doc.text('Period', 30, 102);
-      doc.text(`: ${billingDetails.transaction_period}`, 120, 102);
+      doc.text(`: ${billingDetails.transaction_period || '-'}`, 120, 102);
 
       const imageUrl = 'https://friendsure-spaces.sgp1.digitaloceanspaces.com/teman.png';
       const image = await loadImageAsBase64(imageUrl);
@@ -168,7 +174,7 @@ export default function ExportDetailBillingPage() {
 
       const date = moment();
       const formattedDate = date.format('YYYY_MM_DD');
-      doc.save(`${billingDetails.billing_no}_${formattedDate}.pdf`);
+      doc.save(`${billingDetails.billing_no || 'billing'}_${formattedDate}.pdf`);
     } catch (error) {
       console.error('Failed to generate PDF:', error);
       alert('Failed to generate PDF');
@@ -183,21 +189,26 @@ export default function ExportDetailBillingPage() {
       return;
     }
 
-    const billingDetails = billing.data[0].billings;
+    const billingDetails = billing.data[0].billings ?? billing.data[0];
     const totalAmount =
-      type === 'insurer' ? billingDetails.amount : billingDetails.total - billingDetails.amount;
+      type === 'insurer'
+        ? billingDetails.amount ?? 0
+        : (billingDetails.total ?? 0) - (billingDetails.amount ?? 0);
 
     const headerBilling = [
-      ['Billing No.', billingDetails.billing_no],
+      ['Billing No.', billingDetails.billing_no || '-'],
       [
         type === 'insurer' ? 'Total Amount' : 'Total Net Premium',
-        `${billingDetails.currency} ${formatMoney(totalAmount)}`,
+        `${billingDetails.currency || 'IDR'} ${formatMoney(totalAmount)}`,
       ],
-      ['Created Date', new Date(billingDetails.created_at).toDateString()],
-      ['Status', getStatusConfig(billingDetails.status).label],
-      ['Type', billingDetails.type],
-      ['Company Name', billingDetails.company_name],
-      ['Period', billingDetails.transaction_period],
+      [
+        'Created Date',
+        billingDetails.created_at ? new Date(billingDetails.created_at).toDateString() : '-',
+      ],
+      ['Status', getStatusConfig(billingDetails.status || '').label],
+      ['Type', billingDetails.type || '-'],
+      ['Company Name', billingDetails.company_name || '-'],
+      ['Period', billingDetails.transaction_period || '-'],
       [],
       [],
     ];
@@ -348,11 +359,13 @@ export default function ExportDetailBillingPage() {
     );
   }
 
-  const billingDetails = billing.data[0].billings;
+  const billingDetails = billing.data[0].billings ?? billing.data[0];
   const totalAmount =
-    type === 'insurer' ? billingDetails.amount : billingDetails.total - billingDetails.amount;
+    type === 'insurer'
+      ? (billingDetails?.amount ?? 0)
+      : (billingDetails?.total ?? 0) - (billingDetails?.amount ?? 0);
 
-  const statusInfo = getStatusConfig(billingDetails.status);
+  const statusInfo = getStatusConfig(billingDetails?.status ?? '');
 
   return (
     <Box className="flex flex-col w-full min-h-screen bg-gray-50/50">
@@ -540,10 +553,10 @@ export default function ExportDetailBillingPage() {
                         {index + 1}
                       </Box>
                       <Box as="td" style={tableStyles.td}>
-                        {data.invoice_no}
+                        {data.invoice_no || '-'}
                       </Box>
                       <Box as="td" style={tableStyles.td}>
-                        {data.details?.plan_name.split('|')[0] || '-'}
+                        {data.details?.plan_name?.split('|')[0] || '-'}
                       </Box>
                       {type === 'partner' && (
                         <Box as="td" style={tableStyles.td}>
@@ -551,13 +564,15 @@ export default function ExportDetailBillingPage() {
                         </Box>
                       )}
                       <Box as="td" style={tableStyles.td}>
-                        {formatDate(data.details?.transaction_date, 'YYYY-MM-DD')}
+                        {data.details?.transaction_date 
+                          ? formatDate(data.details.transaction_date, 'YYYY-MM-DD')
+                          : '-'}
                       </Box>
                       <Box as="td" style={tableStyles.td}>
-                        {data.billings.currency}
+                        {data.billings?.currency || billingDetails?.currency || 'IDR'}
                       </Box>
                       <Box as="td" style={tableStyles.tdRight}>
-                        {formatMoney(data.amount)}
+                        {formatMoney(data.amount ?? 0)}
                       </Box>
                       <Box as="td" style={tableStyles.tdRight}>
                         {data.commission_percentage ?? 0}%
@@ -565,7 +580,7 @@ export default function ExportDetailBillingPage() {
                       <Box as="td" style={tableStyles.tdRight}>
                         {type === 'insurer'
                           ? formatMoney(data.commission_amount ?? 0)
-                          : formatMoney(data.amount - (data.commission_amount ?? 0))}
+                          : formatMoney((data.amount ?? 0) - (data.commission_amount ?? 0))}
                       </Box>
                     </Box>
                   ))}

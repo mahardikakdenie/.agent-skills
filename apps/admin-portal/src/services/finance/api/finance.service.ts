@@ -24,7 +24,7 @@ export const financeService = {
   getBillings: (params?: Record<string, unknown>) =>
     get(withQuery(FINANCE_ENDPOINTS.billings, params)),
   getBillingById: (id: string, params?: Record<string, unknown>) =>
-    get(withQuery(FINANCE_ENDPOINTS.billings, { id, ...params })),
+    get(withQuery(FINANCE_ENDPOINTS.billingDetail(id), params)),
   createBilling: (payload: unknown) => post(FINANCE_ENDPOINTS.billings, payload),
   updateBilling: (id: string, payload: unknown) =>
     put(FINANCE_ENDPOINTS.billingDetail(id), payload),

@@ -684,5 +684,21 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Input, and Combobox primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current broker fee add route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /finance/broker-fee/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
-$content
-$content
+
+
+## Batch 9 - /finance/partner-comm/add and /finance/partner-comm/detail/[id] Route Refactor - 2026-05-06
+
+- Route focus: `/finance/partner-comm/add`, `/finance/partner-comm/detail/[id]`
+- Migration intent: `Refactor the partner communication add and detail routes onto the current shared primitive stack, standardizing the form layout and interaction while preserving existing partner communication creation and update logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/finance/partner-comm/add/page.tsx` and `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx` now use the refactored `PartnerCommForm` component.
+  - `apps/admin-portal/src/components/forms/partner-comm-form/index.tsx` (new) replaces the legacy `PartnerCommForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Input`, and `Combobox` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and leverages `ContentLoadingWrapper` for consistent loading states during data fetching and submission.
+  - Updated `financeService.getBillingById` in `apps/admin-portal/src/services/finance/api/finance.service.ts` to use `withQuery` for consistent parameter handling.
+  - Added `id` props to `Combobox` components in `apps/admin-portal/src/components/forms/broker-fee-form/index.tsx` for improved accessibility and field targeting.
+  - Improved robustness of the billing detail export route (`/finance/billing/detail/[id]/export`) with enhanced null-checking and fallback logic for PDF and XLSX generation.
+- Files changed (route-focused): [`apps/admin-portal/src/app/finance/partner-comm/add/page.tsx`, `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/partner-comm-form/index.tsx`, `apps/admin-portal/src/app/finance/billing/detail/[id]/export/page.tsx`, `apps/admin-portal/src/components/forms/broker-fee-form/index.tsx`, `apps/admin-portal/src/services/finance/api/finance.service.ts`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/PartnerCommForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, and Combobox primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current partner communication add and detail route source changes, form refactor, and supporting service updates. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /finance/partner-comm/add and /finance/partner-comm/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

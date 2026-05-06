@@ -8,23 +8,22 @@ import { PageHeader } from '@/components/page-header';
 import { ContentLoadingWrapper } from '@/components/ui/loading';
 import AppURL from '@/constants/app-url.const';
 
-interface BrokerFeeFormProps {
+interface PartnerCommFormProps {
   handleSubmit: any;
   control: any;
   errors: any;
   watch: any;
+  setValue: any;
 
+  channels: any[];
   insurances: any[];
-  products: any[];
-  plans: any[];
 
   showAlert: boolean;
   errorMessage: string;
   isEdit: boolean;
 
+  isLoadingChannels: boolean;
   isLoadingInsurances: boolean;
-  isLoadingProducts: boolean;
-  isLoadingPlans: boolean;
   isLoadingDetail: boolean;
   isSaving: boolean;
 
@@ -47,7 +46,9 @@ const ErrorModal = ({
   return (
     <Box className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <Box className="bg-white p-6 rounded shadow-md w-1/3">
-        <Box as="h2" className="text-lg font-semibold mb-4">Alert</Box>
+        <Box as="h2" className="text-lg font-semibold mb-4">
+          Alert
+        </Box>
         <Box as="p">{message}</Box>
         <Box className="flex justify-end mt-4">
           <Box as="button" onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded">
@@ -59,71 +60,60 @@ const ErrorModal = ({
   );
 };
 
-export function BrokerFeeForm({
+export function PartnerCommForm({
   handleSubmit,
   control,
   errors,
   watch,
+  setValue,
+  channels,
   insurances,
-  products,
-  plans,
   showAlert,
   errorMessage,
   isEdit,
+  isLoadingChannels,
   isLoadingInsurances,
-  isLoadingProducts,
-  isLoadingPlans,
   isLoadingDetail,
   isSaving,
   onSave,
   onBack,
   onCloseAlert,
-}: BrokerFeeFormProps) {
-  const watchProduct = watch('product');
+}: PartnerCommFormProps) {
+  const watchChannel = watch('channel');
 
   const breadcrumbs = [
-    { label: 'Broker Fee', href: AppURL.financeBrokerFee },
+    { label: 'Partner Comm', href: AppURL.financePartnerComm },
     {
-      label: isEdit ? 'Update Broker Fee' : 'Create Broker Fee',
+      label: isEdit ? 'Update Partner Comm' : 'Create Partner Comm',
       isCurrentPage: true,
     },
   ];
 
-  const insuranceOptions = React.useMemo(
+  const channelOptions = React.useMemo(
     () =>
-      insurances.map((insurance) => ({
-        label: insurance.name,
-        value: insurance.id,
+      channels.map((channel: any) => ({
+        label: channel.name,
+        value: channel.id,
       })),
-    [insurances],
+    [channels],
   );
 
-  const productOptions = React.useMemo(
-    () =>
-      products.map((product) => ({
-        label: product.name,
-        value: product.id,
-      })),
-    [products],
-  );
-
-  const planOptions = React.useMemo(
-    () =>
-      plans?.map((plan) => ({
-        label: plan.name.split('|').splice(0, 2).join(' - '),
-        value: plan.id,
-      })),
-    [plans],
-  );
+  const insuranceOptions = React.useMemo(() => {
+    const options = insurances.map((insurance: any) => ({
+      label: insurance.name,
+      value: insurance.id,
+    }));
+    return [{ label: 'All', value: 'All' }, ...options];
+  }, [insurances]);
 
   return (
     <ContentLoadingWrapper
-      isLoading={isSaving || isLoadingInsurances || isLoadingProducts || isLoadingDetail}
+      isLoading={isSaving || isLoadingChannels || isLoadingInsurances || isLoadingDetail}
     >
       <Box className="flex flex-col w-full">
         <Box as="form" onSubmit={handleSubmit(onSave)}>
           <PageHeader
-            title={isEdit ? 'Update Broker Fee' : 'Create Broker Fee'}
+            title={isEdit ? 'Update Partner Comm' : 'Create Partner Comm'}
             breadcrumbs={breadcrumbs}
             showBackButton={true}
             onBackClick={onBack}
@@ -153,6 +143,44 @@ export function BrokerFeeForm({
               <Box>
                 <Box
                   as="label"
+                  htmlFor="channel"
+                  className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
+                >
+                  Channel Name{' '}
+                  <Box as="span" className="text-red-500">
+                    *
+                  </Box>
+                </Box>
+                <Controller
+                  name="channel"
+                  control={control}
+                  rules={{ required: 'Channel Name is required' }}
+                  render={({ field }) => (
+                    <Combobox
+                      id="channel"
+                      options={channelOptions}
+                      value={field.value}
+                      onValueChange={(val) => {
+                        setValue('insurance', 'All');
+                        field.onChange(val);
+                      }}
+                      placeholder="Select Channel"
+                      error={!!errors.channel}
+                      className="w-full"
+                      size="lg"
+                    />
+                  )}
+                />
+                {errors.channel && (
+                  <Box as="p" className="text-red-500 text-xs mt-1">
+                    {errors.channel.message?.toString()}
+                  </Box>
+                )}
+              </Box>
+
+              <Box>
+                <Box
+                  as="label"
                   htmlFor="insurance"
                   className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
                 >
@@ -171,6 +199,7 @@ export function BrokerFeeForm({
                       options={insuranceOptions}
                       value={field.value}
                       onValueChange={field.onChange}
+                      disabled={!watchChannel}
                       placeholder="Select Insurance"
                       error={!!errors.insurance}
                       className="w-full"
@@ -181,69 +210,6 @@ export function BrokerFeeForm({
                 {errors.insurance && (
                   <Box as="p" className="text-red-500 text-xs mt-1">
                     {errors.insurance.message?.toString()}
-                  </Box>
-                )}
-              </Box>
-
-              <Box>
-                <Box
-                  as="label"
-                  htmlFor="product"
-                  className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
-                >
-                  Product Name
-                </Box>
-                <Controller
-                  name="product"
-                  control={control}
-                  render={({ field }) => (
-                    <Combobox
-                      id="product"
-                      options={productOptions}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder="Select Product"
-                      error={!!errors.product}
-                      className="w-full"
-                      size="lg"
-                    />
-                  )}
-                />
-                {errors.product && (
-                  <Box as="p" className="text-red-500 text-xs mt-1">
-                    {errors.product.message?.toString()}
-                  </Box>
-                )}
-              </Box>
-
-              <Box>
-                <Box
-                  as="label"
-                  htmlFor="plan"
-                  className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
-                >
-                  Plan Name
-                </Box>
-                <Controller
-                  name="plan"
-                  control={control}
-                  render={({ field }) => (
-                    <Combobox
-                      id="plan"
-                      options={planOptions || []}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={!watchProduct}
-                      placeholder="Select Plan"
-                      error={!!errors.plan}
-                      className="w-full"
-                      size="lg"
-                    />
-                  )}
-                />
-                {errors.plan && (
-                  <Box as="p" className="text-red-500 text-xs mt-1">
-                    {errors.plan.message?.toString()}
                   </Box>
                 )}
               </Box>

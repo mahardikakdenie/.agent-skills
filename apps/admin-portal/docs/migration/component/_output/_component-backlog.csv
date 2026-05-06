@@ -149,7 +149,7 @@
 "HospitalUploadForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/HospitalUploadForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "InsuranceForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/InsuranceForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "PageManagementForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/PageManagementForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
-"PartnerCommForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/PartnerCommForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
+"PartnerCommForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/partner-comm-form/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "PartnerManagementForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/PartnerManagementForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "BenefitForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/product-catalog/benefit.form.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "FieldArrayInput","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/product-catalog/field-array-input.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""

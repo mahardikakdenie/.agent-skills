@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 75 |
+| PASS | 77 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 2 |
-| NOT_STARTED | 37 |
+| NOT_STARTED | 35 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -75,8 +75,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/finance/broker-fee/add` | `finance-broker-fee-add` | `apps/admin-portal/src/app/finance/broker-fee/add/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/broker-fee/add route onto the refactored BrokerFeeForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives. |
 | `/finance/broker-fee/detail/[id]` | `finance-broker-fee-detail-id` | `apps/admin-portal/src/app/finance/broker-fee/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/broker-fee/detail/[id] route onto the refactored BrokerFeeForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives while ensuring robust ID handling. |
 | `/finance/partner-comm` | `finance-partner-comm` | `apps/admin-portal/src/app/finance/partner-comm/page.tsx` | NO | YES | `DEFERRED_DATA_TABLE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Direct DataTable usage is present in the page-local tree; no explicit Batch 9 route result exists yet, so this route is deferred behind the pending DataTable migration path. |
-| `/finance/partner-comm/add` | `finance-partner-comm-add` | `apps/admin-portal/src/app/finance/partner-comm/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/finance/partner-comm/detail/[id]` | `finance-partner-comm-detail-id` | `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/finance/partner-comm/add` | `finance-partner-comm-add` | `apps/admin-portal/src/app/finance/partner-comm/add/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/partner-comm/add route onto the refactored PartnerCommForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives. |
+| `/finance/partner-comm/detail/[id]` | `finance-partner-comm-detail-id` | `apps/admin-portal/src/app/finance/partner-comm/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /finance/partner-comm/detail/[id] route onto the refactored PartnerCommForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives. |
 | `/finance/unmatch-billing` | `finance-unmatch-billing` | `apps/admin-portal/src/app/finance/unmatch-billing/page.tsx` | NO | YES | `PASS` | 2026-05-04 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the unmatched billing reconciliation route onto the shared DataTable instance API, standardize the layout and table chrome on shared primitives, and implement dynamic column sizing while preserving existing data fetching and pagination. |
 | `/masterdata/channel` | `masterdata-channel` | `apps/admin-portal/src/app/masterdata/channel/page.tsx` | NO | YES | `PASS` | 2026-04-30 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, adopt flex-1 min-h-0 layout stabilization, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/masterdata/channel/add` | `masterdata-channel-add` | `apps/admin-portal/src/app/masterdata/channel/add/page.tsx` | NO | NO | `PASS` | 2026-04-22 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/channel/add route onto the refactored ChannelForm, standardizing the form layout and interaction with shared Box, Button, Input, and Select primitives. |
@@ -578,14 +578,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-partner-comm-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-06`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /finance/partner-comm/add route onto the refactored PartnerCommForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives.
 
 ### /finance/partner-comm/detail/[id]
 
@@ -593,14 +593,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `finance-partner-comm-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-06`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /finance/partner-comm/detail/[id] route onto the refactored PartnerCommForm, standardizing the form layout and interaction with shared Box, Button, Input, and Combobox primitives.
 
 ### /finance/unmatch-billing
 
