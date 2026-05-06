@@ -829,3 +829,16 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current campaign analytics route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker can now treat /report/campaign-analytics as PASS because the route-local migration has been completed.`
 
+## Batch 9 - /report/performance Route Refactor - 2026-05-06
+
+- Route focus: `/report/performance`
+- Migration intent: `Refactor the performance report route onto the current shared primitive stack, standardizing the page layout and breadcrumbs while preserving the existing Looker Studio iframe integration.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/report/performance/page.tsx` now renders the route shell with shared `@repo/ui` `Box` primitives, replacing older native layout tags.
+  - Standardized the page header with shared `Breadcrumb` primitives and standardized typography via `Box as="h2"`.
+  - The Looker Studio iframe is now wrapped in a `Box` primitive for consistent layout control.
+- Files changed (route-focused): [`apps/admin-portal/src/app/report/performance/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box and Breadcrumb primitives while the Looker Studio integration remains local.`
+- Verification note: `This logging update is based on the current performance report route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker can now treat /report/performance as PASS because the route-local migration has been completed.`
+
