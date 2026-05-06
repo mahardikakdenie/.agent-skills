@@ -765,4 +765,21 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Files changed (route-focused): [pps/admin-portal/src/app/membership/list/detail/[id]/page.tsx]
 - Shared-ui impact: No new @repo/ui export is introduced. The route adopts existing shared Box, Card, Badge, and Spinner primitives while PageHeader remains app-local.
 - Verification note: This logging update is based on the current membership detail route source changes. No new smoke, lint, or build evidence is added in this documentation entry.
-- Tracker impact: Batch 9 page tracker should now treat /membership/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.
+- Tracker impact: Batch 9 page tracker should now treat /membership/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.
+
+## Batch 9 - /policy/endorsement/list/export Route Refactor - 2026-05-06
+
+- Route focus: `/policy/endorsement/list/export`
+- Migration intent: `Refactor the endorsement list export page onto the current shared primitive stack, standardizing the report-generation layout and table rendering while preserving the existing data fetching and PDF/XLSX export logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, and `Spinner` primitives.
+  - Transformed native HTML layout tags into the polymorphic `Box` component with appropriate semantic mapping.
+  - Standardized the 'Generate PDF' and 'Generate XLSX' actions on shared `Button` primitives with updated styling and Download icons.
+  - Replaced the bespoke loading indicator with the shared `Spinner` component.
+  - Standardized the back affordance as a semantic `Box` (as a button) with a left chevron icon.
+  - The refactor preserves the existing `jsPDF` and `xlsx` generation logic for report output while ensuring design-system alignment.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and Spinner primitives while the PDF/XLSX generation logic remains local.`
+- Verification note: `This logging update is based on the current endorsement export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
