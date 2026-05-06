@@ -751,3 +751,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Tracker impact: `Batch 9 page tracker can now treat /source/list as PASS because the route-local migration has been completed.`
 
 
+
+## Batch 9 - /membership/list/detail/[id] Route Refactor - 2026-05-06
+
+- Route focus: /membership/list/detail/[id]
+- Migration intent: Refactor the membership detail route onto the current shared primitive stack, standardizing the information cards and detail rows while preserving existing membership detail loading and profile display logic.
+- Route-local behavior updates:
+  - pps/admin-portal/src/app/membership/list/detail/[id]/page.tsx now renders the route shell with shared @repo/ui Box, Card, and Badge primitives, replacing older native layout and local UI components.
+  - The refactor standardizes the Policy Holder Information and Insured Detail sections using shared Card and Box-based definition lists (dl, dt, dd).
+  - Adopts ContentLoadingWrapper for consistent loading states during data fetching.
+  - Standardized status rendering using the shared Badge primitive with semantic tone mapping (Active: success, Pending: warning, Inactive: secondary).
+  - The page header is migrated to the relocated local PageHeader path, providing consistent breadcrumbs and back-navigation.
+- Files changed (route-focused): [pps/admin-portal/src/app/membership/list/detail/[id]/page.tsx]
+- Shared-ui impact: No new @repo/ui export is introduced. The route adopts existing shared Box, Card, Badge, and Spinner primitives while PageHeader remains app-local.
+- Verification note: This logging update is based on the current membership detail route source changes. No new smoke, lint, or build evidence is added in this documentation entry.
+- Tracker impact: Batch 9 page tracker should now treat /membership/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.

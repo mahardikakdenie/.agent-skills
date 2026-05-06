@@ -1,28 +1,21 @@
-"use client";
-import React, { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useMembershipDetail } from "@/hooks/useMembershipDetail.hooks";
-import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
-import { PageHeader } from "@/components/page-header";
+'use client';
+
+import { useParams } from 'next/navigation';
+import React, { useEffect } from 'react';
+
+import { Box, Card, CardHeader, CardTitle, CardContent, Badge } from '@repo/ui';
+
+import { PageHeader } from '@/components/page-header';
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+import AppURL from '@/constants/app-url.const';
+import { useMembershipDetail } from '@/hooks/useMembershipDetail.hooks';
 
 export default function DetailMembership() {
   const params = useParams();
   const idParam = params.id;
-  const id =
-    typeof idParam === "string"
-      ? idParam
-      : Array.isArray(idParam)
-      ? idParam[0]
-      : "";
+  const id = typeof idParam === 'string' ? idParam : Array.isArray(idParam) ? idParam[0] : '';
 
-  const {
-    membershipDetail,
-    isLoading,
-    formatLabel,
-    getStatusColor,
-    getMembershipDetail,
-  } = useMembershipDetail();
+  const { membershipDetail, isLoading, formatLabel, getMembershipDetail } = useMembershipDetail();
 
   useEffect(() => {
     if (id) {
@@ -31,122 +24,153 @@ export default function DetailMembership() {
   }, [id, getMembershipDetail]);
 
   const breadcrumbs = [
-    { label: "Membership" },
-    { label: "List", href: AppURL.membershipList },
-    { label: "Detail", isCurrentPage: true },
+    { label: 'Membership', href: AppURL.membershipList },
+    { label: 'Detail', isCurrentPage: true },
   ];
+
+  const getBadgeTone = (status: string) => {
+    switch (status) {
+      case 'Active':
+        return 'success';
+      case 'Pending':
+        return 'warning';
+      case 'Inactive':
+        return 'secondary';
+      default:
+        return 'warning';
+    }
+  };
 
   return (
     <ContentLoadingWrapper isLoading={isLoading}>
-      <div className="flex flex-col w-full">
-        <PageHeader
-          title="Detail Membership"
-          breadcrumbs={breadcrumbs}
-          showBackButton={true}
-        />
+      <Box className="flex flex-col w-full">
+        <PageHeader title="Detail Membership" breadcrumbs={breadcrumbs} showBackButton={true} />
 
-        <div className="flex flex-col w-full p-4 md:p-6 gap-4">
-          <div className="bg-white grid lg:gap-3 gap-6 rounded-md sm:p-6 p-4 overflow-auto">
-            <div className="flex flex-col gap-3">
-              <p className="font-semibold">Policy Holder Information</p>
+        <Box className="flex flex-col w-full p-4 md:p-6 gap-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold tracking-tight">
+                Policy Holder Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Box as="dl" className="flex flex-col gap-3.5">
+                <Box className="flex gap-2 text-sm">
+                  <Box as="dt" className="min-w-[160px] font-medium text-muted-foreground">
+                    Policy Number
+                  </Box>
+                  <Box className="w-4 text-muted-foreground">:</Box>
+                  <Box as="dd" className="font-semibold text-foreground">
+                    {membershipDetail?.number || '—'}
+                  </Box>
+                </Box>
 
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="min-w-[160px] w-32">Policy Number</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>{membershipDetail?.number || "-"}</div>
-              </div>
+                <Box className="flex gap-2 text-sm">
+                  <Box as="dt" className="min-w-[160px] font-medium text-muted-foreground">
+                    Customer Name
+                  </Box>
+                  <Box className="w-4 text-muted-foreground">:</Box>
+                  <Box as="dd" className="font-semibold text-foreground">
+                    {membershipDetail?.policies?.policy_holders?.name || '—'}
+                  </Box>
+                </Box>
 
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="min-w-[160px] w-32">Customer Name</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {membershipDetail?.policies?.policy_holders?.name || "-"}
-                </div>
-              </div>
+                <Box className="flex gap-2 text-sm">
+                  <Box as="dt" className="min-w-[160px] font-medium text-muted-foreground">
+                    Phone Number
+                  </Box>
+                  <Box className="w-4 text-muted-foreground">:</Box>
+                  <Box as="dd" className="font-semibold text-foreground">
+                    {membershipDetail?.policies?.policy_holders?.phone || '—'}
+                  </Box>
+                </Box>
 
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="min-w-[160px] w-32">Phone Number</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {membershipDetail?.policies?.policy_holders?.phone || "-"}
-                </div>
-              </div>
+                <Box className="flex gap-2 text-sm">
+                  <Box as="dt" className="min-w-[160px] font-medium text-muted-foreground">
+                    Email
+                  </Box>
+                  <Box className="w-4 text-muted-foreground">:</Box>
+                  <Box as="dd" className="font-semibold text-foreground">
+                    {membershipDetail?.policies?.policy_holders?.email || '—'}
+                  </Box>
+                </Box>
 
-              <div className="flex gap-2 text-sm font-medium">
-                <div className="min-w-[160px] w-32">Email</div>
-                <div className="max-w-1 w-1">:</div>
-                <div>
-                  {membershipDetail?.policies?.policy_holders?.email || "-"}
-                </div>
-              </div>
+                {membershipDetail?.status && (
+                  <Box className="flex gap-2 text-sm">
+                    <Box as="dt" className="min-w-[160px] font-medium text-muted-foreground">
+                      Status
+                    </Box>
+                    <Box className="w-4 text-muted-foreground">:</Box>
+                    <Box as="dd">
+                      <Badge variant="solid" tone={getBadgeTone(membershipDetail.status)} size="sm">
+                        {membershipDetail.status}
+                      </Badge>
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
 
-              {membershipDetail?.status && (
-                <div className="flex gap-2 text-sm font-medium">
-                  <div className="min-w-[160px] w-32">Status</div>
-                  <div className="max-w-1 w-1">:</div>
-                  <div>
-                    <span className={getStatusColor(membershipDetail.status)}>
-                      {membershipDetail.status}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-md sm:p-6 p-4 mb-4 md:mb-0 h-fit max-h-full overflow-y-auto">
-            <p className="font-semibold mb-3">Insured Detail</p>
-
-            <div className="flex flex-col lg:flex-row gap-2 lg:gap-20">
-              {membershipDetail?.profile && (
-                <div className="flex flex-col gap-3">
-                  <div className="space-y-2 text-sm font-medium">
+          <Card className="h-fit max-h-full overflow-y-auto">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold tracking-tight">Insured Detail</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Box className="flex flex-col lg:flex-row gap-8 lg:gap-24">
+                {membershipDetail?.profile && (
+                  <Box as="dl" className="flex flex-col gap-3.5 flex-1">
                     {Object.entries(membershipDetail.profile)
-                      .filter(
-                        ([_, value]) =>
-                          value !== null && value !== undefined && value !== ""
-                      )
+                      .filter(([, value]) => value !== null && value !== undefined && value !== '')
                       .map(([key, value], index) => (
-                        <div key={index} className="flex gap-2">
-                          <div className="min-w-[160px] capitalize">
+                        <Box key={index} className="flex gap-2 text-sm">
+                          <Box
+                            as="dt"
+                            className="min-w-[160px] font-medium text-muted-foreground capitalize"
+                          >
                             {formatLabel(key)}
-                          </div>
-                          <div className="w-1">:</div>
-                          <div>{String(value)}</div>
-                        </div>
+                          </Box>
+                          <Box className="w-4 text-muted-foreground">:</Box>
+                          <Box as="dd" className="font-semibold text-foreground">
+                            {String(value)}
+                          </Box>
+                        </Box>
                       ))}
-                  </div>
-                </div>
-              )}
+                  </Box>
+                )}
 
-              {membershipDetail?.other_info && (
-                <div className="flex flex-col gap-3">
-                  <div className="space-y-2 text-sm font-medium">
+                {membershipDetail?.other_info && (
+                  <Box as="dl" className="flex flex-col gap-3.5 flex-1">
                     {Object.entries(membershipDetail.other_info)
                       .filter(
                         ([key, value]) =>
                           value !== null &&
                           value !== undefined &&
-                          value !== "" &&
-                          key !== "email" &&
-                          key !== "gender"
+                          value !== '' &&
+                          key !== 'email' &&
+                          key !== 'gender',
                       )
                       .map(([key, value], index) => (
-                        <div key={index} className="flex gap-2">
-                          <div className="min-w-[160px] capitalize">
+                        <Box key={index} className="flex gap-2 text-sm">
+                          <Box
+                            as="dt"
+                            className="min-w-[160px] font-medium text-muted-foreground capitalize"
+                          >
                             {formatLabel(key)}
-                          </div>
-                          <div className="w-1">:</div>
-                          <div>{String(value)}</div>
-                        </div>
+                          </Box>
+                          <Box className="w-4 text-muted-foreground">:</Box>
+                          <Box as="dd" className="font-semibold text-foreground">
+                            {String(value)}
+                          </Box>
+                        </Box>
                       ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+                  </Box>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
     </ContentLoadingWrapper>
   );
 }
