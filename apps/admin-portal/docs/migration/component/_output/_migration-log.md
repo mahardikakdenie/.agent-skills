@@ -783,3 +783,4 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current endorsement export route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/export as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 
+$newEntry
