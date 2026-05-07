@@ -259,7 +259,11 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
         aria-expanded={resolvedOpen}
         aria-haspopup="dialog"
         data-slot="date-picker-trigger"
-        className={cn(datePickerTriggerVariants({ size, hasValue, disabled }), classNames?.trigger)}
+        className={cn(
+          datePickerTriggerVariants({ size, hasValue, disabled }),
+          iconPosition === 'end' && 'justify-between',
+          classNames?.trigger,
+        )}
         {...props}
         onBlur={onBlur}
         onClick={handleClick ?? onClick}
