@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 93 |
+| PASS | 94 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 21 |
+| NOT_STARTED | 20 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -125,7 +125,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/membership/list/export` | `membership-list-export` | `apps/admin-portal/src/app/membership/list/export/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /membership/list/export route onto shared Box, Button, Table, and Spinner primitives, standardizing the page layout and report-generation buttons while preserving the existing PDF/XLSX export and localStorage state logic. |
 | `/membership/list/upload` | `membership-list-upload` | `apps/admin-portal/src/app/membership/list/upload/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /membership/list/upload onto shared Box, Button, Select, Combobox, Table, and Input primitives, standardizing the form layout and file upload interaction while preserving the existing membership upload and preview logic. |
 | `/policy/endorsement/list/detail/[id]` | `policy-endorsement-list-detail-id` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` | NO | YES | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the endorsement detail route onto shared Box, Button, Dialog, Table, and Textarea primitives; move the profile comparison and endorsement details onto shared Table and DataTable contracts; and preserve existing approval, rejection, and partner-upload workflows. |
-| `/policy/endorsement/list/detail/[id]/upload` | `policy-endorsement-list-detail-id-upload` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/policy/endorsement/list/detail/[id]/upload` | `policy-endorsement-list-detail-id-upload` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the endorsement upload route onto shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives; integrate XLSX for inline data preview with Excel date serial conversion; and preserve existing bulk endorsement status update via useUpdateEndorsementStatusBulking. |
 | `/policy/endorsement/list/export` | `policy-endorsement-list-export` | `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /policy/endorsement/list/export route onto shared Box, Button, and Spinner primitives, standardizing the page layout and report-generation buttons while preserving the existing PDF/XLSX export logic. |
 | `/policy/endorsement/list/upload` | `policy-endorsement-list-upload` | `apps/admin-portal/src/app/policy/endorsement/list/upload/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /policy/endorsement/list/upload route onto shared Box, Button, Table, Select, and Combobox primitives, standardizing the form layout and file upload interaction while preserving the existing bulk endorsement creation logic. |
 | `/policy/list/detail/[id]` | `policy-list-detail-id` | `apps/admin-portal/src/app/policy/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the policy detail route onto shared Box, Button, Dialog, and Table primitives; move the benefits list onto the shared Table contract; and preserve existing policy detail and renewal workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
@@ -1314,14 +1314,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `policy-endorsement-list-detail-id-upload`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-07`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the endorsement upload route onto shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives; integrate XLSX for inline data preview with automatic Excel date serial–to–ISO conversion; and preserve the existing bulk endorsement status update via useUpdateEndorsementStatusBulking. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /policy/endorsement/list/export
 

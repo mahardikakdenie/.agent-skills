@@ -905,3 +905,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Select, Combobox, Table, and Input primitives.`
 - Verification note: `This logging update is based on the current membership upload route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /membership/list/upload as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /policy/endorsement/list/detail/[id]/upload Route Refactor - 2026-05-07
+
+- Route focus: `/policy/endorsement/list/detail/[id]/upload`
+- Migration intent: `Refactor the endorsement upload route onto the current shared primitive stack, standardizing the file upload form and data preview while preserving the existing bulk endorsement status update logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, `Table`, `TableHeader`, `TableRow`, `TableHead`, `TableBody`, and `TableCell` primitives.
+  - Standardized the page header using `Box as="h1"` and a `Box`-based back affordance with `ChevronLeft` icon, replacing native layout tags.
+  - Replaced the bespoke file-upload UI with a standardized `Box` and `input` composition, incorporating inline clear (`X`) and preview (`Eye`) actions that share the same file-input row chrome.
+  - Integrated `XLSX` for inline data preview, allowing users to inspect spreadsheet content before submission, including automatic Excel date serial–to–ISO conversion via a local `excelDateToISO` helper.
+  - Standardized the data preview table using shared `@repo/ui` `Table` primitives with an explicit empty state featuring a `FileText` icon placeholder and descriptive copy.
+  - Preserved the existing `useUpdateEndorsementStatusBulking` mutation hook integration for bulk endorsement status update on upload, including header key normalization via `toSnakeCase` and `setLoading` state coordination.
+- Files changed (route-focused): [`apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives.`
+- Verification note: `This logging update is based on the current endorsement upload route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/detail/[id]/upload as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
