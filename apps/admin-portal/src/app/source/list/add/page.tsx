@@ -1,7 +1,9 @@
-"use client";
-import React from "react";
-import { useSourceForm } from "@/hooks/useSourceForm.hooks";
-import { SourceForm } from "@/components/forms/SourceForm";
+'use client';
+
+import React from 'react';
+
+import { SourceForm } from '@/components/forms/source-form';
+import { useSourceForm } from '@/hooks/useSourceForm.hooks';
 
 export default function CreateSourcePage() {
   const {
@@ -19,7 +21,7 @@ export default function CreateSourcePage() {
     setShowAlert,
     goBack,
     handleSourceTypeChange,
-  } = useSourceForm("create");
+  } = useSourceForm('create');
 
   if (hasAccess === false) {
     return null;
@@ -27,13 +29,13 @@ export default function CreateSourcePage() {
 
   return (
     <SourceForm
+      mode="create"
       handleSubmit={handleSubmit}
       control={control}
       errors={errors}
       insurances={insurances}
       showAlert={showAlert}
       errorMessage={errorMessage}
-      isEdit={false}
       sourceType={sourceType}
       isLoadingInsurances={isLoadingInsurances}
       isLoadingDetail={false}

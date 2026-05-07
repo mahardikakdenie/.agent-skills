@@ -1,18 +1,15 @@
-"use client";
-import React, { useEffect } from "react";
-import { useSourceForm } from "@/hooks/useSourceForm.hooks";
-import { SourceForm } from "@/components/forms/SourceForm";
-import { useParams } from "next/navigation";
+'use client';
+
+import { useParams } from 'next/navigation';
+import React, { useEffect } from 'react';
+
+import { SourceForm } from '@/components/forms/source-form';
+import { useSourceForm } from '@/hooks/useSourceForm.hooks';
 
 export default function DetailSourcePage() {
   const params = useParams();
   const idParam = params.id;
-  const id =
-    typeof idParam === "string"
-      ? idParam
-      : Array.isArray(idParam)
-      ? idParam[0]
-      : "";
+  const id = typeof idParam === 'string' ? idParam : Array.isArray(idParam) ? idParam[0] : '';
 
   const {
     handleSubmit,
@@ -31,7 +28,7 @@ export default function DetailSourcePage() {
     goBack,
     handleSourceTypeChange,
     loadSourceDetail,
-  } = useSourceForm("edit");
+  } = useSourceForm('edit');
 
   useEffect(() => {
     if (id) {
@@ -45,13 +42,13 @@ export default function DetailSourcePage() {
 
   return (
     <SourceForm
+      mode="edit"
       handleSubmit={handleSubmit}
       control={control}
       errors={errors}
       insurances={insurances}
       showAlert={showAlert}
       errorMessage={errorMessage}
-      isEdit
       sourceType={sourceType}
       isLoadingInsurances={isLoadingInsurances}
       isLoadingDetail={isLoadingDetail}
