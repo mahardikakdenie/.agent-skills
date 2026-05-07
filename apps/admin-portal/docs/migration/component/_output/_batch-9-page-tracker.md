@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 92 |
+| PASS | 93 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 22 |
+| NOT_STARTED | 21 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -123,7 +123,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/user/detail/[id]` | `masterdata-user-detail-id` | `apps/admin-portal/src/app/masterdata/user/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes keep the detail route on the refreshed `UserFormWrapper`, remove redundant status prop plumbing, and preserve existing user detail, group, role, channel, and insurer workflows. |
 | `/membership/list/detail/[id]` | `membership-list-detail-id` | `apps/admin-portal/src/app/membership/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the membership detail route onto shared Box, Card, Badge, and Spinner primitives; standardizes the policy holder and insured detail presentation using shared Card and definition lists; and adopts ContentLoadingWrapper for consistent loading states. |
 | `/membership/list/export` | `membership-list-export` | `apps/admin-portal/src/app/membership/list/export/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /membership/list/export route onto shared Box, Button, Table, and Spinner primitives, standardizing the page layout and report-generation buttons while preserving the existing PDF/XLSX export and localStorage state logic. |
-| `/membership/list/upload` | `membership-list-upload` | `apps/admin-portal/src/app/membership/list/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/membership/list/upload` | `membership-list-upload` | `apps/admin-portal/src/app/membership/list/upload/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /membership/list/upload onto shared Box, Button, Select, Combobox, Table, and Input primitives, standardizing the form layout and file upload interaction while preserving the existing membership upload and preview logic. |
 | `/policy/endorsement/list/detail/[id]` | `policy-endorsement-list-detail-id` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/page.tsx` | NO | YES | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the endorsement detail route onto shared Box, Button, Dialog, Table, and Textarea primitives; move the profile comparison and endorsement details onto shared Table and DataTable contracts; and preserve existing approval, rejection, and partner-upload workflows. |
 | `/policy/endorsement/list/detail/[id]/upload` | `policy-endorsement-list-detail-id-upload` | `apps/admin-portal/src/app/policy/endorsement/list/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/policy/endorsement/list/export` | `policy-endorsement-list-export` | `apps/admin-portal/src/app/policy/endorsement/list/export/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /policy/endorsement/list/export route onto shared Box, Button, and Spinner primitives, standardizing the page layout and report-generation buttons while preserving the existing PDF/XLSX export logic. |
@@ -1284,14 +1284,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `membership-list-upload`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-07`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor /membership/list/upload onto shared Box, Button, Select, Combobox, Table, and Input primitives, standardizing the form layout and file upload interaction while preserving the existing membership upload and preview logic.
 
 ### /policy/endorsement/list/detail/[id]
 
@@ -1927,5 +1927,8 @@ Return:
 - total discovered page routes
 - DataTable-dependent page count
 - summary by status
+- any ambiguous routes that were conservatively classified
+- confirmation that _batch-9-page-tracker.md was created or refreshed
+us
 - any ambiguous routes that were conservatively classified
 - confirmation that _batch-9-page-tracker.md was created or refreshed

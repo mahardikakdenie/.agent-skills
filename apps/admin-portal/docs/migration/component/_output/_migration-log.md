@@ -889,3 +889,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Combobox, DatePicker, Dialog, and Input primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current sanction add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /sanction/list/add and /sanction/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /membership/list/upload Route Refactor - 2026-05-07
+
+- Route focus: /membership/list/upload
+- Migration intent: `Refactor the membership upload route onto the current shared primitive stack, standardizing the form layout, file upload, and data preview while preserving the existing membership upload logic for feedback and first-time creation.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/membership/list/upload/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, `Select`, `Combobox`, `Input`, and `Table` primitives.
+  - Standardized the form layout using `Box` grid and flex compositions, replacing older native layout tags.
+  - Replaced the bespoke file-upload UI with a standardized `Box` and `input` composition, including clear and preview actions.
+  - Integrated `XLSX` for inline data preview, allowing users to inspect spreadsheet content before submission.
+  - Standardized the data preview table using shared `@repo/ui` `Table` primitives with explicit empty states.
+  - Preserved the existing upload logic, including permission checks, channel selection, and chunked uploads for first-time submissions without transactions.
+- Files changed (route-focused): [`apps/admin-portal/src/app/membership/list/upload/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Select, Combobox, Table, and Input primitives.`
+- Verification note: `This logging update is based on the current membership upload route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /membership/list/upload as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
