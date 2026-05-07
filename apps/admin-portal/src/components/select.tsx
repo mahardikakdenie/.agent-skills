@@ -84,12 +84,12 @@ const Select: React.FC<SelectProps> = ({ value, onChange, options, allOptions, d
     };
 
     return (
-        <div ref={selectRef} className="relative w-full text-xs">
+        <div ref={selectRef} className="relative w-full text-base">
             <button
                 type="button"
                 disabled={disabled}
                 onClick={toggleDropdown}
-                className={`w-full flex items-center justify-between ${bgSelect && !disabled ? bgSelect : disabled ? `bg-[${primaryDisabled}]` : "bg-white"} ${withBorder ? "p-2 border border-gray-300" : "py-2 pr-2"} rounded-md ${disabled ? "cursor-not-allowed" : "cursor-pointer"} ${additionalClassNameSelect}`}
+                className={`w-full flex items-center justify-between ${bgSelect && !disabled ? bgSelect : disabled ? `bg-[${primaryDisabled}]` : "bg-white"} ${withBorder ? "px-4 py-3 border border-gray-300" : "py-2 pr-2"} rounded-md ${disabled ? "cursor-not-allowed" : "cursor-pointer"} ${additionalClassNameSelect}`}
             >
                 {icon && (<span className="mr-2">{icon}</span>)}
                 {isPriorityPlaceholder ? (
@@ -101,7 +101,7 @@ const Select: React.FC<SelectProps> = ({ value, onChange, options, allOptions, d
                     <ChevronDown color={chevronColor ? chevronColor : undefined} width="30" height="15" />
                 </span>
             </button>
-            {errorMessage && (<p className="text-xs text-red-500 mt-0.5 ml-0.5">*{errorMessage}</p>)}
+            {errorMessage && (<p className="text-sm text-red-500 mt-0.5 ml-0.5">*{errorMessage}</p>)}
             {isOpen && (
                 <ul className={`max-h-36 overflow-y-auto sm:scrollable absolute w-full bg-white border border-gray-300 rounded-md mt-1 z-10 ${dropUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
                     {(allOptions && allOptions.length > 0 ? allOptions : options).map((item, index) => {

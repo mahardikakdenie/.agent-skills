@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 90 |
+| PASS | 92 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 24 |
+| NOT_STARTED | 22 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -153,8 +153,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `PASS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace bespoke date controls with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/report/performance` | `report-performance` | `apps/admin-portal/src/app/report/performance/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /report/performance route onto shared Box and Breadcrumb primitives, standardizing the page layout and header while preserving the existing Looker Studio iframe integration. |
 | `/sanction/list` | `sanction-list` | `apps/admin-portal/src/app/sanction/list/page.tsx` | NO | YES | `PASS` | 2026-04-14 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/sanction/list/add` | `sanction-list-add` | `apps/admin-portal/src/app/sanction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/sanction/list/detail/[id]` | `sanction-list-detail-id` | `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/sanction/list/add` | `sanction-list-add` | `apps/admin-portal/src/app/sanction/list/add/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /sanction/list/add route onto the refactored SanctionForm, standardizing the form layout and interaction with shared Box, Button, Combobox, DatePicker, Dialog, and Input primitives. |
+| `/sanction/list/detail/[id]` | `sanction-list-detail-id` | `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /sanction/list/detail/[id] route onto the refactored SanctionForm, standardizing the form layout and interaction with shared Box, Button, Combobox, DatePicker, Dialog, and Input primitives. |
 | `/sanction/list/upload` | `sanction-list-upload` | `apps/admin-portal/src/app/sanction/list/upload/page.tsx` | NO | NO | `PASS` | 2026-04-20 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor /sanction/list/upload onto shared Box, Button, and FileUpload primitives, standardize the CSV requirement display using Box and Badge, and implement batch blacklist creation via the updated sanction upload hook. |
 | `/source/list` | `source-list` | `apps/admin-portal/src/app/source/list/page.tsx` | NO | YES | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the source list route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement a details drawer using shared Drawer primitives while preserving existing add and detail navigation. |
 | `/source/list/add` | `source-list-add` | `apps/admin-portal/src/app/source/list/add/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /source/list/add route onto the refactored SourceForm, standardizing the form layout and interaction with shared Box, Button, Input, Select, Combobox, and Dialog primitives. |
@@ -1734,14 +1734,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `sanction-list-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-07`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /sanction/list/add route onto the refactored SanctionForm, standardizing the form layout and interaction with shared Box, Button, Combobox, DatePicker, Dialog, and Input primitives. Adopts ContentLoadingWrapper for consistent loading states.
 
 ### /sanction/list/detail/[id]
 
@@ -1749,14 +1749,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `sanction-list-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-07`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /sanction/list/detail/[id] route onto the refactored SanctionForm, standardizing the form layout and interaction with shared Box, Button, Combobox, DatePicker, Dialog, and Input primitives. Adopts ContentLoadingWrapper for consistent loading states.
 
 ### /sanction/list/upload
 

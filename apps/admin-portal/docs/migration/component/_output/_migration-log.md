@@ -873,3 +873,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Input, Select, Combobox, and Dialog primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current source add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat both /source/list/add and /source/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /sanction/list/add and /sanction/list/detail/[id] Route Refactor - 2026-05-07
+
+- Route focus: `/sanction/list/add`, `/sanction/list/detail/[id]`
+- Migration intent: `Refactor the sanction add and detail routes onto the current shared primitive stack, standardizing the form layout and interaction while preserving existing sanction creation and update logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/sanction/list/add/page.tsx` and `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx` now use the refactored `SanctionForm` component.
+  - `apps/admin-portal/src/components/forms/sanction-form/index.tsx` replaces the legacy `SanctionForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Combobox`, `DatePicker`, `Dialog`, and `Input` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and leverages `ContentLoadingWrapper` for consistent loading states during data fetching and submission.
+  - Standardized breadcrumbs and a `Box`-based back affordance are integrated into the new page layout.
+  - Supports identity details (first, middle, last name), personal data (country, ID, phone, email), source selection, and blacklist details (date and reason) with validation and success/error feedback via `Dialog`.
+- Files changed (route-focused): [`apps/admin-portal/src/app/sanction/list/add/page.tsx`, `apps/admin-portal/src/app/sanction/list/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/sanction-form/index.tsx`, `apps/admin-portal/src/hooks/useSanctionForm.hooks.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/SanctionForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Combobox, DatePicker, Dialog, and Input primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current sanction add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /sanction/list/add and /sanction/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

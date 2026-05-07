@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useSanctionForm } from "@/hooks/useSanctionForm.hooks";
-import { SanctionForm } from "@/components/forms/SanctionForm";
+import { SanctionForm } from "@/components/forms/sanction-form";
 
 export default function EditSanctionPage() {
   const params = useParams();
@@ -45,6 +45,7 @@ export default function EditSanctionPage() {
 
   return (
     <SanctionForm
+      mode="edit"
       handleSubmit={handleSubmit}
       control={control}
       errors={errors}
@@ -52,7 +53,6 @@ export default function EditSanctionPage() {
       countries={countries}
       showAlert={showAlert}
       errorMessage={errorMessage}
-      isEdit={true}
       isLoadingSources={isLoadingSources}
       isLoadingCountries={isLoadingCountries}
       isLoadingDetail={isLoadingDetail}

@@ -174,7 +174,10 @@ export function useSource(): UseSourceProps {
   const handleViewDetail = useCallback(async (id: string) => {
     try {
       const response: any = await sanctionService.getSourceById(id);
-      const sourceData = response?.data?.[0];
+      const responseData = response?.data;
+      const sourceData = Array.isArray(responseData)
+        ? responseData[0]
+        : responseData;
       setSelectedSource(sourceData);
       setDrawerOpen(true);
     } catch (err) {

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useSanctionForm } from "@/hooks/useSanctionForm.hooks";
-import { SanctionForm } from "@/components/forms/SanctionForm";
+import { SanctionForm } from "@/components/forms/sanction-form";
 
 export default function CreateSanctionPage() {
   const {
@@ -27,6 +27,7 @@ export default function CreateSanctionPage() {
 
   return (
     <SanctionForm
+      mode="create"
       handleSubmit={handleSubmit}
       control={control}
       errors={errors}
@@ -34,7 +35,6 @@ export default function CreateSanctionPage() {
       countries={countries}
       showAlert={showAlert}
       errorMessage={errorMessage}
-      isEdit={false}
       isLoadingSources={isLoadingSources}
       isLoadingCountries={isLoadingCountries}
       isLoadingDetail={false}

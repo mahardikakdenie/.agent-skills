@@ -91,7 +91,7 @@ const Input: React.FC<InputProps> = ({value, type = "text", onChange, onChangeFi
     };
 
     return (
-        <div className="relative w-full text-xs text-black">
+        <div className="relative w-full text-base text-black">
             <div className="flex items-center">
                 <input
                     key={count}
@@ -107,7 +107,7 @@ const Input: React.FC<InputProps> = ({value, type = "text", onChange, onChangeFi
                     onFocus={handleOnFocus}
                     onBlur={handleOnBlur}
                     placeholder={placeholder}
-                    className={`hide-scrollbar outline-none w-full flex-grow ${withBorder ? "border border-gray-300" : "shadow"} rounded-md py-[15px] pl-[15px] ${type === "password" ? 'pr-[70px]' : 'pr-[40px]'} ${disabled ? `bg-[${primaryDisabled}] cursor-not-allowed` : "bg-white cursor-text"}`}
+                    className={`hide-scrollbar outline-none w-full flex-grow ${withBorder ? "border border-gray-300" : "shadow"} rounded-md py-[11px] pl-[15px] ${type === "password" ? 'pr-[70px]' : 'pr-[40px]'} ${disabled ? `bg-[${primaryDisabled}] cursor-not-allowed` : "bg-white cursor-text"}`}
                 />
                 {disabled ? null : inputValue ? (
                     <div className="flex items-center justify-center absolute right-2">
@@ -121,7 +121,7 @@ const Input: React.FC<InputProps> = ({value, type = "text", onChange, onChangeFi
                     <span className="absolute right-2">{icon}</span>
                 ) : null}
             </div>
-            {errorMessage && (<p className="text-xs text-red-500 mt-0.5 ml-0.5">*{errorMessage}</p>)}
+            {errorMessage && (<p className="text-sm text-red-500 mt-0.5 ml-0.5">*{errorMessage}</p>)}
         </div>
     );
 };

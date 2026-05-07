@@ -41,7 +41,7 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             isWithShadow = true,
             isForceClear = false,
             bgDatePicker = "bg-white",
-            heightDatePicker = "h-[46px]",
+            heightDatePicker = "h-12",
             borderDatePicker,
             onChange,
             onSubmit,
@@ -235,12 +235,12 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
         return (
             <div ref={fromUseRef} className="group w-full relative rounded-md shadow-none">
                 <div className="h-full flex flex-col">
-                    <button ref={ref} onClick={() => setIsOpen(true)} disabled={isDisabled}
-                        className={`px-4 ${bgDatePicker} ${heightDatePicker} ${isWithShadow && "shadow"} rounded-md transition-all text-xs flex items-center ${errorMessage ? "border border-red-500" : borderDatePicker ? `border ${borderDatePicker}` : ""} ${!dateValue && "text-gray-400"} ${isDisabled ? "cursor-not-allowed" : "clickable"}`}
+                    <button type="button" ref={ref} onClick={() => setIsOpen(true)} disabled={isDisabled}
+                        className={`px-4 ${bgDatePicker} ${heightDatePicker} ${isWithShadow && "shadow"} rounded-md transition-all text-base flex items-center ${errorMessage ? "border border-red-500" : borderDatePicker ? `border ${borderDatePicker}` : ""} ${!dateValue ? "text-muted-foreground" : "text-foreground"} ${isDisabled ? "cursor-not-allowed" : "clickable"}`}
                     >
                         {label} <span className="ml-auto h-5 w-5">{CalenderIcon(isDisabled ? primaryDisabled : primary, "30", "30", "0 0 25 24")}</span>
                     </button>
-                    {errorMessage && (<p className="text-red-500 text-xs p-1">{errorMessage}</p>)}
+                    {errorMessage && (<p className="text-red-500 text-sm p-1">{errorMessage}</p>)}
                 </div>
 
                 {isOpen && (

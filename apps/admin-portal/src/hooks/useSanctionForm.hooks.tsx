@@ -139,7 +139,10 @@ export function useSanctionForm(
 
   const sourcesData = (sourcesResponse as any)?.data || [];
   const countriesData = (countriesResponse as any)?.data || [];
-  const sanctionDetail = (sanctionDetailResponse as any)?.data?.[0] ?? null;
+  const sanctionDetailData = (sanctionDetailResponse as any)?.data;
+  const sanctionDetail = Array.isArray(sanctionDetailData)
+    ? sanctionDetailData[0]
+    : sanctionDetailData || null;
 
   const handleSaveSuccess = useCallback(
     (data: unknown) => {

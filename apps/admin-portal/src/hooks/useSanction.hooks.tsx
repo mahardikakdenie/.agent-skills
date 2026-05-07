@@ -175,7 +175,10 @@ export function useSanction(): UseSanctionProps {
   const handleViewDetail = useCallback(async (id: string) => {
     try {
       const response: any = await sanctionService.getBlacklistById(id);
-      const sanctionData = response?.data?.[0];
+      const responseData = response?.data;
+      const sanctionData = Array.isArray(responseData)
+        ? responseData[0]
+        : responseData;
       setSelectedSanction(sanctionData);
       setDrawerOpen(true);
     } catch (err) {

@@ -97,9 +97,9 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({ list, onChange, titleMo
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-white">
                         <tr>
-                            <th key={`header-select`} className="px-6 py-6 whitespace-nowrap text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Select</th>
+                            <th key={`header-select`} className="px-6 py-6 whitespace-nowrap text-left text-sm font-semibold text-gray-500 uppercase tracking-wider">Select</th>
                             {list && list.length > 0 && Object.keys(list[0]).filter(kH => kH !== "value").map((kH, kHIndex) => (
-                                <th key={`header-${kHIndex}`} className="px-6 py-6 whitespace-nowrap text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{capitalizeStringWithChar(kH, "_")}</th>
+                                <th key={`header-${kHIndex}`} className="px-6 py-6 whitespace-nowrap text-left text-sm font-semibold text-gray-500 uppercase tracking-wider">{capitalizeStringWithChar(kH, "_")}</th>
                             ))}
                         </tr>
                         </thead>

@@ -33,7 +33,7 @@ const TextArea: React.FC<TextAreaProps> = ({value, onChange, disabled = false, w
     };
 
     return (
-        <div className="relative w-full text-xs text-black">
+        <div className="relative w-full text-base text-black">
             <div className="flex items-center">
                 <textarea
                     maxLength={max}
@@ -42,7 +42,7 @@ const TextArea: React.FC<TextAreaProps> = ({value, onChange, disabled = false, w
                     disabled={disabled}
                     onChange={handleOnChange}
                     placeholder={placeholder}
-                    className={`overflow-y-auto sm:scrollable resize-none outline-none ${height ? height : "h-full"} w-full flex-grow ${withBorder ? "border border-gray-300" : "shadow"} rounded-md py-[15px] pl-[15px] pr-[35px] ${disabled ? `bg-[${primaryDisabled}] cursor-not-allowed` : "bg-white cursor-text"}`}
+                    className={`overflow-y-auto sm:scrollable resize-none outline-none ${height ? height : "h-full"} w-full flex-grow ${withBorder ? "border border-gray-300" : "shadow"} rounded-md py-[11px] pl-[15px] pr-[35px] ${disabled ? `bg-[${primaryDisabled}] cursor-not-allowed` : "bg-white cursor-text"}`}
                 />
                 {disabled ? null : textAreaValue ? (
                     <div onClick={clear} className="absolute right-2 top-2 cursor-pointer">
@@ -51,7 +51,7 @@ const TextArea: React.FC<TextAreaProps> = ({value, onChange, disabled = false, w
                 ) : null}
             </div>
             {errorMessage && (
-                <p className="text-xs text-red-500 mt-0.5 ml-0.5">*{errorMessage}</p>
+                <p className="text-sm text-red-500 mt-0.5 ml-0.5">*{errorMessage}</p>
             )}
         </div>
     );

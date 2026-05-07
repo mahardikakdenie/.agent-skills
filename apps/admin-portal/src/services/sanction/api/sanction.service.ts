@@ -21,7 +21,7 @@ export const sanctionService = {
   getSources: (params?: Record<string, unknown>) =>
     get(withQuery(SANCTION_ENDPOINTS.sourcesPaging, params)),
   getSourceById: (id: string) =>
-    get(withQuery(SANCTION_ENDPOINTS.sources, { id })),
+    get(SANCTION_ENDPOINTS.sourceDetail(id)),
   createSource: (payload: unknown) => post(SANCTION_ENDPOINTS.sources, payload),
   updateSource: (id: string, payload: unknown) =>
     put(SANCTION_ENDPOINTS.sourceUpdate(id), payload),
@@ -30,7 +30,7 @@ export const sanctionService = {
   getBlacklist: (params?: Record<string, unknown>) =>
     get(withQuery(SANCTION_ENDPOINTS.blacklist, params)),
   getBlacklistById: (id: string) =>
-    get(withQuery(SANCTION_ENDPOINTS.blacklist, { id })),
+    get(SANCTION_ENDPOINTS.blacklistDetail(id)),
   createBlacklist: (payload: unknown) => post(SANCTION_ENDPOINTS.blacklist, payload),
   updateBlacklist: (id: string, payload: unknown) =>
     put(SANCTION_ENDPOINTS.blacklistUpdate(id), payload),

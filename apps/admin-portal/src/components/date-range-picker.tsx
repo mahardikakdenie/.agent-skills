@@ -40,14 +40,14 @@ const DatePickerDropdown = ({ onDateChange }: { onDateChange: (from: string, to:
   };
 
   return (
-    <div className="relative w-full text-xs">
-      <div className="relative bg-white rounded-md shadow h-[46px] overflow-hidden">
+    <div className="relative w-full text-base">
+      <div className="relative bg-white rounded-md shadow h-12 overflow-hidden">
         <input
           type="text"
           readOnly
           value={`${format(dateRange[0].startDate ?? new Date(), "dd/MM/yyyy")} - ${format(dateRange[0].endDate ?? new Date(), "dd/MM/yyyy")}`}
           onClick={() => setShowPicker(!showPicker)}
-          className="w-full px-4 cursor-pointer rounded-md h-full shadow-none bg-transparent text-[13px] z-10 relative"
+          className="w-full px-4 cursor-pointer rounded-md h-full shadow-none bg-transparent text-base z-10 relative"
         />
         <Calendar className="w-4 h-4 absolute right-3 top-[15px] text-primary z-0" />
       </div>
