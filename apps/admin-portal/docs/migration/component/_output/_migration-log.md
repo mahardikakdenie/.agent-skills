@@ -959,3 +959,21 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route now adopts existing shared Box, Button, Combobox, DatePicker, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, and Textarea primitives while PageHeader and ContentLoadingWrapper remain app-local.`
 - Verification note: `This logging update is based on the current transaction add route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /transaction/list/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /transaction/list/detail/[id] Route Refactor - 2026-05-11
+
+- Route focus: `/transaction/list/detail/[id]`
+- Migration intent: `Refactor the transaction detail page onto the current shared primitive stack, standardizing the detail view layout, premium calculation display, and status update action while preserving the existing transaction data fetching and payment status mutation logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, and `Spinner` primitives.
+  - Standardized the page header via the local `PageHeader` component from `@/components/page-header`, with breadcrumbs back to the transaction list and a conditional "Update to Paid" action button visible only for pending transactions.
+  - A local `DetailItem` helper component is introduced to render key-value rows using `Box` composition with fixed label widths and break-word value overflow, replacing any legacy native layout nodes.
+  - Premium calculation logic is implemented inline: currency conversion via a matched `CurrencyRate` entry, embedded plan discount via `plan.premium_discount_type`/`premium_discount_value`, voucher discount via `voucher_info.data`, and total fees accumulation from the `fees` array.
+  - The `id` param is safely resolved from `useParams()` with an explicit string/array guard before passing to `useTransactionDetail`.
+  - A full-screen `Spinner` is rendered while transaction data is loading; a "Transaction not found" empty state with a card shell is shown when the transaction is absent.
+  - `toastNotification` is used for success and error feedback on the `handleUpdateToPaid` status mutation.
+  - Strict inline TypeScript types `TransactionDetail`, `TransactionFee`, and `CurrencyRate` are introduced to replace previously untyped API response casts.
+- Files changed (route-focused): [`apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and Spinner primitives while PageHeader remains app-local.`
+- Verification note: `This logging update is based on the current transaction detail route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /transaction/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
