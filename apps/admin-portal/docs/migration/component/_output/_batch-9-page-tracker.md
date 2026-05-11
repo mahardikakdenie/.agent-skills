@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 94 |
+| PASS | 95 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 20 |
+| NOT_STARTED | 19 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -162,7 +162,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/transaction/list/add` | `transaction-list-add` | `apps/admin-portal/src/app/transaction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/transaction/list/detail/[id]` | `transaction-list-detail-id` | `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/transaction/list/export` | `transaction-list-export` | `apps/admin-portal/src/app/transaction/list/export/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /transaction/list/export route onto shared Box, Button, Spinner, and Table primitives, standardizing the page layout and report-generation buttons while preserving the existing PDF/XLSX export logic. |
-| `/transaction/list/import/import` | `transaction-list-import-import` | `apps/admin-portal/src/app/transaction/list/import/import/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/transaction/list/import/import` | `transaction-list-import-import` | `apps/admin-portal/src/app/transaction/list/import/import/page.tsx` | NO | NO | `PASS` | 2026-05-11 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /transaction/list/import/import route onto shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives, standardizing the file-upload chrome and CSV preview table while preserving the existing bulk transaction import logic. |
 | `/oauth/msal` | `oauth-msal` | `apps/admin-portal/src/app/oauth/msal/page.tsx` | NO | NO | `OUT_OF_SCOPE` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | Technical MSAL callback route that completes auth and redirects home; not a Batch 9 page-stabilization target. |
 
 ## Route Details
@@ -1869,14 +1869,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `transaction-list-import-import`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-11`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /transaction/list/import/import route onto shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives, standardizing the file-upload chrome with inline clear and preview actions and the CSV preview table while preserving the existing useBulkCreateTransactions mutation integration.
 
 ### /oauth/msal
 

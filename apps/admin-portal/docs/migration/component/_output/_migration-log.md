@@ -921,3 +921,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives.`
 - Verification note: `This logging update is based on the current endorsement upload route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /policy/endorsement/list/detail/[id]/upload as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /transaction/list/import/import Route Refactor - 2026-05-11
+
+- Route focus: `/transaction/list/import/import`
+- Migration intent: `Refactor the transaction import route onto the current shared primitive stack, standardizing the file upload form and CSV data preview while preserving the existing bulk transaction import logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/transaction/list/import/import/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, `Table`, `TableHeader`, `TableRow`, `TableHead`, `TableBody`, and `TableCell` primitives.
+  - Standardized the page header using `Box as="h1"` and a `Box`-based back affordance with `ChevronLeft` icon from `react-feather`, replacing native layout tags.
+  - Replaced the bespoke file-upload UI with a standardized `Box`-and-`input` composition, incorporating inline clear (`X`) and preview (`Eye`) actions that share the same file-input row chrome.
+  - Integrated `Papa` (papaparse) for inline CSV data preview, allowing users to inspect CSV content before submission via the `handlePreview` flow.
+  - Standardized the data preview table using shared `@repo/ui` `Table`, `TableHeader`, `TableRow`, `TableHead`, `TableBody`, and `TableCell` primitives, with dynamic column headers derived from parsed CSV keys.
+  - Preserved the existing `useBulkCreateTransactions` mutation hook integration for bulk transaction creation on upload, including `setLoading` state coordination via `useScreen`.
+- Files changed (route-focused): [`apps/admin-portal/src/app/transaction/list/import/import/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives.`
+- Verification note: `This logging update is based on the current transaction import route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /transaction/list/import/import as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
