@@ -66,6 +66,8 @@ export function useThirdPartyConfig() {
       resetForm();
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to create configuration";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
@@ -85,6 +87,8 @@ export function useThirdPartyConfig() {
       resetForm();
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to update configuration";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
@@ -97,6 +101,8 @@ export function useThirdPartyConfig() {
       setDeletingConfig(null);
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to delete configuration";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
