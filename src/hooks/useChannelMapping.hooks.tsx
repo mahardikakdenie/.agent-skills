@@ -92,6 +92,8 @@ export function useChannelMapping() {
       resetForm();
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to create channel mapping";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
@@ -111,6 +113,8 @@ export function useChannelMapping() {
       resetForm();
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to update channel mapping";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
@@ -123,6 +127,8 @@ export function useChannelMapping() {
       setDeletingMapping(null);
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to delete channel mapping";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });

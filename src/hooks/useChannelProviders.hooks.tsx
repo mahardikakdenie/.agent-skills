@@ -116,6 +116,8 @@ export function useChannelProviders() {
       resetForm();
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to create channel provider";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
@@ -135,6 +137,8 @@ export function useChannelProviders() {
       resetForm();
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to update channel provider";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
@@ -150,6 +154,8 @@ export function useChannelProviders() {
       setDisablingProvider(null);
     },
     onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to disable channel provider";
+      toastNotification(message, "error");
       handleResponseError(error);
     },
   });
