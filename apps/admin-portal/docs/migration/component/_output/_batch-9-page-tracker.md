@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 95 |
+| PASS | 96 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 19 |
+| NOT_STARTED | 18 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -159,7 +159,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/source/list` | `source-list` | `apps/admin-portal/src/app/source/list/page.tsx` | NO | YES | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the source list route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement a details drawer using shared Drawer primitives while preserving existing add and detail navigation. |
 | `/source/list/add` | `source-list-add` | `apps/admin-portal/src/app/source/list/add/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /source/list/add route onto the refactored SourceForm, standardizing the form layout and interaction with shared Box, Button, Input, Select, Combobox, and Dialog primitives. |
 | `/source/list/detail/[id]` | `source-list-detail-id` | `apps/admin-portal/src/app/source/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-07 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /source/list/detail/[id] route onto the refactored SourceForm, standardizing the form layout and interaction with shared Box, Button, Input, Select, Combobox, and Dialog primitives while ensuring robust ID handling. |
-| `/transaction/list/add` | `transaction-list-add` | `apps/admin-portal/src/app/transaction/list/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/transaction/list/add` | `transaction-list-add` | `apps/admin-portal/src/app/transaction/list/add/page.tsx` | NO | NO | `PASS` | 2026-05-11 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /transaction/list/add route onto shared Box, Button, Combobox, DatePicker, Input, Select, Table, and Textarea primitives, standardize the form layout with PageHeader and ContentLoadingWrapper, and introduce DatePicker for date fields while preserving the existing conventional transaction creation logic. |
 | `/transaction/list/detail/[id]` | `transaction-list-detail-id` | `apps/admin-portal/src/app/transaction/list/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/transaction/list/export` | `transaction-list-export` | `apps/admin-portal/src/app/transaction/list/export/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /transaction/list/export route onto shared Box, Button, Spinner, and Table primitives, standardizing the page layout and report-generation buttons while preserving the existing PDF/XLSX export logic. |
 | `/transaction/list/import/import` | `transaction-list-import-import` | `apps/admin-portal/src/app/transaction/list/import/import/page.tsx` | NO | NO | `PASS` | 2026-05-11 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /transaction/list/import/import route onto shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives, standardizing the file-upload chrome and CSV preview table while preserving the existing bulk transaction import logic. |
@@ -1824,14 +1824,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `transaction-list-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-11`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the /transaction/list/add route onto shared Box, Button, Combobox, DatePicker, Input, Select, Table, and Textarea primitives. Legacy manual Breadcrumb composition, Link, ChevronLeft, cn, and SelectGroup are removed in favour of the local PageHeader component for breadcrumbs, back button, title, and the Save action slot. ContentLoadingWrapper provides the submission loading overlay. DatePicker is newly adopted for the insured_effective_date and insured_exp_date fields using iconPosition="end" and a local parseDate helper. Select for the type and insured_payment_method fields is migrated from the legacy shadcn composition pattern to the unified options-prop API. Local helpers RequiredMark, FieldError, FormSection, InlineSelect, SelectOptionItems, and parseDate reduce repetition across the large form. Strict TypeScript types Option, ApiList, ApiOption, Customer, PlanPackage, and Plan are introduced inline. All existing data-fetching effects and participants table CRUD handlers are preserved.
 
 ### /transaction/list/detail/[id]
 

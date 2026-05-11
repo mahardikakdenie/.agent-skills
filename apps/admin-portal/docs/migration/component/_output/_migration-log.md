@@ -937,3 +937,25 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Table, TableHeader, TableRow, TableHead, TableBody, and TableCell primitives.`
 - Verification note: `This logging update is based on the current transaction import route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /transaction/list/import/import as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /transaction/list/add Route Refactor - 2026-05-11
+
+- Route focus: `/transaction/list/add`
+- Migration intent: `Refactor the transaction add page onto the current shared primitive stack, standardizing the full-form layout, field composition, and submission flow while preserving the existing conventional transaction creation logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/transaction/list/add/page.tsx` now adopts shared `@repo/ui` `Box`, `Button`, `Combobox`, `DatePicker`, `Input`, `Select`, `SelectContent`, `SelectItem`, `SelectTrigger`, `SelectValue`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableHeader`, `TableRow`, and `Textarea` primitives.
+  - Legacy manual `Breadcrumb` composition (`BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbList`, `BreadcrumbPage`, `BreadcrumbSeparator`) and the `Link`-based back affordance are removed; the page now adopts the local `PageHeader` component from `@/components/page-header` for breadcrumbs, back button, title, and the Save action slot.
+  - Wrapped the page in `ContentLoadingWrapper` from `@/components/ui/loading`, driven by `isSubmitting`, to render a full-page overlay during transaction creation.
+  - `DatePicker` is adopted (new for this route) for the `insured_effective_date` and `insured_exp_date` fields, using `iconPosition="end"` and a local `parseDate` helper that safely converts the ISO string field value to a `Date` object for the picker.
+  - `Select` for the `type` and `insured_payment_method` fields is migrated from the legacy shadcn-style manual composition pattern to the unified `options`-prop API, removing direct `SelectContent`/`SelectGroup`/`SelectItem` wiring for those fields.
+  - A local `InlineSelect` helper component is introduced to encapsulate the phone-code dropdown pattern (code selector + number input fused with `rounded-r-none`/`rounded-l-none`), used consistently for `phone_number_code`, `insured_phone_number_code`, `agent_phone_number_code`, and `insured_premium_currency`.
+  - Local helper components `RequiredMark`, `FieldError`, and `FormSection` are introduced to eliminate repetitive required-mark, error-display, and section-chrome JSX across the large form.
+  - Strict TypeScript types `Option`, `ApiList`, `ApiOption`, `Customer`, `PlanPackage`, and `Plan` are introduced inline to replace the previously untyped API response casts.
+  - Constants `fieldLabelClassName`, `invalidControlClassName`, and `defaultControlClassName` centralize the repeated Tailwind strings for label and control border states.
+  - `cn` from `@/lib/utils`, `Link` from `next/navigation`, `ChevronLeft` and `SelectGroup` are removed; all layout nodes are now `Box`.
+  - The `Save` icon from `react-feather` is adopted for the submit button inside `PageHeader`.
+  - All existing data-fetching effects (`fetchChannels`, `fetchCustomers`, `fetchInsurances`, `fetchProductCategories`, `fetchCurrencies`, `fetchPlans`), field-watcher effects (`selectedType`, `selectedCustomer`, `selectedInsurance`, `selectedCategory`, `selectedPlan`), and the participants table CRUD handlers (`handleAddInsuredObject`, `handleSaveInsuredObject`, `handleEditInsuredObject`, `handleRemoveInsuredObject`) are preserved intact.
+- Files changed (route-focused): [`apps/admin-portal/src/app/transaction/list/add/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route now adopts existing shared Box, Button, Combobox, DatePicker, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, and Textarea primitives while PageHeader and ContentLoadingWrapper remain app-local.`
+- Verification note: `This logging update is based on the current transaction add route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /transaction/list/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
