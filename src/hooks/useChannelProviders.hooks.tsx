@@ -42,6 +42,8 @@ export function useChannelProviders() {
   );
   const [disablingProvider, setDisablingProvider] =
     useState<ChannelProvider | null>(null);
+  const [deletingProvider, setDeletingProvider] =
+    useState<ChannelProvider | null>(null);
 
   // Form state
   const [formData, setFormData] = useState<ChannelProviderFormData>({
@@ -160,6 +162,20 @@ export function useChannelProviders() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => CommunicationService.deleteChannelProvider(id),
+    onSuccess: () => {
+      toastNotification("Channel provider deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
+      setDeletingProvider(null);
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to delete channel provider";
+      toastNotification(message, "error");
+      handleResponseError(error);
+    },
+  });
+
   const openCreate = useCallback(() => {
     resetForm();
     setIsCreateOpen(true);
@@ -213,6 +229,11 @@ export function useChannelProviders() {
     disableMutation.mutate(disablingProvider.id);
   }, [disablingProvider, disableMutation]);
 
+  const handleDelete = useCallback(() => {
+    if (!deletingProvider) return;
+    deleteMutation.mutate(deletingProvider.id);
+  }, [deletingProvider, deleteMutation]);
+
   // Reset provider dropdown when type changes in create mode
   useEffect(() => {
     if (isCreateOpen) {
@@ -247,6 +268,8 @@ export function useChannelProviders() {
     setEditingProvider,
     disablingProvider,
     setDisablingProvider,
+    deletingProvider,
+    setDeletingProvider,
     formData,
     setFormData,
     openCreate,
@@ -254,10 +277,12 @@ export function useChannelProviders() {
     handleCreate,
     handleUpdate,
     handleDisable,
+    handleDelete,
     resetForm,
     refetch,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isDisabling: disableMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 }

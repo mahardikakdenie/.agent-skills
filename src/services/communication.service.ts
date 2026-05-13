@@ -41,4 +41,8 @@ export const CommunicationService = {
   getChannels: () => {
     return channelService.get(ApiURL.channels);
   },
+
+  deleteChannelProvider: (id: string) => {
+    return communicationService.delete(ApiURL.channelProviderDetails(id));
+  },
 };

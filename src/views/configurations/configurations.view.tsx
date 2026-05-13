@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useScreen } from "@/context/screen.context";
 import { getHeaderPage } from "@/helpers/app.helper";
@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useChannelProviders } from "@/hooks/useChannelProviders.hooks";
-import { Edit, XCircle } from "react-feather";
+import { Edit, XCircle, Trash } from "react-feather";
 
 interface ChannelProvider {
   id: string;
@@ -55,6 +55,8 @@ export const ConfigurationsView = () => {
     setEditingProvider,
     disablingProvider,
     setDisablingProvider,
+    deletingProvider,
+    setDeletingProvider,
     formData,
     setFormData,
     openCreate,
@@ -62,10 +64,12 @@ export const ConfigurationsView = () => {
     handleCreate,
     handleUpdate,
     handleDisable,
+    handleDelete,
     resetForm,
     isCreating,
     isUpdating,
     isDisabling,
+    isDeleting,
   } = useChannelProviders();
 
   const channelNameMap = useMemo(() => {
@@ -75,6 +79,24 @@ export const ConfigurationsView = () => {
     });
     return map;
   }, [channels]);
+
+  const [submitted, setSubmitted] = useState(false);
+
+  const isCreateValid = useMemo(() => {
+    const hasBasicFields = !!(formData.channelId && formData.type && formData.provider);
+    if (formData.type === "email") {
+      return hasBasicFields && !!formData.fromEmail;
+    }
+    return hasBasicFields;
+  }, [formData]);
+
+  const isEditValid = useMemo(() => {
+    const hasProvider = !!formData.provider;
+    if (editingProvider?.type === "email") {
+      return hasProvider && !!formData.fromEmail;
+    }
+    return hasProvider;
+  }, [formData, editingProvider]);
 
   const columns: Column<ChannelProvider>[] = [
     {
@@ -152,108 +174,140 @@ export const ConfigurationsView = () => {
               <XCircle size={16} />
             </button>
           )}
+          <button
+            onClick={() => setDeletingProvider(item)}
+            className="text-red-500 hover:text-red-700"
+            title="Delete"
+          >
+            <Trash size={16} />
+          </button>
         </div>
       ),
     },
   ];
 
-  const renderFormFields = (isEdit: boolean) => (
-    <div className="grid gap-4 py-4">
-      <div className="grid gap-2">
-        <Label htmlFor="channel">Channel</Label>
-        <Select
-          value={formData.channelId}
-          onValueChange={(v) =>
-            setFormData((prev: typeof formData) => ({
-              ...prev,
-              channelId: v,
-            }))
-          }
-        >
-            <SelectTrigger>
-              <SelectValue placeholder="Select channel" />
+  const renderFormFields = (isEdit: boolean) => {
+    const showChannelError = submitted && !isEdit && !formData.channelId;
+    const showTypeError = submitted && !isEdit && !formData.type;
+    const showProviderError = submitted && !formData.provider;
+    const showFromEmailError =
+      submitted &&
+      ((!isEdit && formData.type === "email" && !formData.fromEmail) ||
+        (isEdit && editingProvider?.type === "email" && !formData.fromEmail));
+
+    return (
+      <div className="grid gap-4 py-4">
+        {!isEdit && (
+          <div className="grid gap-2">
+            <Label htmlFor="channel">Channel</Label>
+            <Select
+              value={formData.channelId}
+              onValueChange={(v) =>
+                setFormData((prev: typeof formData) => ({
+                  ...prev,
+                  channelId: v,
+                }))
+              }
+            >
+              <SelectTrigger className={showChannelError ? "border-red-500" : ""}>
+                <SelectValue placeholder="Select channel" />
+              </SelectTrigger>
+              <SelectContent>
+                {channels.map((ch: any) => (
+                  <SelectItem key={ch.id} value={ch.id}>
+                    {ch.name || ch.id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {showChannelError && (
+              <p className="text-xs text-red-500">Channel is required</p>
+            )}
+          </div>
+        )}
+
+        <div className="grid gap-2">
+          <Label htmlFor="type">Type</Label>
+          {isEdit ? (
+            <Input value={formData.type} disabled className="capitalize" />
+          ) : (
+            <Select
+              value={formData.type}
+              onValueChange={(v) =>
+                setFormData((prev: typeof formData) => ({ ...prev, type: v }))
+              }
+            >
+              <SelectTrigger className={showTypeError ? "border-red-500" : ""}>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="whatsapp">WhatsApp</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          {showTypeError && (
+            <p className="text-xs text-red-500">Type is required</p>
+          )}
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="provider">Provider</Label>
+          <Select
+            value={formData.provider}
+            onValueChange={(v) =>
+              setFormData((prev: typeof formData) => ({ ...prev, provider: v }))
+            }
+            disabled={!formData.type && !isEdit}
+          >
+            <SelectTrigger className={showProviderError ? "border-red-500" : ""}>
+              <SelectValue placeholder="Select provider" />
             </SelectTrigger>
             <SelectContent>
-              {channels.map((ch: any) => (
-                <SelectItem key={ch.id} value={ch.id}>
-                  {ch.name || ch.id}
+              {availableProviders.map((p: string) => (
+                <SelectItem key={p} value={p}>
+                  {p}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-      </div>
+          {showProviderError && (
+            <p className="text-xs text-red-500">Provider is required</p>
+          )}
+        </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="type">Type</Label>
-        {isEdit ? (
-          <Input value={formData.type} disabled className="capitalize" />
-        ) : (
-          <Select
-            value={formData.type}
-            onValueChange={(v) =>
-              setFormData((prev: typeof formData) => ({ ...prev, type: v }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="email">Email</SelectItem>
-              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-            </SelectContent>
-          </Select>
+        {(formData.type === "email" || (isEdit && editingProvider?.type === "email")) && (
+          <div className="grid gap-2">
+            <Label htmlFor="fromEmail">From Email</Label>
+            <Input
+              value={formData.fromEmail || ""}
+              onChange={(e) =>
+                setFormData((prev: typeof formData) => ({
+                  ...prev,
+                  fromEmail: e.target.value,
+                }))
+              }
+              placeholder="sender@example.com"
+              className={showFromEmailError ? "border-red-500" : ""}
+            />
+            {showFromEmailError && (
+              <p className="text-xs text-red-500">From Email is required</p>
+            )}
+          </div>
         )}
-      </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="provider">Provider</Label>
-        <Select
-          value={formData.provider}
-          onValueChange={(v) =>
-            setFormData((prev: typeof formData) => ({ ...prev, provider: v }))
-          }
-          disabled={!formData.type}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select provider" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableProviders.map((p: string) => (
-              <SelectItem key={p} value={p}>
-                {p}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {(formData.type === "email" || (isEdit && editingProvider?.type === "email")) && (
-        <div className="grid gap-2">
-          <Label htmlFor="fromEmail">From Email</Label>
-          <Input
-            value={formData.fromEmail || ""}
-            onChange={(e) =>
-              setFormData((prev: typeof formData) => ({
-                ...prev,
-                fromEmail: e.target.value,
-              }))
+        <div className="flex items-center gap-3">
+          <Label htmlFor="enabled">Enabled</Label>
+          <Switch
+            checked={formData.enabled}
+            onCheckedChange={(v) =>
+              setFormData((prev: typeof formData) => ({ ...prev, enabled: v }))
             }
-            placeholder="sender@example.com"
           />
         </div>
-      )}
-
-      <div className="flex items-center gap-3">
-        <Label htmlFor="enabled">Enabled</Label>
-        <Switch
-          checked={formData.enabled}
-          onCheckedChange={(v) =>
-            setFormData((prev: typeof formData) => ({ ...prev, enabled: v }))
-          }
-        />
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="mx-auto py-5 px-7">
@@ -295,6 +349,7 @@ export const ConfigurationsView = () => {
           if (!open) {
             setIsCreateOpen(false);
             resetForm();
+            setSubmitted(false);
           }
         }}
       >
@@ -312,11 +367,21 @@ export const ConfigurationsView = () => {
               onClick={() => {
                 setIsCreateOpen(false);
                 resetForm();
+                setSubmitted(false);
               }}
             >
               Cancel
             </Button>
-            <Button onClick={handleCreate} disabled={isCreating}>
+            <Button
+              onClick={() => {
+                if (!isCreateValid) {
+                  setSubmitted(true);
+                } else {
+                  handleCreate();
+                }
+              }}
+              disabled={isCreating || !isCreateValid}
+            >
               {isCreating ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
@@ -330,6 +395,7 @@ export const ConfigurationsView = () => {
           if (!open) {
             setEditingProvider(null);
             resetForm();
+            setSubmitted(false);
           }
         }}
       >
@@ -347,11 +413,21 @@ export const ConfigurationsView = () => {
               onClick={() => {
                 setEditingProvider(null);
                 resetForm();
+                setSubmitted(false);
               }}
             >
               Cancel
             </Button>
-            <Button onClick={handleUpdate} disabled={isUpdating}>
+            <Button
+              onClick={() => {
+                if (!isEditValid) {
+                  setSubmitted(true);
+                } else {
+                  handleUpdate();
+                }
+              }}
+              disabled={isUpdating || !isEditValid}
+            >
               {isUpdating ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
@@ -386,6 +462,43 @@ export const ConfigurationsView = () => {
               disabled={isDisabling}
             >
               {isDisabling ? "Disabling..." : "Disable"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={!!deletingProvider}
+        onOpenChange={(open) => {
+          if (!open) setDeletingProvider(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Channel Provider</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to permanently delete this channel provider? This action cannot be undone.
+              {deletingProvider?.enabled && (
+                <span className="block mt-2 text-amber-600">
+                  ⚠️ This provider is currently active. Deleting it may disrupt communications for the associated channel.
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeletingProvider(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
