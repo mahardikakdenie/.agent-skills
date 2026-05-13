@@ -130,7 +130,7 @@ export function useChannelProviders() {
       data,
     }: {
       id: string;
-      data: { provider?: string; fromEmail?: string; enabled?: boolean };
+      data: ChannelProviderFormData;
     }) => CommunicationService.updateChannelProvider(id, data),
     onSuccess: () => {
       toastNotification("Channel provider updated successfully");
@@ -210,12 +210,13 @@ export function useChannelProviders() {
 
   const handleUpdate = useCallback(() => {
     if (!editingProvider) return;
-    const payload: { provider?: string; fromEmail?: string; enabled?: boolean } =
-      {
-        provider: formData.provider,
-        enabled: formData.enabled,
-      };
-    if (editingProvider.type === "email") {
+    const payload: ChannelProviderFormData = {
+      channelId: formData.channelId,
+      type: formData.type,
+      provider: formData.provider,
+      enabled: formData.enabled,
+    };
+    if (formData.type === "email" && formData.fromEmail) {
       payload.fromEmail = formData.fromEmail;
     }
     updateMutation.mutate({

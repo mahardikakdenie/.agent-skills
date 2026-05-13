@@ -91,11 +91,11 @@ export const ConfigurationsView = () => {
   }, [formData]);
 
   const isEditValid = useMemo(() => {
-    const hasProvider = !!formData.provider;
-    if (editingProvider?.type === "email") {
-      return hasProvider && !!formData.fromEmail;
+    const hasBasicFields = !!(formData.channelId && formData.type && formData.provider);
+    if (formData.type === "email" || editingProvider?.type === "email") {
+      return hasBasicFields && !!formData.fromEmail;
     }
-    return hasProvider;
+    return hasBasicFields;
   }, [formData, editingProvider]);
 
   const columns: Column<ChannelProvider>[] = [
@@ -187,18 +187,15 @@ export const ConfigurationsView = () => {
   ];
 
   const renderFormFields = (isEdit: boolean) => {
-    const showChannelError = submitted && !isEdit && !formData.channelId;
+    const showChannelError = submitted && !formData.channelId;
     const showTypeError = submitted && !isEdit && !formData.type;
     const showProviderError = submitted && !formData.provider;
     const showFromEmailError =
-      submitted &&
-      ((!isEdit && formData.type === "email" && !formData.fromEmail) ||
-        (isEdit && editingProvider?.type === "email" && !formData.fromEmail));
+      submitted && formData.type === "email" && !formData.fromEmail;
 
     return (
       <div className="grid gap-4 py-4">
-        {!isEdit && (
-          <div className="grid gap-2">
+        <div className="grid gap-2">
             <Label htmlFor="channel">Channel</Label>
             <Select
               value={formData.channelId}
@@ -224,7 +221,6 @@ export const ConfigurationsView = () => {
               <p className="text-xs text-red-500">Channel is required</p>
             )}
           </div>
-        )}
 
         <div className="grid gap-2">
           <Label htmlFor="type">Type</Label>
@@ -258,7 +254,7 @@ export const ConfigurationsView = () => {
             onValueChange={(v) =>
               setFormData((prev: typeof formData) => ({ ...prev, provider: v }))
             }
-            disabled={!formData.type && !isEdit}
+            disabled={!formData.type}
           >
             <SelectTrigger className={showProviderError ? "border-red-500" : ""}>
               <SelectValue placeholder="Select provider" />
@@ -276,7 +272,7 @@ export const ConfigurationsView = () => {
           )}
         </div>
 
-        {(formData.type === "email" || (isEdit && editingProvider?.type === "email")) && (
+        {formData.type === "email" && (
           <div className="grid gap-2">
             <Label htmlFor="fromEmail">From Email</Label>
             <Input

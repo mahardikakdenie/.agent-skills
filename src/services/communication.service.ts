@@ -23,7 +23,7 @@ export const CommunicationService = {
 
   updateChannelProvider: (
     channelId: string,
-    data: { provider?: string; fromEmail?: string; enabled?: boolean }
+    data: { channelId?: string; type?: string; provider?: string; fromEmail?: string; enabled?: boolean }
   ) => {
     return communicationService.patch(
       ApiURL.channelProviderDetails(channelId),
