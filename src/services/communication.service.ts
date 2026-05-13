@@ -23,7 +23,7 @@ export const CommunicationService = {
 
   updateChannelProvider: (
     channelId: string,
-    data: { provider?: string; fromEmail?: string; enabled?: boolean }
+    data: { channelId?: string; type?: string; provider?: string; fromEmail?: string; enabled?: boolean }
   ) => {
     return communicationService.patch(
       ApiURL.channelProviderDetails(channelId),
@@ -40,5 +40,9 @@ export const CommunicationService = {
 
   getChannels: () => {
     return channelService.get(ApiURL.channels);
+  },
+
+  deleteChannelProvider: (id: string) => {
+    return communicationService.delete(ApiURL.channelProviderDetails(id));
   },
 };

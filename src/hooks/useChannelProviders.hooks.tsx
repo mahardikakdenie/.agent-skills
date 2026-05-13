@@ -42,6 +42,8 @@ export function useChannelProviders() {
   );
   const [disablingProvider, setDisablingProvider] =
     useState<ChannelProvider | null>(null);
+  const [deletingProvider, setDeletingProvider] =
+    useState<ChannelProvider | null>(null);
 
   // Form state
   const [formData, setFormData] = useState<ChannelProviderFormData>({
@@ -128,7 +130,7 @@ export function useChannelProviders() {
       data,
     }: {
       id: string;
-      data: { provider?: string; fromEmail?: string; enabled?: boolean };
+      data: ChannelProviderFormData;
     }) => CommunicationService.updateChannelProvider(id, data),
     onSuccess: () => {
       toastNotification("Channel provider updated successfully");
@@ -155,6 +157,20 @@ export function useChannelProviders() {
     },
     onError: (error: any) => {
       const message = error?.response?.data?.message || "Failed to disable channel provider";
+      toastNotification(message, "error");
+      handleResponseError(error);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => CommunicationService.deleteChannelProvider(id),
+    onSuccess: () => {
+      toastNotification("Channel provider deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
+      setDeletingProvider(null);
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to delete channel provider";
       toastNotification(message, "error");
       handleResponseError(error);
     },
@@ -194,12 +210,13 @@ export function useChannelProviders() {
 
   const handleUpdate = useCallback(() => {
     if (!editingProvider) return;
-    const payload: { provider?: string; fromEmail?: string; enabled?: boolean } =
-      {
-        provider: formData.provider,
-        enabled: formData.enabled,
-      };
-    if (editingProvider.type === "email") {
+    const payload: ChannelProviderFormData = {
+      channelId: formData.channelId,
+      type: formData.type,
+      provider: formData.provider,
+      enabled: formData.enabled,
+    };
+    if (formData.type === "email" && formData.fromEmail) {
       payload.fromEmail = formData.fromEmail;
     }
     updateMutation.mutate({
@@ -212,6 +229,11 @@ export function useChannelProviders() {
     if (!disablingProvider) return;
     disableMutation.mutate(disablingProvider.id);
   }, [disablingProvider, disableMutation]);
+
+  const handleDelete = useCallback(() => {
+    if (!deletingProvider) return;
+    deleteMutation.mutate(deletingProvider.id);
+  }, [deletingProvider, deleteMutation]);
 
   // Reset provider dropdown when type changes in create mode
   useEffect(() => {
@@ -247,6 +269,8 @@ export function useChannelProviders() {
     setEditingProvider,
     disablingProvider,
     setDisablingProvider,
+    deletingProvider,
+    setDeletingProvider,
     formData,
     setFormData,
     openCreate,
@@ -254,10 +278,12 @@ export function useChannelProviders() {
     handleCreate,
     handleUpdate,
     handleDisable,
+    handleDelete,
     resetForm,
     refetch,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isDisabling: disableMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 }

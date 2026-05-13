@@ -5,6 +5,14 @@ import { Plus } from "react-feather";
 import { DataTable } from "@/components/ui/DataTable";
 import { useChannel } from "@/hooks/useChannel.hooks";
 import { createChannelTableColumns } from "@/components/tableConfig/channelTableConfig";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function ChannelsPage() {
   const {
@@ -22,6 +30,9 @@ export default function ChannelsPage() {
     setRowsPerPage,
     handleEdit,
     handleDelete,
+    confirmDelete,
+    deleteDialog,
+    setDeleteDialog,
     addNewChannel,
   } = useChannel();
 
@@ -66,6 +77,41 @@ export default function ChannelsPage() {
         className="channel-table"
         noDataText="No channel data available"
       />
+
+      <Dialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => {
+          if (!open) setDeleteDialog({ ...deleteDialog, open: false });
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Channel</DialogTitle>
+            <DialogDescription>
+              {deleteDialog.isLoading
+                ? "Checking associated providers..."
+                : deleteDialog.providerCount > 0
+                  ? `Are you sure you want to delete this channel? This will also delete ${deleteDialog.providerCount} associated channel-provider(s). This action cannot be undone.`
+                  : "Are you sure you want to delete this channel? This action cannot be undone."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialog({ ...deleteDialog, open: false })}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleteDialog.isLoading}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
