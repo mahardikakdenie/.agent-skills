@@ -144,7 +144,7 @@
 "CurrencyForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/CurrencyForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "EmailTagForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/EmailTagForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "EmailTemplateForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/EmailTemplateForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
-"GroupForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/GroupForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
+"GroupForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/group-form/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "HolidayDateForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/HolidayDateForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "HospitalUploadForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/HospitalUploadForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "InsuranceForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/InsuranceForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""

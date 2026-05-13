@@ -977,3 +977,20 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, and Spinner primitives while PageHeader remains app-local.`
 - Verification note: `This logging update is based on the current transaction detail route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /transaction/list/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /masterdata/group/add and /masterdata/group/detail/[id] Route Refactor - 2026-05-13
+
+- Route focus: `/masterdata/group/add`, `/masterdata/group/detail/[id]`
+- Migration intent: `Refactor the group add and detail routes onto the current shared primitive stack, standardizing the form layout and group member management interaction while preserving existing group creation, role assignment, and user assignment logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/masterdata/group/add/page.tsx` and `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx` now use the refactored `GroupForm` component.
+  - `apps/admin-portal/src/components/forms/group-form/index.tsx` replaces the legacy `apps/admin-portal/src/components/forms/GroupForm/index.tsx` and adopts shared `@repo/ui` `Box`, `Button`, `Checkbox`, `Combobox`, `DataTable`, `Dialog`, `Image`, `Input`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableHeader`, and `TableRow` primitives.
+  - The refactored form utilizes `Box` for all layout and semantic elements, standardizes the page header via the local `PageHeader` component, and wraps the page in `ContentLoadingWrapper` for consistent loading states during save and detail-fetch operations.
+  - The role management section renders an add-roles `Dialog` with a `Combobox` platform filter, an `Input` search field, and a `DataTable` with `Checkbox` selection columns and `CompactTablePagination`; current group roles are displayed in a shared `Table` with inline delete `Button` actions.
+  - The user management section renders an add-users `Dialog` with an `Input` search field and a `DataTable` with `Checkbox` selection columns and `CompactTablePagination`; current group users are displayed in a shared `Table` with inline delete `Button` actions.
+  - Label clickable areas are restricted to text-only via `inline-block` on `Box as="label"` elements.
+- Files changed (route-focused): [`apps/admin-portal/src/app/masterdata/group/add/page.tsx`, `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx`, `apps/admin-portal/src/components/forms/group-form/index.tsx`]
+- Local files deleted: [`apps/admin-portal/src/components/forms/GroupForm/index.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Checkbox, Combobox, DataTable, Dialog, Image, Input, Table, TableBody, TableCell, TableHead, TableHeader, and TableRow primitives while PageHeader, ContentLoadingWrapper, and CompactTablePagination remain app-local.`
+- Verification note: `This logging update is based on the current group add and detail route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat both /masterdata/group/add and /masterdata/group/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

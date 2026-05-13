@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useGroupForm } from "@/hooks/useGroupForm.hooks";
-import GroupForm from "@/components/forms/GroupForm";
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+import GroupForm from '@/components/forms/group-form';
+import { useGroupForm } from '@/hooks/useGroupForm.hooks';
 
 export default function EditGroup() {
   const params = useParams();
-  const groupId =
-    typeof params.id === "string" ? params.id : params.id?.[0] || "";
+  const groupId = typeof params.id === 'string' ? params.id : params.id?.[0] || '';
 
   const {
     handleSubmit,
@@ -32,7 +32,7 @@ export default function EditGroup() {
     handleAddUser,
     handleDeleteUser,
     goBack,
-  } = useGroupForm("edit");
+  } = useGroupForm('edit');
 
   useEffect(() => {
     if (groupId) {

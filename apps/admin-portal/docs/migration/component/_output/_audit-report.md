@@ -2470,7 +2470,7 @@
 
 ### GroupForm
 
-- **File:** src/components/forms/GroupForm/index.tsx
+- **File:** src/components/forms/group-form/index.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** N/A
 - **@repo/ui status:** missing

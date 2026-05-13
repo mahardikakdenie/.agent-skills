@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useGroupForm } from "@/hooks/useGroupForm.hooks";
-import GroupForm from "@/components/forms/GroupForm";
+import GroupForm from '@/components/forms/group-form';
+import { useGroupForm } from '@/hooks/useGroupForm.hooks';
 
 export default function AddGroupPage() {
   const {
@@ -14,7 +14,7 @@ export default function AddGroupPage() {
     isSaving,
     handleSave,
     goBack,
-  } = useGroupForm("create");
+  } = useGroupForm('create');
 
   return (
     <GroupForm

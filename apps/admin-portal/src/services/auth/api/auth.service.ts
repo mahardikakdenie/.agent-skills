@@ -71,7 +71,7 @@ export const authService = {
   getGroups: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.groups, params)),
   getGroupById: (id: string) =>
-    get(withQuery(AUTH_ENDPOINTS.groups, { id })),
+    get(AUTH_ENDPOINTS.groupDetail(id)),
   createGroup: (payload: unknown) => post(AUTH_ENDPOINTS.groups, payload),
   updateGroup: (id: string, payload: unknown) =>
     put(AUTH_ENDPOINTS.groupDetail(id), payload),

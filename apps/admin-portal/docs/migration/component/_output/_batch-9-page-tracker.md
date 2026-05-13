@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 97 |
+| PASS | 99 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 17 |
+| NOT_STARTED | 15 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -93,8 +93,8 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/masterdata/email-template/tag` | `masterdata-email-template-tag` | `apps/admin-portal/src/app/masterdata/email-template/tag/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-04-29 updates migrate the route onto the shared DataTable instance API, standardize the page chrome on shared primitives, and implement dynamic column sizing while preserving existing navigation. |
 | `/masterdata/email-template/tag/add` | `masterdata-email-template-tag-add` | `apps/admin-portal/src/app/masterdata/email-template/tag/add/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/email-template/tag/add route onto shared Box, Button, Combobox, and Input primitives; adopts ContentLoadingWrapper for consistent loading; and standardizes the page header and form layout. |
 | `/masterdata/group` | `masterdata-group` | `apps/admin-portal/src/app/masterdata/group/page.tsx` | NO | YES | `PASS` | 2026-04-09 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the table chrome on shared primitives, and add compact pagination and explicit empty-state handling while preserving existing add and detail navigation. |
-| `/masterdata/group/add` | `masterdata-group-add` | `apps/admin-portal/src/app/masterdata/group/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/masterdata/group/detail/[id]` | `masterdata-group-detail-id` | `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/masterdata/group/add` | `masterdata-group-add` | `apps/admin-portal/src/app/masterdata/group/add/page.tsx` | NO | NO | `PASS` | 2026-05-13 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/group/add route onto the refactored GroupForm, standardizing the form layout and interaction with shared Box, Button, Checkbox, Combobox, DataTable, Dialog, Image, Input, and Table primitives while adopting ContentLoadingWrapper for loading states. |
+| `/masterdata/group/detail/[id]` | `masterdata-group-detail-id` | `apps/admin-portal/src/app/masterdata/group/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-13 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/group/detail/[id] route onto the refactored GroupForm, standardizing the form layout and interaction with shared Box, Button, Checkbox, Combobox, DataTable, Dialog, Image, Input, and Table primitives, including role and user management dialogs with DataTable selection. |
 | `/masterdata/holiday-date` | `masterdata-holiday-date` | `apps/admin-portal/src/app/masterdata/holiday-date/page.tsx` | NO | YES | `PASS` | 2026-04-10 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
 | `/masterdata/holiday-date/add` | `masterdata-holiday-date-add` | `apps/admin-portal/src/app/masterdata/holiday-date/add/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/holiday-date/add route onto the refactored HolidayDateForm, standardizing the form layout and interaction with shared Box, Button, Select, Input, and DatePicker primitives. |
 | `/masterdata/holiday-date/detail/[id]` | `masterdata-holiday-date-detail-id` | `apps/admin-portal/src/app/masterdata/holiday-date/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-21 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /masterdata/holiday-date/detail/[id] route onto the refactored HolidayDateForm, standardizing the form layout and interaction with shared Box, Button, Select, Input, and DatePicker primitives. |
@@ -848,14 +848,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-group-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-13`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/group/add` route onto the refactored `GroupForm`. The refactor standardizes the form layout and interaction, replaces native HTML elements with shared `@repo/ui` `Box`, `Button`, `Checkbox`, `Combobox`, `DataTable`, `Dialog`, `Image`, `Input`, and `Table` primitives, and wraps the page in `ContentLoadingWrapper` for consistent loading states. The page header is standardized via the local `PageHeader` component while preserving existing group creation logic.
 
 ### /masterdata/group/detail/[id]
 
@@ -863,14 +863,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `masterdata-group-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-13`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the `/masterdata/group/detail/[id]` route onto the refactored `GroupForm`. The refactor standardizes the form layout and interaction with shared `@repo/ui` `Box`, `Button`, `Checkbox`, `Combobox`, `DataTable`, `Dialog`, `Image`, `Input`, and `Table` primitives, including role and user management dialogs featuring `DataTable` with `Checkbox` selection, `Combobox` platform filter, `Input` search, and `CompactTablePagination`. The page header is standardized via the local `PageHeader` component while preserving existing group update, role assignment, and user assignment logic.
 
 ### /masterdata/holiday-date
 
