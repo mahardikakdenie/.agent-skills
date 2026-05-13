@@ -143,8 +143,8 @@ function ProductCatalogContent({ category }: ProductCatalogContentProps) {
   }, [category, categoryMenuItems]);
 
   return (
-    <Box className="flex w-full flex-col md:flex-row md:items-start min-h-[calc(100vh-var(--fs-navbar-height,64px))]">
-      <Box className="flex flex-col w-full p-4 md:p-6 pb-16 md:pb-20 flex-1">
+    <Box className="flex w-full flex-col md:flex-row md:items-start">
+      <Box className="flex w-full flex-col p-4 md:p-6">
         <Box className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
           <Box as="h1" className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
             Product Catalog - {activeCategoryLabel}
@@ -159,7 +159,7 @@ function ProductCatalogContent({ category }: ProductCatalogContentProps) {
           </Button>
         </Box>
 
-        <Box className="flex flex-col gap-4 xl:flex-row xl:items-start flex-1 mb-10">
+        <Box className="flex flex-col gap-4 xl:flex-row xl:items-start">
           <ProductCategorySection
             activeCategory={category}
             items={categoryMenuItems}
@@ -187,7 +187,7 @@ function ProductCatalogContent({ category }: ProductCatalogContentProps) {
             </Box>
 
             <DataTable
-              className="!gap-3 pb-4 md:pb-6 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+              className="!gap-3 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
               loading={isLoadingCatalogPlans}
               data={catalogPlans as ProductCatalogTableData[]}
               columns={productCatalogTableColumns}

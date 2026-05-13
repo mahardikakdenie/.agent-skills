@@ -1,372 +1,276 @@
-"use client";
-import Image from "next/image";
-import noData from "@public/images/no-data.webp";
-import { useProducts } from "../hooks";
-import { useEffect, useState } from "react";
-import { Input } from "@repo/ui";
-import { Button } from "@repo/ui";
-import { useAuth } from "@/context/auth.context";
-import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Plus, Trash } from "react-feather";
-import type { ProductCatalogDto } from "@/services/product/api/product.types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@repo/ui";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui";
-import AppURL from "@/constants/app-url.const";
-import ExtendedSidemenu, { SubmenuItem } from "@/components/extended-sidemenu";
-import { productService } from "@/services/product/api/product.service";
+'use client';
 
-const formatCategoryLabel = (value: string | undefined) => {
-  if (!value) return "";
+import { PlusIcon } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { type ChangeEvent, useMemo } from 'react';
 
-  return value
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
+import { Box, Button, Combobox, DataTable, Input } from '@repo/ui';
+
+import {
+  createProductCatalogTableColumns,
+  ProductCatalogTableData,
+} from '@/components/tableConfig/productCatalogTableConfig';
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import AppURL from '@/constants/app-url.const';
+
+import { useProducts } from '../hooks';
+
+interface InsuranceListItem {
+  id: string;
+  name: string;
+}
+
+interface CategoryMenuItem {
+  id?: string;
+  url: string;
+  label: string;
+  slug?: string;
+}
 
 export default function ProductCatalogPage() {
   const { category } = useParams<{ category: string }>();
-  const [product, setProducts] = useState<ProductCatalogDto[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
-  const [searchPlanName, setSearchPlanName] = useState("");
-  const [searchInsurer, setSearchInsurer] = useState("");
-  const [searchProduct, setSearchProduct] = useState("");
-  const { fetchInsurances, insurances } = useProducts();
-  const { fetchProducts, products } = useProducts();
 
+  return <ProductCatalogContent category={category} />;
+}
+
+interface ProductCatalogContentProps {
+  category: string;
+}
+
+function ProductCatalogContent({ category }: ProductCatalogContentProps) {
   const router = useRouter();
 
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [canCreate, setCanCreate] = useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const { permissionList } = useAuth();
-  const [subMenuItems, setSubMenuItems] = useState<SubmenuItem[]>([]);
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const access = permissionList.includes("Product Category.Read");
-      const editBtn = permissionList.includes("Product Category.Update");
-      const deleteBtn = permissionList.includes("Product Category.Delete");
-      const createBtn = permissionList.includes("Product Category.Create");
-
-      setCanEdit(editBtn);
-      setCanDelete(deleteBtn);
-      setHasAccess(access);
-      setCanCreate(createBtn);
-      if (!access) {
-        router.push(AppURL.forbidden);
-      }
-    };
-
-    checkAccess();
-  }, [router]);
-
-  useEffect(() => {
-    if (searchPlanName || searchInsurer || searchProduct) {
-      setPage(1);
-    }
-  }, [searchPlanName, searchInsurer, searchProduct]);
-
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const params = {
-          page,
-          pageSize: rowsPerPage,
-          category,
-          ...(searchPlanName && { planName: searchPlanName }),
-          ...(searchInsurer && { insuranceId: searchInsurer }),
-          ...(searchProduct && { productId: searchProduct }),
-        };
-
-        const response: any = await productService.getPlans(params);
-
-        if (response?.data && response?.meta) {
-          setProducts(response.data);
-          setTotalPages(Math.ceil(response.meta.total / rowsPerPage));
-          setTotalItems(response.meta.total);
-        } else {
-          console.error("Unexpected response structure:", response);
-        }
-      } catch (error) {
-        console.error("Failed to fetch plans:", error);
-      }
-    };
-
-    fetchPlans();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    category,
-    searchPlanName,
-    searchInsurer,
-    searchProduct,
+  const {
+    catalogPlans,
+    totalPages,
+    totalItems,
+    subMenuItems,
+    insurances,
+    isLoadingCatalogPlans,
     page,
     rowsPerPage,
-  ]);
+    setPage,
+    searchPlanName,
+    setSearchPlanName,
+    searchInsurer,
+    canCreate,
+    canDelete,
+    handleDeletePlan,
+    handleViewDetail,
+    handleSearchInsurerOnChange,
+    handleRowsPerPageChange,
+  } = useProducts({ category });
 
-  useEffect(() => {
-    fetchInsurances({});
-    fetchProducts({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const productCatalogTableColumns = useMemo(
+    () =>
+      createProductCatalogTableColumns({
+        page,
+        rowsPerPage,
+        onViewDetail: handleViewDetail,
+        onDelete: handleDeletePlan,
+        canDelete,
+      }),
+    [page, rowsPerPage, handleViewDetail, handleDeletePlan, canDelete],
+  );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response: any = await productService.getCategories({ limit: 1000 });
-        const rawCategories =
-          response?.data?.data ?? response?.data ?? response ?? [];
-        const normalizedCategories = Array.isArray(rawCategories)
-          ? rawCategories
-          : [];
-        const formattedCategories = normalizedCategories.map((item: any) => ({
-          url: item.name,
-          label: item.display_name || formatCategoryLabel(item.name),
-        }));
-        setSubMenuItems(formattedCategories);
-      } catch (error) {
-        console.error("Failed to fetch product categories:", error);
-      }
-    };
+  const insuranceOptions = useMemo(
+    () =>
+      (insurances as InsuranceListItem[]).map((insurance) => ({
+        label: insurance.name,
+        value: insurance.id,
+      })),
+    [insurances],
+  );
 
-    fetchCategories();
-  }, []);
+  const categoryMenuItems = subMenuItems as CategoryMenuItem[];
 
-  useEffect(() => {
-    if (searchInsurer) {
-      fetchProducts({
-        insuranceId: searchInsurer,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchInsurer]);
+  const activeCategoryLabel = useMemo(() => {
+    const activeItem = categoryMenuItems.find(
+      (item) =>
+        item.slug === category || item.url === `${AppURL.productCategory}?category=${category}`,
+    );
 
-  const handleViewDetail = (id: string) => {
-    router.push(AppURL.productCatalogDetail(category, id));
-  };
-
-  const handleSearchInsurerOnChange = (v: string) => {
-    setSearchInsurer(v);
-  };
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
-
-  const handleDeletePlan = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this campaign?")) {
-      try {
-        await productService.deletePlan(id);
-        setProducts((prevProducts) =>
-          prevProducts.filter((plan) => plan.id !== id)
-        );
-        window.location.reload();
-      } catch (error) {
-        console.error("Failed to delete plan:", error);
-      }
-    }
-  };
+    return activeItem?.label || category.split('-').map(capitalizeCategoryWord).join(' ');
+  }, [category, categoryMenuItems]);
 
   return (
-    <div className="flex w-full flex-col md:flex-row md:items-start">
-      <div className="flex flex-col w-full p-4 md:p-6">
-        <div className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
-          <h1 className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
-            Product Catalog -{" "}
-            {category
-              .split("-")
-              .map(
-                (item) => item.charAt(0).toUpperCase() + item.slice(1) + " "
-              )}
-          </h1>
+    <Box className="flex w-full flex-col md:flex-row md:items-start">
+      <Box className="flex w-full flex-col p-4 md:p-6">
+        <Box className="flex gap-2 sm:flex-row flex-col sm:pb-0 pb-4">
+          <Box as="h1" className="text-black font-bold sm:text-2xl text-xl mt-2 mb-4">
+            Product Catalog - {activeCategoryLabel}
+          </Box>
           <Button
             onClick={() => router.push(AppURL.productCatalogAdd(category))}
             disabled={!canCreate}
-            className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] ml-auto rounded-full"
+            className="h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d] sm:ml-auto"
+            leftIcon={<PlusIcon className="w-5 h-5" />}
           >
-            <Plus className="w-5 h-5 mr-1 " /> Add Plan
+            Add Plan
           </Button>
-        </div>
+        </Box>
 
-        <div className="flex gap-4">
-          <ExtendedSidemenu
-            title="Product Categories"
-            items={subMenuItems}
-            activeUrl={category}
+        <Box className="flex flex-col gap-4 xl:flex-row xl:items-start">
+          <ProductCategorySection
+            activeCategory={category}
+            items={categoryMenuItems}
+            onSelectCategory={(url) => router.push(url)}
           />
-          <div className="flex-1 min-w-0">
-            <div className="w-full px-4 px-md-6 py-3 bg-white rounded-lg mb-4">
-              <div className="flex gap-4 items-center sm:flex-row flex-col">
-                <Select
-                  value={searchInsurer}
-                  onValueChange={handleSearchInsurerOnChange}
+          <Box className="flex-1 min-w-0">
+            <Box className="flex gap-4 items-center sm:flex-row flex-col mb-4">
+              <Combobox
+                options={insuranceOptions}
+                value={searchInsurer}
+                onValueChange={(v) => handleSearchInsurerOnChange(v || '')}
+                placeholder="Select Insurer"
+                searchPlaceholder="Search Insurer..."
+                triggerClassName="h-12"
+                className="w-full"
+                clearable
+              />
+              <Input
+                type="text"
+                placeholder="Search by Plan Name"
+                className="h-12 rounded border p-2 w-full"
+                value={searchPlanName}
+                onChange={(e) => setSearchPlanName(e.target.value)}
+              />
+            </Box>
+
+            <DataTable
+              className="!gap-3 [&_th]:px-2.5 [&_th]:py-2.5 [&_td]:px-2.5 [&_td]:py-3"
+              loading={isLoadingCatalogPlans}
+              data={catalogPlans as ProductCatalogTableData[]}
+              columns={productCatalogTableColumns}
+              defaultState={{
+                columnPinning: {
+                  left: ['index', 'insurer'],
+                  right: ['actions'],
+                },
+              }}
+              enablePagination={true}
+              pagination={{
+                pageIndex: page - 1,
+                pageSize: rowsPerPage,
+                pageCount: totalPages,
+                rowCount: totalItems,
+                onPageChange: (pageIndex) => {
+                  if (isLoadingCatalogPlans) {
+                    return;
+                  }
+
+                  setPage(pageIndex + 1);
+                },
+                onPageSizeChange: (pageSize) => {
+                  if (isLoadingCatalogPlans) {
+                    return;
+                  }
+
+                  handleRowsPerPageChange({
+                    target: { value: String(pageSize) },
+                  } as ChangeEvent<HTMLSelectElement>);
+                },
+              }}
+              pageSizeOptions={[10, 20, 30, 50]}
+              emptyState={
+                <Box className="sticky left-0 flex min-h-[10rem] w-[100cqw] items-center justify-center py-4 text-sm text-slate-600 md:min-h-[11rem] md:py-5">
+                  No product catalog data available
+                </Box>
+              }
+              renderPagination={(table) => (
+                <Box className="-mt-1">
+                  <CompactTablePagination
+                    table={table}
+                    pageSizeOptions={[10, 20, 30, 50]}
+                    disabled={isLoadingCatalogPlans}
+                  />
+                </Box>
+              )}
+              tableOptions={{
+                manualPagination: true,
+                enableColumnPinning: true,
+                enableColumnResizing: true,
+                defaultColumn: {
+                  minSize: 48,
+                  size: 96,
+                },
+                getRowId: (row, index) => row?.id || `product-catalog-row-${index}`,
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+function capitalizeCategoryWord(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+interface ProductCategorySectionProps {
+  activeCategory: string;
+  items: CategoryMenuItem[];
+  onSelectCategory: (url: string) => void;
+}
+
+function ProductCategorySection({
+  activeCategory,
+  items,
+  onSelectCategory,
+}: ProductCategorySectionProps) {
+  return (
+    <Box
+      as="aside"
+      aria-label="Product categories"
+      className="flex w-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm xl:sticky xl:w-56 xl:flex-shrink-0"
+      style={{
+        top: '2rem',
+        maxHeight: 'calc(100vh - var(--fs-navbar-height, 64px) - 6rem)',
+      }}
+    >
+      <Box className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3">
+        <Box className="min-w-0">
+          <Box as="h2" className="text-sm font-semibold leading-5 text-slate-900">
+            Product Categories
+          </Box>
+        </Box>
+      </Box>
+
+      <Box className="max-h-32 min-h-0 overflow-x-auto overflow-y-hidden px-2 pb-4 pt-2 xl:max-h-none xl:flex-1 xl:overflow-y-auto xl:overflow-x-hidden">
+        <Box as="nav" className="flex gap-2 xl:flex-col" aria-label="Product category list">
+          {items.length > 0 ? (
+            items.map((item) => {
+              const isActive =
+                item.slug === activeCategory ||
+                item.url === `${AppURL.productCategory}?category=${activeCategory}`;
+
+              return (
+                <Box
+                  as="button"
+                  key={item.id || item.url}
+                  type="button"
+                  aria-current={isActive ? 'page' : undefined}
+                  onClick={() => onSelectCategory(item.url)}
+                  className={`group flex min-w-max cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors lg:min-w-0 ${
+                    isActive
+                      ? 'bg-sky-50 text-[#016DA1] ring-1 ring-sky-200'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
                 >
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select Insurer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Select Insurer</SelectLabel>
-                      {insurances.map((insurance: any) => (
-                        <SelectItem key={insurance.id} value={insurance.id}>
-                          {insurance.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="text"
-                  placeholder="Search by Plan Name"
-                  className="p-2 border rounded h-12"
-                  value={searchPlanName}
-                  onChange={(e) => setSearchPlanName(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="w-full p-4 bg-white rounded-lg">
-              <Table className="table-product-catalog">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="whitespace-nowrap !max-w-16 w-16">
-                      No.
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">Insurer</TableHead>
-                    <TableHead className="min-w-44">Plan Name</TableHead>
-                    <TableHead className="whitespace-nowrap">Product</TableHead>
-                    <TableHead className="whitespace-nowrap">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {product.length > 0 ? (
-                    product.map((product, index) => {
-                      const logoUrl =
-                        product.products.insurances.logo_url || null;
-                      return (
-                        <TableRow key={product.id}>
-                          <TableCell className="!max-w-16 w-16">
-                            {(page - 1) * rowsPerPage + index + 1}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2 items-center">
-                              <div className="inline-flex justify-center items-center w-8 min-w-8 h-8">
-                                {logoUrl && (
-                                  <Image
-                                    src={logoUrl}
-                                    alt=""
-                                    width={100}
-                                    height={50}
-                                    className="w-full h-auto"
-                                  />
-                                )}
-                              </div>
-                              {product.products.insurances.name}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {product.name
-                              .split("|")
-                              .map((item: any, i: any) => (
-                                <div key={i}>{item}</div>
-                              ))}
-                          </TableCell>
-                          <TableCell>{product.products.name}</TableCell>
-                          <TableCell className="w-20">
-                            <div className="flex gap-4 items-center">
-                              <Button
-                                variant="secondary"
-                                onClick={() => handleViewDetail(product.id)}
-                                className="bg-[#016DA1] hover:bg-[#016DA1] text-white px-4 rounded-full"
-                              >
-                                View
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                onClick={() => handleDeletePlan(product.id)}
-                                disabled={!canDelete}
-                                className="text-red-600 px-0"
-                              >
-                                <Trash />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  ) : (
-                    <TableRow className="hover:!bg-white">
-                      <TableCell colSpan={5}>
-                        <div className="flex flex-col gap-4 items-center justify-center py-14">
-                          <Image alt="no data" src={noData} width={200} />
-                          <div>No transaction data available</div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={5}>
-                      <div className="flex justify-center items-center gap-2 font-normal">
-                        <label htmlFor="rowsPerPage">Showing:</label>
-                        <select
-                          id="rowsPerPage"
-                          className="p-2 border rounded"
-                          value={rowsPerPage}
-                          onChange={handleRowsPerPageChange}
-                        >
-                          {[10, 20, 30, 50].map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="mr-2">of {totalItems} items</span>
-                        <button
-                          onClick={() => setPage((prevState) => prevState - 1)}
-                          disabled={page === 1}
-                          title="Previous"
-                        >
-                          <ChevronLeft />
-                        </button>
-                        <button
-                          onClick={() => setPage((prevState) => prevState + 1)}
-                          disabled={page === totalPages}
-                          title="Next"
-                        >
-                          <ChevronRight />
-                        </button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                  <Box as="span" className="min-w-0 truncate font-medium">
+                    {item.label}
+                  </Box>
+                </Box>
+              );
+            })
+          ) : (
+            <Box className="flex min-h-20 w-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
+              No matching categories
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Box>
   );
 }

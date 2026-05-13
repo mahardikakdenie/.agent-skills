@@ -1017,3 +1017,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The routes adopt existing shared Box, Button, Combobox, DatePicker, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, and SelectValue primitives while PageHeader, ContentLoadingWrapper, and selection modals remain app-local.`
 - Verification note: `This logging update is based on the current campaign add, detail, and edit route source changes and form refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /promotion/campaign/add, /promotion/campaign/detail/[id], and /promotion/campaign/edit/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /product-category/[category] Route Refactor - 2026-05-13
+
+- Route focus: `/product-category/[category]`
+- Migration intent: `Migrate the dynamic product-category catalog route onto the current shared primitive stack, standardizing the sidebar, filters, and table rendering on the shared DataTable instance API and Box polymorphic API while preserving the existing category-switching and plan management flow.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/product-category/[category]/page.tsx` now renders the route shell, category sidebar, and catalog content with shared `@repo/ui` `Box`, `Button`, `Combobox`, `DataTable`, and `Input` primitives.
+  - The catalog list now mounts shared `@repo/ui` `DataTable` directly with manual pagination, column pinning, column resizing, and `CompactTablePagination` integration.
+  - A `ProductCategorySection` sidebar component is introduced using the polymorphic `Box` API (`as="aside"`, `as="nav"`, `as="button"`, `as="h2"`, `as="span"`) with sticky positioning, overflow-aware scroll layout, and `aria-current` for the active category.
+  - The page shell uses `useParams` to extract the `category` segment and delegates catalog content rendering to a `ProductCatalogContent` sub-component.
+  - `activeCategoryLabel` is derived by matching `subMenuItems` against the current category slug, with a capitalization fallback for unmatched slugs.
+- Files changed (route-focused): [`apps/admin-portal/src/app/product-category/[category]/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Button, Combobox, DataTable, and Input primitives while CompactTablePagination remains app-local.`
+- Verification note: `This logging update is based on the current product-category/[category] route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /product-category/[category] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`

@@ -34,13 +34,13 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | Total discovered page.tsx routes | 115 |
 | In-scope pages | 114 |
 | Smoke routes | 10 |
-| DataTable-dependent pages | 36 |
-| PASS | 102 |
+| DataTable-dependent pages | 37 |
+| PASS | 103 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 12 |
+| NOT_STARTED | 11 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -133,7 +133,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/policy/list/import` | `policy-list-import` | `apps/admin-portal/src/app/policy/list/import/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /policy/list/import route onto shared Box, Button, Combobox, and Table primitives, standardizing the page layout and file-upload interaction while preserving the existing policy-import submission logic. |
 | `/policy/pending-renewals` | `policy-pending-renewals` | `apps/admin-portal/src/app/policy/pending-renewals/page.tsx` | NO | YES | `PASS` | 2026-04-13 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API and standardize the filter and table chrome on shared primitives. |
 | `/product-category` | `product-category` | `apps/admin-portal/src/app/product-category/page.tsx` | NO | YES | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the route onto the shared DataTable instance API, standardize the filter and page chrome on shared primitives, and implement dynamic column sizing while preserving the existing category-switching and plan management flow. |
-| `/product-category/[category]` | `product-category-category` | `apps/admin-portal/src/app/product-category/[category]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]` | `product-category-category` | `apps/admin-portal/src/app/product-category/[category]/page.tsx` | NO | YES | `PASS` | 2026-05-13 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate the /product-category/[category] route onto shared Box, Button, Combobox, DataTable, and Input primitives, introduce a responsive ProductCategorySection sidebar using Box polymorphic API (aside/nav/button), adopt CompactTablePagination, and preserve existing category-switching, insurer filtering, and plan management flow. |
 | `/product-category/[category]/add` | `product-category-category-add` | `apps/admin-portal/src/app/product-category/[category]/add/page.tsx` | NO | NO | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /product-category/[category]/add route onto shared Box, Breadcrumb, Button, Combobox, and Input primitives; adopts ContentLoadingWrapper for consistent loading; and standardizes the page header and form layout. |
 | `/product-category/[category]/detail/[id]` | `product-category-category-detail-id` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/page.tsx` | NO | YES | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the product category detail route onto shared Box, Button, Combobox, DataTable, Dialog, Input, Select, Table, Tabs, and Tooltip primitives; move package columns onto the shared ColumnDef contract; and preserve existing package, benefit, detail, channel, and product update workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/product-category/[category]/detail/[id]/add-benefit` | `product-category-category-detail-id-add-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1433,15 +1433,15 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Page file: `apps/admin-portal/src/app/product-category/[category]/page.tsx`
 - Route label: `product-category-category`
 - Smoke route: `NO`
-- DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- DataTable dependency: `YES`
+- Status: `PASS`
+- Last checked: `2026-05-13`
 - Evidence:
   - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes migrate the /product-category/[category] route onto shared Box, Button, Combobox, DataTable, and Input primitives, introduce a responsive ProductCategorySection sidebar using Box polymorphic API (aside/nav/button), adopt CompactTablePagination, and preserve existing category-switching, insurer filtering, and plan management flow.
 
 ### /product-category/[category]/add
 
