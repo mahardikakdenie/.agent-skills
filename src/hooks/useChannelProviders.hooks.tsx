@@ -124,12 +124,12 @@ export function useChannelProviders() {
 
   const updateMutation = useMutation({
     mutationFn: ({
-      channelId,
+      id,
       data,
     }: {
-      channelId: string;
+      id: string;
       data: { provider?: string; fromEmail?: string; enabled?: boolean };
-    }) => CommunicationService.updateChannelProvider(channelId, data),
+    }) => CommunicationService.updateChannelProvider(id, data),
     onSuccess: () => {
       toastNotification("Channel provider updated successfully");
       queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
@@ -144,8 +144,8 @@ export function useChannelProviders() {
   });
 
   const disableMutation = useMutation({
-    mutationFn: (channelId: string) =>
-      CommunicationService.updateChannelProvider(channelId, {
+    mutationFn: (id: string) =>
+      CommunicationService.updateChannelProvider(id, {
         enabled: false,
       }),
     onSuccess: () => {
@@ -203,14 +203,14 @@ export function useChannelProviders() {
       payload.fromEmail = formData.fromEmail;
     }
     updateMutation.mutate({
-      channelId: editingProvider.channelId,
+      id: editingProvider.id,
       data: payload,
     });
   }, [editingProvider, formData, updateMutation]);
 
   const handleDisable = useCallback(() => {
     if (!disablingProvider) return;
-    disableMutation.mutate(disablingProvider.channelId);
+    disableMutation.mutate(disablingProvider.id);
   }, [disablingProvider, disableMutation]);
 
   // Reset provider dropdown when type changes in create mode
