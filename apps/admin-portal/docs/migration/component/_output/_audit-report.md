@@ -2385,7 +2385,7 @@
 
 ### CampaignForm
 
-- **File:** src/components/forms/CampaignForm/index.tsx
+- **File:** src/components/forms/campaign-form/index.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** N/A
 - **@repo/ui status:** missing

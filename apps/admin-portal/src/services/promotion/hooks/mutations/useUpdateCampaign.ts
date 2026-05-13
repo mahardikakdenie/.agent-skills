@@ -17,14 +17,14 @@ export function useUpdateCampaign(
   return useMutation({
     mutationFn: ({ id, payload }) => promotionService.updateCampaign(id, payload),
     ...options,
-    onSuccess: (data, variables, context, mutation) => {
-      queryClient.invalidateQueries({ queryKey: promotionKeys.campaigns() });
+    onSuccess: async (data, variables, context, mutation) => {
+      await queryClient.invalidateQueries({ queryKey: promotionKeys.campaigns() });
       if (variables?.id) {
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: promotionKeys.campaignDetail(variables.id),
         });
       }
-      options?.onSuccess?.(data, variables, context, mutation);
+      await options?.onSuccess?.(data, variables, context, mutation);
     },
   });
 }

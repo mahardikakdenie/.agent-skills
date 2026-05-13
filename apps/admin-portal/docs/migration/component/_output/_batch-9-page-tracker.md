@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 36 |
-| PASS | 99 |
+| PASS | 102 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 15 |
+| NOT_STARTED | 12 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -145,9 +145,9 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/product-category/[category]/detail/[id]/upload-benefit` | `product-category-category-detail-id-upload-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-benefit/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/detail/[id]/upload-detail` | `product-category-category-detail-id-upload-detail` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-detail/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/promotion/campaign` | `promotion-campaign` | `apps/admin-portal/src/app/promotion/campaign/page.tsx` | NO | YES | `PASS` | 2026-04-14 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and table chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. |
-| `/promotion/campaign/add` | `promotion-campaign-add` | `apps/admin-portal/src/app/promotion/campaign/add/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/promotion/campaign/detail/[id]` | `promotion-campaign-detail-id` | `apps/admin-portal/src/app/promotion/campaign/detail/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
-| `/promotion/campaign/edit/[id]` | `promotion-campaign-edit-id` | `apps/admin-portal/src/app/promotion/campaign/edit/[id]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/promotion/campaign/add` | `promotion-campaign-add` | `apps/admin-portal/src/app/promotion/campaign/add/page.tsx` | NO | NO | `PASS` | 2026-05-13 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes replace the legacy CampaignForm with the new campaign-form component, adopt shared Box, Button, Combobox, DatePicker, Dialog, Input, and Select primitives, standardize the page header via PageHeader, and wrap the form in ContentLoadingWrapper while preserving existing campaign creation logic. |
+| `/promotion/campaign/detail/[id]` | `promotion-campaign-detail-id` | `apps/admin-portal/src/app/promotion/campaign/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-13 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the detail page onto shared Box, Button, and Spinner primitives with local SectionCard, DetailItem, and EmptyText helpers, resolving relation names in parallel from channel/insurance/product/plan services while preserving voucher display logic. |
+| `/promotion/campaign/edit/[id]` | `promotion-campaign-edit-id` | `apps/admin-portal/src/app/promotion/campaign/edit/[id]/page.tsx` | NO | NO | `PASS` | 2026-05-13 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes replace the legacy CampaignForm with the new campaign-form component in edit mode, adopt shared Box, Button, Combobox, DatePicker, Dialog, Input, and Select primitives, and hydrate existing campaign data via useCampaignDetail and useCampaignForm while preserving campaign update logic. |
 | `/report/campaign` | `report-campaign` | `apps/admin-portal/src/app/report/campaign/page.tsx` | NO | YES | `PASS` | 2026-04-29 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the date/filter and table chrome on shared primitives, and implement measured amount-column sizing while preserving the existing report flow. |
 | `/report/campaign-analytics` | `report-campaign-analytics` | `apps/admin-portal/src/app/report/campaign-analytics/page.tsx` | NO | NO | `PASS` | 2026-05-06 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the /report/campaign-analytics route onto shared Box, Button, and Combobox primitives, standardizing the analytics dashboard and PDF export while preserving the existing recharts visualization logic. |
 | `/report/claim` | `report-claim` | `apps/admin-portal/src/app/report/claim/page.tsx` | NO | YES | `PASS` | 2026-04-27 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes migrate `/report/claim` onto the shared DataTable instance API, replace bespoke date controls with shared `DateRangePicker`, add compact pagination and explicit empty-state handling, and move claim report columns onto the shared `ColumnDef` contract. This route is treated as PASS for the current Batch 9 tracking pass. |
@@ -1614,14 +1614,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `promotion-campaign-add`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-13`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes replace the legacy `CampaignForm` with the new `campaign-form` component (`apps/admin-portal/src/components/forms/campaign-form/index.tsx`), which adopts shared `@repo/ui` `Box`, `Button`, `Combobox`, `DatePicker`, `Dialog`, `Input`, and `Select` primitives, standardizes the page header via the local `PageHeader` component with breadcrumbs and a submit action slot, wraps the page in `ContentLoadingWrapper` for loading states, and uses `react-hook-form` `Controller`-based field composition backed by `useCampaignForm` with TanStack Query mutation hooks while preserving existing campaign creation and voucher management logic.
 
 ### /promotion/campaign/detail/[id]
 
@@ -1629,14 +1629,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `promotion-campaign-detail-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-13`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes refactor the detail page onto shared `@repo/ui` `Box`, `Button`, and `Spinner` primitives, replacing native layout tags with local `SectionCard`, `DetailItem`, and `EmptyText` helper components. Relation names for channels, insurances, products, and plans are resolved in parallel from their respective services. Voucher details are conditionally displayed for voucher-type campaigns. A full-screen `Spinner` is rendered during load and error/empty states are handled inline. The Edit button navigates to the campaign edit route.
 
 ### /promotion/campaign/edit/[id]
 
@@ -1644,14 +1644,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `promotion-campaign-edit-id`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-13`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Current apps/admin-portal/src changes replace the legacy `CampaignForm` with the new `campaign-form` component in `mode="edit"`, adopting shared `@repo/ui` `Box`, `Button`, `Combobox`, `DatePicker`, `Dialog`, `Input`, and `Select` primitives. Edit-mode hydration is handled via `useCampaignDetail` within `useCampaignForm`, which also wires up the `useUpdateCampaign` TanStack Query mutation hook and resolves relation names for channels, insurances, products, and plans. Existing campaign update and voucher management logic is preserved.
 
 ### /report/campaign
 

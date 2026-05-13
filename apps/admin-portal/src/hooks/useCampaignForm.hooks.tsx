@@ -5,6 +5,7 @@ import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { isValid, parseISO, format } from "date-fns";
 import { productService } from "@/services/product/api/product.service";
+import { channelService } from "@/services/channel/api/channel.service";
 import { promotionService } from "@/services/promotion/api/promotion.service";
 import { useChannelsV1 } from "@/services/channel/hooks/queries/useChannelsV1";
 import { useCreateCampaign } from "@/services/promotion/hooks/mutations/useCreateCampaign";
@@ -15,7 +16,13 @@ import { usePlans } from "@/services/product/hooks/queries/usePlans";
 import { useProducts } from "@/services/product/hooks/queries/useProducts";
 import { useReferenceCurrencies } from "@/services/product/hooks/queries/useReferenceCurrencies";
 import AppURL from "@/constants/app-url.const";
-import { PromotionDetails } from "@/app/promotion/dto/promotion.details.dto";
+import {
+  EmbeddedDiscountChannel,
+  EmbeddedDiscountInsurance,
+  EmbeddedDiscountPlan,
+  EmbeddedDiscountProduct,
+  PromotionDetails,
+} from "@/app/promotion/dto/promotion.details.dto";
 
 interface CampaignFormData {
   name: string;
@@ -33,6 +40,7 @@ interface UseCampaignFormProps {
   handleSubmit: any;
   control: any;
   errors: any;
+  isSubmitting: boolean;
   reset: any;
   watch: any;
 
@@ -146,6 +154,148 @@ interface UseCampaignFormProps {
   isSaving: boolean;
 }
 
+type UnknownRecord = Record<string, unknown>;
+type CampaignDetailWithVouchers = PromotionDetails & {
+  vouchers?: { code?: string; usage_limit?: number }[];
+};
+type HydratableChannel = EmbeddedDiscountChannel & {
+  name?: string;
+  channel?: { name?: string };
+};
+type HydratableInsurance = EmbeddedDiscountInsurance & {
+  name?: string;
+  insurance?: { name?: string };
+};
+type HydratableProduct = EmbeddedDiscountProduct & {
+  name?: string;
+  product?: { name?: string };
+};
+type HydratablePlan = EmbeddedDiscountPlan & {
+  plan?: { name?: string };
+};
+
+const isRecord = (value: unknown): value is UnknownRecord =>
+  Boolean(value && typeof value === "object" && !Array.isArray(value));
+
+const normalizeResponseItem = (response: unknown): UnknownRecord | null => {
+  if (!isRecord(response)) {
+    return null;
+  }
+
+  const data = response.data;
+
+  if (Array.isArray(data)) {
+    return isRecord(data[0]) ? data[0] : null;
+  }
+
+  if (isRecord(data)) {
+    if (Array.isArray(data.data)) {
+      return isRecord(data.data[0]) ? data.data[0] : null;
+    }
+
+    return data;
+  }
+
+  return response;
+};
+
+const getStringValue = (value: unknown) => (typeof value === "string" ? value : "");
+
+const getNestedName = (item: UnknownRecord, key: string) => {
+  const nestedValue = item[key];
+  return isRecord(nestedValue) ? getStringValue(nestedValue.name) : "";
+};
+
+const getRelationName = (item: unknown, primaryNameKey: string) => {
+  if (!isRecord(item)) {
+    return "";
+  }
+
+  return (
+    getStringValue(item[primaryNameKey]) ||
+    getStringValue(item.name) ||
+    getNestedName(item, "channel") ||
+    getNestedName(item, "insurance") ||
+    getNestedName(item, "product") ||
+    getNestedName(item, "plan")
+  );
+};
+
+const fetchRelationName = async (
+  id: string | undefined,
+  currentName: string,
+  fetcher: (id: string) => Promise<unknown>
+) => {
+  if (currentName || !id) {
+    return currentName;
+  }
+
+  try {
+    const response = await fetcher(id);
+    return getStringValue(normalizeResponseItem(response)?.name);
+  } catch (error) {
+    console.warn("Failed to fetch campaign relation name:", error);
+    return "";
+  }
+};
+
+const resolveCampaignRelations = async (campaign: PromotionDetails) => {
+  const [channels, insurances, products, plans] = await Promise.all([
+    Promise.all(
+      campaign.embedded_discount_channels.map(async (channel) => ({
+        ...channel,
+        channel_name: await fetchRelationName(
+          channel.channel_id,
+          channel.channel_name,
+          channelService.getChannelByIdV1
+        ),
+      }))
+    ),
+    Promise.all(
+      campaign.embedded_discount_insurances.map(async (insurance) => ({
+        ...insurance,
+        insurance_name: await fetchRelationName(
+          insurance.insurance_id,
+          insurance.insurance_name,
+          productService.getInsuranceById
+        ),
+      }))
+    ),
+    Promise.all(
+      campaign.embedded_discount_products.map(async (product) => ({
+        ...product,
+        product_name: await fetchRelationName(
+          product.product_id,
+          product.product_name,
+          productService.getProductById
+        ),
+      }))
+    ),
+    Promise.all(
+      campaign.embedded_discount_plans.map(async (plan) => ({
+        ...plan,
+        name: await fetchRelationName(plan.plan_id, plan.name, productService.getPlanById),
+      }))
+    ),
+  ]);
+
+  return {
+    ...campaign,
+    embedded_discount_channels: channels,
+    embedded_discount_insurances: insurances,
+    embedded_discount_products: products,
+    embedded_discount_plans: plans,
+  };
+};
+
+const hasMissingPlanNames = (campaign: PromotionDetails) =>
+  campaign.embedded_discount_plans.some((plan) => !plan.name);
+
+const toPayloadNumber = (value: string | number) => {
+  const parsedValue = Number(value);
+  return Number.isFinite(parsedValue) ? parsedValue : 0;
+};
+
 export function useCampaignForm(
   mode: "create" | "edit" = "create"
 ): UseCampaignFormProps {
@@ -160,7 +310,7 @@ export function useCampaignForm(
     control,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<CampaignFormData>({
     shouldUnregister: false,
     defaultValues: {
@@ -349,118 +499,165 @@ export function useCampaignForm(
       refetchOnMount: "always",
     });
 
-  const campaignDetail = useMemo(() => {
-    return (
-      (campaignDetailResponse as any)?.data?.[0] ??
-      (campaignDetailResponse as any)?.data?.data?.[0] ??
-      null
-    );
-  }, [campaignDetailResponse]);
+  const campaignDetail = useMemo(
+    () =>
+      normalizeResponseItem(campaignDetailResponse) as unknown as CampaignDetailWithVouchers | null,
+    [campaignDetailResponse]
+  );
 
   useEffect(() => {
-    if (campaignDetail && isEdit) {
-      const formatDate = (dateString: string) => {
-        if (!dateString) return "";
-        try {
-          const parsedDate = parseISO(dateString);
-          return isValid(parsedDate) ? format(parsedDate, "yyyy-MM-dd") : "";
-        } catch (error) {
-          console.error("Date formatting error:", error);
-          return "";
-        }
-      };
-
-      const formData = {
-        name: campaignDetail.name || "",
-        type: campaignDetail.type || "embedded",
-        value_currency: campaignDetail.value_currency || "IDR",
-        value: campaignDetail.value || 0,
-        value_type: campaignDetail.value_type || "fixed",
-        start_date: formatDate(campaignDetail.start_date),
-        end_date: formatDate(campaignDetail.end_date),
-        minimum_amount: campaignDetail.minimum_amount || 0,
-        maximum_amount: campaignDetail.maximum_amount || 0,
-      };
-
-      setPromotion(campaignDetail);
-
-      reset(formData, {
-        keepErrors: false,
-        keepDirty: false,
-        keepIsSubmitted: false,
-        keepTouched: false,
-        keepIsValid: false,
-        keepSubmitCount: false,
-      });
-
-      setTimeout(() => {
-        const fieldsToUpdate = [
-          { field: "type", value: campaignDetail.type || "embedded" },
-          { field: "value_type", value: campaignDetail.value_type || "fixed" },
-          {
-            field: "value_currency",
-            value: campaignDetail.value_currency || "IDR",
-          },
-          { field: "value", value: campaignDetail.value || 0 },
-          {
-            field: "minimum_amount",
-            value: campaignDetail.minimum_amount || 0,
-          },
-          {
-            field: "maximum_amount",
-            value: campaignDetail.maximum_amount || 0,
-          },
-        ];
-
-        fieldsToUpdate.forEach(({ field, value }) => {
-          if (watch(field as keyof CampaignFormData) !== value) {
-            setValue(field as keyof CampaignFormData, value, {
-              shouldValidate: true,
-            });
-          }
-        });
-      }, 100);
-
-      setGlobalSelectedChannels(
-        new Set(
-          campaignDetail.embedded_discount_channels?.map(
-            (c: any) => c.channel_id
-          ) || []
-        )
-      );
-      setGlobalSelectedInsuranceIds(
-        new Set(
-          campaignDetail.embedded_discount_insurances?.map(
-            (i: any) => i.insurance_id
-          ) || []
-        )
-      );
-      setGlobalSelectedProdIds(
-        new Set(
-          campaignDetail.embedded_discount_products?.map(
-            (p: any) => p.product_id
-          ) || []
-        )
-      );
-      setGlobalSelectedPlanIds(
-        new Set(
-          campaignDetail.embedded_discount_plans?.map((p: any) => p.plan_id) ||
-            []
-        )
-      );
-
-      if (campaignDetail.type === "voucher") {
-        const voucherData = campaignDetail.vouchers || [];
-        setVouchers(
-          voucherData.map((v: any) => ({
-            code: v.code || "",
-            usageLimit: v.usage_limit || 1,
-          }))
-        );
-      } else {
-        setVouchers([]);
-      }
+    if (!campaignDetail || !isEdit) {
+      return;
     }
+
+    let isMounted = true;
+
+    const formatDate = (dateString: string) => {
+      if (!dateString) return "";
+      try {
+        const parsedDate = parseISO(dateString);
+        return isValid(parsedDate) ? format(parsedDate, "yyyy-MM-dd") : "";
+      } catch (error) {
+        console.error("Date formatting error:", error);
+        return "";
+      }
+    };
+
+    const formData = {
+      name: campaignDetail.name || "",
+      type: campaignDetail.type || "embedded",
+      value_currency: campaignDetail.value_currency || "IDR",
+      value: campaignDetail.value || 0,
+      value_type: campaignDetail.value_type || "fixed",
+      start_date: formatDate(campaignDetail.start_date),
+      end_date: formatDate(campaignDetail.end_date),
+      minimum_amount: campaignDetail.minimum_amount || 0,
+      maximum_amount: campaignDetail.maximum_amount || 0,
+    };
+
+    const promotionWithLocalNames = {
+      ...campaignDetail,
+      embedded_discount_channels: (campaignDetail.embedded_discount_channels || []).map(
+        (channel: HydratableChannel) => ({
+          ...channel,
+          channel_name: getRelationName(channel, "channel_name"),
+        })
+      ),
+      embedded_discount_insurances: (campaignDetail.embedded_discount_insurances || []).map(
+        (insurance: HydratableInsurance) => ({
+          ...insurance,
+          insurance_name: getRelationName(insurance, "insurance_name"),
+        })
+      ),
+      embedded_discount_products: (campaignDetail.embedded_discount_products || []).map(
+        (product: HydratableProduct) => ({
+          ...product,
+          product_name: getRelationName(product, "product_name"),
+        })
+      ),
+      embedded_discount_plans: (campaignDetail.embedded_discount_plans || []).map(
+        (plan: HydratablePlan) => ({
+          ...plan,
+          name: getRelationName(plan, "name"),
+        })
+      ),
+    };
+
+    setPromotion(promotionWithLocalNames);
+
+    reset(formData, {
+      keepErrors: false,
+      keepDirty: false,
+      keepIsSubmitted: false,
+      keepTouched: false,
+      keepIsValid: false,
+      keepSubmitCount: false,
+    });
+
+    const formSyncTimer = setTimeout(() => {
+      const fieldsToUpdate = [
+        { field: "type", value: campaignDetail.type || "embedded" },
+        { field: "value_type", value: campaignDetail.value_type || "fixed" },
+        {
+          field: "value_currency",
+          value: campaignDetail.value_currency || "IDR",
+        },
+        { field: "value", value: campaignDetail.value || 0 },
+        {
+          field: "minimum_amount",
+          value: campaignDetail.minimum_amount || 0,
+        },
+        {
+          field: "maximum_amount",
+          value: campaignDetail.maximum_amount || 0,
+        },
+      ];
+
+      fieldsToUpdate.forEach(({ field, value }) => {
+        if (watch(field as keyof CampaignFormData) !== value) {
+          setValue(field as keyof CampaignFormData, value, {
+            shouldValidate: true,
+          });
+        }
+      });
+    }, 100);
+
+    const hydrateCampaignRelations = async () => {
+      const hydratedPromotion = await resolveCampaignRelations(promotionWithLocalNames);
+
+      if (!isMounted) {
+        return;
+      }
+
+      setPromotion(hydratedPromotion);
+    };
+
+    hydrateCampaignRelations();
+
+    setGlobalSelectedChannels(
+      new Set(
+        campaignDetail.embedded_discount_channels?.map(
+          (c: EmbeddedDiscountChannel) => c.channel_id
+        ) || []
+      )
+    );
+    setGlobalSelectedInsuranceIds(
+      new Set(
+        campaignDetail.embedded_discount_insurances?.map(
+          (i: EmbeddedDiscountInsurance) => i.insurance_id
+        ) || []
+      )
+    );
+    setGlobalSelectedProdIds(
+      new Set(
+        campaignDetail.embedded_discount_products?.map(
+          (p: EmbeddedDiscountProduct) => p.product_id
+        ) || []
+      )
+    );
+    setGlobalSelectedPlanIds(
+      new Set(
+        campaignDetail.embedded_discount_plans?.map((p: EmbeddedDiscountPlan) => p.plan_id) ||
+          []
+      )
+    );
+
+    if (campaignDetail.type === "voucher") {
+      const voucherData = campaignDetail.vouchers || [];
+      setVouchers(
+        voucherData.map((v) => ({
+          code: v.code || "",
+          usageLimit: v.usage_limit || 1,
+        }))
+      );
+    } else {
+      setVouchers([]);
+    }
+
+    return () => {
+      isMounted = false;
+      clearTimeout(formSyncTimer);
+    };
   }, [campaignDetail, isEdit, reset, watch, setValue]);
 
   const handleSaveSuccess = useCallback(
@@ -593,31 +790,41 @@ export function useCampaignForm(
         }
       }
 
+      const promotionForPayload = await resolveCampaignRelations(promotion);
+
+      if (hasMissingPlanNames(promotionForPayload)) {
+        setPromotion(promotionForPayload);
+        setErrorMessage(
+          "Unable to update promotion because one or more selected plan names could not be loaded. Please refresh and try again."
+        );
+        setShowAlert(true);
+        return;
+      }
+
+      setPromotion(promotionForPayload);
+
       const payload = {
         type: formData.type,
-        value: formData.value,
+        value: toPayloadNumber(formData.value),
         value_type: formData.value_type,
         value_currency: formData.value_currency,
         start_date: formData.start_date,
         end_date: formData.end_date,
         name: formData.name,
-        minimum_amount: formData.minimum_amount,
-        maximum_amount: formData.maximum_amount,
-        products: promotion.embedded_discount_products.map((product) => ({
+        minimum_amount: toPayloadNumber(formData.minimum_amount),
+        maximum_amount: toPayloadNumber(formData.maximum_amount),
+        products: promotionForPayload.embedded_discount_products.map((product) => ({
           product_id: product.product_id,
-          name: product.product_name,
         })),
-        insurances: promotion.embedded_discount_insurances.map((insurance) => ({
+        insurances: promotionForPayload.embedded_discount_insurances.map((insurance) => ({
           insurance_id: insurance.insurance_id,
-          name: insurance.insurance_name,
         })),
-        plans: promotion.embedded_discount_plans.map((plan) => ({
+        plans: promotionForPayload.embedded_discount_plans.map((plan) => ({
           plan_id: plan.plan_id,
           name: plan.name,
         })),
-        channels: promotion.embedded_discount_channels.map((channel) => ({
+        channels: promotionForPayload.embedded_discount_channels.map((channel) => ({
           channel_id: channel.channel_id,
-          name: channel.channel_name,
         })),
         vouchers: vouchers.map((voucher) => ({
           code: voucher.code,
@@ -1172,6 +1379,7 @@ export function useCampaignForm(
     handleSubmit,
     control,
     errors,
+    isSubmitting,
     reset,
     watch,
 

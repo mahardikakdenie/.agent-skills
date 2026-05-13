@@ -1,7 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
-import { FaCheck, FaTimes } from "react-icons/fa";
-import { productService } from "@/services/product/api/product.service";
+import noData from '@public/images/no-data.webp';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Check, X } from 'react-feather';
+
+import {
+  Box,
+  Button,
+  Checkbox,
+  Combobox,
+  DataTable,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Image,
+  type ColumnDef,
+} from '@repo/ui';
+
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { productService } from '@/services/product/api/product.service';
 
 interface Product {
   id: string;
@@ -43,6 +61,15 @@ interface Category {
   name: string;
 }
 
+const ALL_PRODUCTS_CATEGORY = '__all_products__';
+const pageSizeOptions = [10, 20, 30, 50];
+
+const formatCategoryName = (name: string): string =>
+  name
+    .replace(/[-_]/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
 const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   isOpen,
   onClose,
@@ -58,296 +85,367 @@ const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   currentPageProd,
   onRemoveProd,
 }) => {
-  const [selectAll, setSelectAll] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(ALL_PRODUCTS_CATEGORY);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [localSelectedProductIds, setLocalSelectedProductIds] = useState<
-    Set<string>
-  >(new Set());
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [selectedProductMap, setSelectedProductMap] = useState<Map<string, Product>>(new Map());
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const data = products?.data || [];
-  const totalItems = products?.meta.total || 0;
-  const totalPages = Math.ceil(totalItems / showProdPerPage);
+  const data = useMemo(() => products?.data || [], [products?.data]);
+  const totalItems = products?.meta?.total || 0;
+  const totalPages = Math.max(Math.ceil(totalItems / showProdPerPage), 1);
+  const selectedIds =
+    globalSelectedProdIds.size > 0
+      ? globalSelectedProdIds
+      : selectedProductIds.size > 0
+        ? selectedProductIds
+        : initialSelectedProductIds;
 
-  const formatCategoryName = (name: string): string => {
-    return name
-      .replace(/[-_]/g, " ")
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
+  const filteredProducts = useMemo(
+    () =>
+      data.filter(
+        (product) =>
+          selectedCategoryId === ALL_PRODUCTS_CATEGORY || product.category === selectedCategoryId,
+      ),
+    [data, selectedCategoryId],
+  );
 
-  // Initialize local selection based on global selected IDs when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setLocalSelectedProductIds(new Set(globalSelectedProdIds));
-    }
-  }, [isOpen, globalSelectedProdIds]);
-
-  // Check if all products on the current page are selected
-  useEffect(() => {
-    setSelectAll(
-      data.length > 0 &&
-        data.every((product) => localSelectedProductIds.has(product.id))
-    );
-  }, [data, localSelectedProductIds]);
+  const categoryOptions = useMemo(
+    () => [
+      { label: 'All Products', value: ALL_PRODUCTS_CATEGORY },
+      ...categories.map((category) => ({
+        label: category.name,
+        value: category.id,
+        keywords: [category.name],
+      })),
+    ],
+    [categories],
+  );
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoadingCategories(true);
+      setCategoryError(null);
+
       try {
         const response: any = await productService.getCategories();
+
         if (response?.data && Array.isArray(response.data)) {
-          const categoryList = response.data.map(
-            (category: { id: string; name: string }) => ({
+          setCategories(
+            response.data.map((category: { id: string; name: string }) => ({
               id: category.id,
               name: formatCategoryName(category.name),
-            })
+            })),
           );
-          setCategories([{ id: "", name: "All Products" }, ...categoryList]);
-        } else {
-          throw new Error("Unexpected response structure");
+          return;
         }
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-        setError("Failed to fetch categories");
-        setLoading(false);
+
+        throw new Error('Unexpected response structure');
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setCategoryError('Failed to fetch categories');
+      } finally {
+        setLoadingCategories(false);
       }
     };
 
     fetchCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCheckboxChange = (productId: string) => {
-    setLocalSelectedProductIds((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(productId)) {
-        newSelected.delete(productId);
-        onRemoveProd(productId); // Call to remove the productId from main state
-      } else {
-        newSelected.add(productId);
-      }
-      return newSelected;
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    onPageChangeProd(currentPageProd);
+  }, [currentPageProd, isOpen, onPageChangeProd]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setSelectedProductMap((prevSelectedProducts) => {
+      const nextSelectedProducts = new Map(
+        Array.from(prevSelectedProducts).filter(([productId]) => selectedIds.has(productId)),
+      );
+
+      data.forEach((product) => {
+        if (selectedIds.has(product.id)) {
+          nextSelectedProducts.set(product.id, product);
+        }
+      });
+
+      return nextSelectedProducts;
     });
-  };
+  }, [data, isOpen, selectedIds]);
 
-  const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll; // Toggle selectAll state
-    setSelectAll(newSelectAll);
+  const isAllSelected =
+    filteredProducts.length > 0 &&
+    filteredProducts.every((product) => globalSelectedProdIds.has(product.id));
 
-    const newSelected = new Set(globalSelectedProdIds); // Copy the current selected prod
+  const handleCheckboxChange = React.useCallback(
+    (product: Product) => {
+      if (globalSelectedProdIds.has(product.id)) {
+        setSelectedProductMap((prevSelectedProducts) => {
+          const nextSelectedProducts = new Map(prevSelectedProducts);
+          nextSelectedProducts.delete(product.id);
+          return nextSelectedProducts;
+        });
+        setGlobalSelectedProdIds((prevSelectedProducts) => {
+          const nextSelectedProducts = new Set(prevSelectedProducts);
+          nextSelectedProducts.delete(product.id);
+          return nextSelectedProducts;
+        });
+        onRemoveProd(product.id);
+        return;
+      }
 
-    if (newSelectAll) {
-      // Selecting all prod
-      data.forEach((prod) => {
-        newSelected.add(prod.id);
+      setSelectedProductMap((prevSelectedProducts) => {
+        const nextSelectedProducts = new Map(prevSelectedProducts);
+        nextSelectedProducts.set(product.id, product);
+        return nextSelectedProducts;
       });
-    } else {
-      // Deselecting all prod
-      data.forEach((prod) => {
-        newSelected.delete(prod.id);
-        onRemoveProd(prod.id); // Remove each prod from the main state
+      setGlobalSelectedProdIds((prevSelectedProducts) => {
+        const nextSelectedProducts = new Set(prevSelectedProducts);
+        nextSelectedProducts.add(product.id);
+        return nextSelectedProducts;
       });
-    }
-
-    setGlobalSelectedProdIds(newSelected); // Update the selected prod
-  };
-
-  const handleApply = () => {
-    // Update global selected product IDs only when Save is clicked
-    setGlobalSelectedProdIds(localSelectedProductIds);
-
-    // Prepare the selected products data to return
-    const selectedProductsData: Product[] = Array.from(localSelectedProductIds)
-      .map((productId) => data.find((product) => product.id === productId))
-      .filter((prod): prod is Product => Boolean(prod));
-
-    onClose();
-    setTimeout(() => {
-      onSelect(selectedProductsData);
-    }, 100);
-  };
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      onPageChangeProd(page);
-    }
-  };
-
-  const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedCategoryId(event.target.value);
-  };
-
-  const filteredProducts = data.filter(
-    (product) =>
-      selectedCategoryId === "" || product.category === selectedCategoryId
+    },
+    [globalSelectedProdIds, onRemoveProd, setGlobalSelectedProdIds],
   );
 
-  if (!isOpen) return null;
+  const handleSelectAllChange = React.useCallback(() => {
+    if (isAllSelected) {
+      filteredProducts.forEach((product) => {
+        onRemoveProd(product.id);
+      });
+
+      setSelectedProductMap((prevSelectedProducts) => {
+        const nextSelectedProducts = new Map(prevSelectedProducts);
+        filteredProducts.forEach((product) => {
+          nextSelectedProducts.delete(product.id);
+        });
+        return nextSelectedProducts;
+      });
+      setGlobalSelectedProdIds((prevSelectedProducts) => {
+        const nextSelectedProducts = new Set(prevSelectedProducts);
+        filteredProducts.forEach((product) => {
+          nextSelectedProducts.delete(product.id);
+        });
+        return nextSelectedProducts;
+      });
+      return;
+    }
+
+    setSelectedProductMap((prevSelectedProducts) => {
+      const nextSelectedProducts = new Map(prevSelectedProducts);
+      filteredProducts.forEach((product) => {
+        nextSelectedProducts.set(product.id, product);
+      });
+      return nextSelectedProducts;
+    });
+    setGlobalSelectedProdIds((prevSelectedProducts) => {
+      const nextSelectedProducts = new Set(prevSelectedProducts);
+      filteredProducts.forEach((product) => {
+        nextSelectedProducts.add(product.id);
+      });
+      return nextSelectedProducts;
+    });
+  }, [filteredProducts, isAllSelected, onRemoveProd, setGlobalSelectedProdIds]);
+
+  const handleApply = React.useCallback(() => {
+    onSelect(Array.from(selectedProductMap.values()));
+    onClose();
+  }, [onClose, onSelect, selectedProductMap]);
+
+  const productModalColumns = useMemo<ColumnDef<Product>[]>(
+    () => [
+      {
+        id: 'select',
+        header: () => (
+          <Checkbox
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAllChange}
+            className="justify-center"
+          />
+        ),
+        enableSorting: false,
+        enableResizing: false,
+        size: 56,
+        minSize: 56,
+        meta: {
+          headerCellClassName: 'w-14 whitespace-nowrap text-center',
+          cellClassName: 'w-14 text-center align-middle',
+          cellContentClassName: 'flex items-center justify-center',
+        },
+        cell: ({ row }) => {
+          const product = row.original;
+
+          return (
+            <Box onClick={(event) => event.stopPropagation()}>
+              <Checkbox
+                checked={globalSelectedProdIds.has(product.id)}
+                onCheckedChange={() => handleCheckboxChange(product)}
+                className="justify-center"
+              />
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'id',
+        accessorFn: (product) => product?.id || '-',
+        header: 'Product ID',
+        enableSorting: false,
+        size: 320,
+        minSize: 220,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const product = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm font-medium leading-5 text-slate-900"
+              onClick={() => handleCheckboxChange(product)}
+            >
+              {product?.id || '-'}
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'name',
+        accessorFn: (product) => product?.name || '-',
+        header: 'Product Name',
+        enableSorting: false,
+        size: 520,
+        minSize: 240,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const product = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm leading-5 text-slate-600"
+              onClick={() => handleCheckboxChange(product)}
+            >
+              {product?.name || '-'}
+            </Box>
+          );
+        },
+      },
+    ],
+    [globalSelectedProdIds, handleCheckboxChange, handleSelectAllChange, isAllSelected],
+  );
 
   return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
-          <FaTimes />
-        </button>
-        <h2 className="text-2xl font-semibold mb-4">
-          <span className="text-[#016DA1]">Select Products</span>
-        </h2>
+    <Dialog open={isOpen} onClose={onClose}>
+      <DialogContent className="flex max-h-[calc(100vh-48px)] w-[1000px] max-w-full flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 bg-[#F8F8F8] py-3 px-4 sm:px-6">
+          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+            Select Products
+            <DialogClose className="ml-auto">
+              <Button
+                type="button"
+                variant="ghost"
+                className="bg-transparent hover:bg-transparent text-black p-0"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </DialogClose>
+          </DialogTitle>
+        </DialogHeader>
 
-        {/* Filter Dropdown */}
-        <div className="mb-4">
-          <label
-            htmlFor="category-filter"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Filter by Category
-          </label>
-          {loading ? (
-            <p className="text-center text-sm text-gray-500">
-              Loading categories...
-            </p>
-          ) : error ? (
-            <p className="text-center text-sm text-red-500">{error}</p>
-          ) : (
-            <select
-              id="category-filter"
+        <Box className="min-h-0 flex-1 overflow-y-auto p-4">
+          <Box className="mb-4">
+            <Combobox
+              aria-label="Filter by Category"
+              size="lg"
               value={selectedCategoryId}
-              onChange={handleCategoryChange}
-              className="h-14 px-3 block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+              options={categoryOptions}
+              placeholder="Filter by Category"
+              searchPlaceholder="Search Category"
+              onValueChange={(value) => {
+                setSelectedCategoryId(value || ALL_PRODUCTS_CATEGORY);
+              }}
+              disabled={loadingCategories || !!categoryError}
+              loading={loadingCategories}
+              triggerClassName="bg-white"
+            />
+            {categoryError ? (
+              <Box as="p" className="mt-1 text-xs text-red-500">
+                {categoryError}
+              </Box>
+            ) : null}
+          </Box>
 
-        {/* Product List with Pagination */}
-        <div className="flex-grow overflow-y-auto mb-4">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={handleSelectAllChange}
-                    className="form-checkbox"
-                  />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Product ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Product Name
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-2 py-1 text-center whitespace-nowrap text-xs font-medium">
-                      <input
-                        type="checkbox"
-                        checked={localSelectedProductIds.has(product.id)}
-                        onChange={() => handleCheckboxChange(product.id)}
-                        className="form-checkbox"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {product.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {product.name}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="px-6 py-4 text-center text-sm text-gray-500"
-                  >
-                    No products available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination and Rows Per Page Controls */}
-        <div className="flex justify-center items-center gap-2 font-normal mb-4">
-          <label htmlFor="rowsPerPage">Showing:</label>
-          <select
-            id="rowsPerPage"
-            className="p-2 border rounded"
-            value={showProdPerPage === totalItems ? "All" : showProdPerPage}
-            onChange={(e) => {
-              const value =
-                e.target.value === "All" ? totalItems : Number(e.target.value);
-              onProdPerPageChange(value);
+          <DataTable
+            className="!gap-3 [&_td]:px-4 [&_td]:py-3 [&_th]:px-4 [&_th]:py-2.5"
+            data={filteredProducts}
+            columns={productModalColumns}
+            pagination={{
+              pageIndex: currentPageProd - 1,
+              pageSize: showProdPerPage,
+              pageCount: totalPages,
+              rowCount: totalItems,
+              onPageChange: (pageIndex) => {
+                onPageChangeProd(pageIndex + 1);
+              },
+              onPageSizeChange: (pageSize) => {
+                onProdPerPageChange(pageSize);
+              },
             }}
-          >
-            {[10, 20, 30, 50, "All"].map((option) => (
-              <option key={option} value={option === "All" ? "All" : option}>
-                {option === "All" ? "Show All" : option}
-              </option>
-            ))}
-          </select>
-          <span className="mr-2">
-            {showProdPerPage === totalItems
-              ? `Showing all ${totalItems} items`
-              : `of ${totalItems} items`}
-          </span>
-          <button
-            onClick={() => handlePageChange(currentPageProd - 1)}
-            disabled={currentPageProd === 1 || showProdPerPage === totalItems}
-            className="py-1 rounded flex items-center disabled:opacity-50"
-          >
-            <ChevronLeft />
-          </button>
-          {/* <span>
-            {showProdPerPage === totalItems
-              ? `Showing all on a single page`
-              : `Page ${currentPageProd} of ${totalPages}`}
-          </span> */}
-          <button
-            onClick={() => handlePageChange(currentPageProd + 1)}
-            disabled={
-              currentPageProd === totalPages || showProdPerPage === totalItems
+            pageSizeOptions={pageSizeOptions}
+            getRowClassName={({ row }) =>
+              globalSelectedProdIds.has(row.original.id)
+                ? 'bg-slate-50 hover:!bg-slate-50'
+                : undefined
             }
-            className="py-1 rounded flex items-center disabled:opacity-50"
-          >
-            <ChevronRight />
-          </button>
-        </div>
+            emptyState={
+              <Box className="sticky left-0 flex min-h-[14rem] w-[100cqw] items-center justify-center py-6">
+                <Box className="flex flex-col items-center justify-center gap-3">
+                  <Image alt="no data" src={noData.src} width={180} fit="contain" />
+                  <Box as="span">No products available</Box>
+                </Box>
+              </Box>
+            }
+            renderPagination={(table) => (
+              <Box className="-mt-1">
+                <CompactTablePagination table={table} pageSizeOptions={pageSizeOptions} />
+              </Box>
+            )}
+            tableOptions={{
+              manualPagination: true,
+              enableColumnResizing: false,
+              defaultColumn: {
+                minSize: 56,
+                size: 160,
+              },
+              getRowId: (product, index) => product?.id || `product-row-${index}`,
+            }}
+          />
+        </Box>
 
-        {/* Save Button */}
-        <div className="flex justify-center mt-4">
-          <button
+        <DialogFooter className="shrink-0 sm:justify-center justify-center pb-4 sm:pb-6">
+          <Button
             type="button"
+            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
             onClick={handleApply}
-            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+            disabled={globalSelectedProdIds.size === 0}
+            leftIcon={<Check className="w-4 h-4" />}
           >
-            <FaCheck className="mr-2" />
             Save
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

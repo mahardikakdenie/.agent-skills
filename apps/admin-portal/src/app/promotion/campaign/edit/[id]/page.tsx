@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import CampaignForm from "@/components/forms/CampaignForm";
+import CampaignForm from "@/components/forms/campaign-form";
 
 export default function EditPromotionPage() {
   const params = useParams();

@@ -44,8 +44,7 @@ export const productService = {
 
   getInsurances: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.insurances, params)),
-  getInsuranceById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.insurances, { id })),
+  getInsuranceById: (id: string) => get(PRODUCT_ENDPOINTS.insuranceDetail(id)),
   createInsurance: (payload: unknown) => post(PRODUCT_ENDPOINTS.insurances, payload),
   updateInsurance: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.insuranceDetail(id), payload),

@@ -1,7 +1,24 @@
-import Image from "next/image";
-import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import noData from '@public/images/no-data.webp';
+import NextImage from 'next/image';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Check, X } from 'react-feather';
+
+import {
+  Box,
+  Button,
+  Checkbox,
+  DataTable,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Image,
+  type ColumnDef,
+} from '@repo/ui';
+
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 
 export interface InsuranceResponseDTO {
   data: Insurance[];
@@ -29,12 +46,12 @@ interface InsuranceSelectionModalProps {
   showInsPerPage: number;
   onInsurancePerPageChange: (insPerPage: number) => void;
   globalSelectedInsuranceIds: Set<string>;
-  setGlobalSelectedInsuranceIds: React.Dispatch<
-    React.SetStateAction<Set<string>>
-  >;
+  setGlobalSelectedInsuranceIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   currentPageIns: number;
   onRemoveInsurance: (insuranceId: string) => void;
 }
+
+const pageSizeOptions = [10, 20, 30, 50];
 
 const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   isOpen,
@@ -50,219 +67,310 @@ const InsuranceSelectionModal: React.FC<InsuranceSelectionModalProps> = ({
   currentPageIns,
   onRemoveInsurance,
 }) => {
-  const [selectAll, setSelectAll] = useState(false);
-  const [localSelectedInsuranceIds, setLocalSelectedInsuranceIds] = useState<
-    Set<string>
-  >(new Set());
+  const [selectedInsuranceMap, setSelectedInsuranceMap] = useState<Map<string, Insurance>>(
+    new Map(),
+  );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const data = insurances?.data || [];
-  const totalItems = insurances?.meta.total || 0;
-  const totalPages = Math.ceil(totalItems / showInsPerPage);
+  const data = useMemo(() => insurances?.data || [], [insurances?.data]);
+  const totalItems = insurances?.meta?.total || 0;
+  const totalPages = Math.max(Math.ceil(totalItems / showInsPerPage), 1);
 
-  // Initialize local selection based on global selected IDs when modal opens
   useEffect(() => {
-    if (isOpen) {
-      setLocalSelectedInsuranceIds(new Set(globalSelectedInsuranceIds));
+    if (!isOpen) {
+      return;
     }
-  }, [isOpen, globalSelectedInsuranceIds]);
+
+    onPageChangeIns(currentPageIns);
+  }, [currentPageIns, isOpen, onPageChangeIns]);
 
   useEffect(() => {
-    setSelectAll(
-      data.length > 0 &&
-        data.every((insurance) => localSelectedInsuranceIds.has(insurance.id))
-    );
-  }, [data, localSelectedInsuranceIds]);
+    if (!isOpen) {
+      return;
+    }
 
-  const handleCheckboxChange = (insuranceId: string) => {
-    setLocalSelectedInsuranceIds((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(insuranceId)) {
-        newSelected.delete(insuranceId);
-        onRemoveInsurance(insuranceId); // Call to remove the ins from main state
-      } else {
-        newSelected.add(insuranceId);
-      }
-      return newSelected;
+    setSelectedInsuranceMap((prevSelectedInsurances) => {
+      const nextSelectedInsurances = new Map(
+        Array.from(prevSelectedInsurances).filter(([insuranceId]) =>
+          globalSelectedInsuranceIds.has(insuranceId),
+        ),
+      );
+
+      initialSelectedInsurances.forEach((insurance) => {
+        if (globalSelectedInsuranceIds.has(insurance.id)) {
+          nextSelectedInsurances.set(insurance.id, insurance);
+        }
+      });
+
+      data.forEach((insurance) => {
+        if (globalSelectedInsuranceIds.has(insurance.id)) {
+          nextSelectedInsurances.set(insurance.id, insurance);
+        }
+      });
+
+      return nextSelectedInsurances;
     });
-  };
+  }, [data, globalSelectedInsuranceIds, initialSelectedInsurances, isOpen]);
 
-  const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll; // Toggle selectAll state
-    setSelectAll(newSelectAll);
+  const isAllSelected =
+    data.length > 0 && data.every((insurance) => globalSelectedInsuranceIds.has(insurance.id));
 
-    const newSelected = new Set(globalSelectedInsuranceIds); // Copy the current selected ins
+  const handleCheckboxChange = React.useCallback(
+    (insurance: Insurance) => {
+      if (globalSelectedInsuranceIds.has(insurance.id)) {
+        setSelectedInsuranceMap((prevSelectedInsurances) => {
+          const nextSelectedInsurances = new Map(prevSelectedInsurances);
+          nextSelectedInsurances.delete(insurance.id);
+          return nextSelectedInsurances;
+        });
+        onRemoveInsurance(insurance.id);
+        return;
+      }
 
-    if (newSelectAll) {
-      // Selecting all ins
-      data.forEach((ins) => {
-        newSelected.add(ins.id);
+      setSelectedInsuranceMap((prevSelectedInsurances) => {
+        const nextSelectedInsurances = new Map(prevSelectedInsurances);
+        nextSelectedInsurances.set(insurance.id, insurance);
+        return nextSelectedInsurances;
       });
-    } else {
-      // Deselecting all ins
-      data.forEach((ins) => {
-        newSelected.delete(ins.id);
-        onRemoveInsurance(ins.id); // Remove each ins from the main state
+      setGlobalSelectedInsuranceIds((prevSelectedInsurances) => {
+        const nextSelectedInsurances = new Set(prevSelectedInsurances);
+        nextSelectedInsurances.add(insurance.id);
+        return nextSelectedInsurances;
       });
+    },
+    [globalSelectedInsuranceIds, onRemoveInsurance, setGlobalSelectedInsuranceIds],
+  );
+
+  const handleSelectAllChange = React.useCallback(() => {
+    if (isAllSelected) {
+      data.forEach((insurance) => {
+        onRemoveInsurance(insurance.id);
+      });
+
+      setSelectedInsuranceMap((prevSelectedInsurances) => {
+        const nextSelectedInsurances = new Map(prevSelectedInsurances);
+        data.forEach((insurance) => {
+          nextSelectedInsurances.delete(insurance.id);
+        });
+        return nextSelectedInsurances;
+      });
+      return;
     }
 
-    setGlobalSelectedInsuranceIds(newSelected); // Update the selected ins
-  };
+    setSelectedInsuranceMap((prevSelectedInsurances) => {
+      const nextSelectedInsurances = new Map(prevSelectedInsurances);
+      data.forEach((insurance) => {
+        nextSelectedInsurances.set(insurance.id, insurance);
+      });
+      return nextSelectedInsurances;
+    });
+    setGlobalSelectedInsuranceIds((prevSelectedInsurances) => {
+      const nextSelectedInsurances = new Set(prevSelectedInsurances);
+      data.forEach((insurance) => {
+        nextSelectedInsurances.add(insurance.id);
+      });
+      return nextSelectedInsurances;
+    });
+  }, [data, isAllSelected, onRemoveInsurance, setGlobalSelectedInsuranceIds]);
 
-  const handleApply = () => {
-    // Update global selected insurance IDs only when Save is clicked
-    setGlobalSelectedInsuranceIds(localSelectedInsuranceIds);
-
-    // Prepare the selected insurances data to return
-    const selectedInsurancesData: Insurance[] = Array.from(
-      localSelectedInsuranceIds
-    )
-      .map((insuranceId) =>
-        data.find((insurance) => insurance.id === insuranceId)
-      )
-      .filter((ins): ins is Insurance => Boolean(ins));
-
+  const handleApply = React.useCallback(() => {
+    onSelect(Array.from(selectedInsuranceMap.values()));
     onClose();
-    setTimeout(() => {
-      onSelect(selectedInsurancesData);
-    }, 100);
-  };
+  }, [onClose, onSelect, selectedInsuranceMap]);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      onPageChangeIns(page);
-    }
-  };
+  const insuranceModalColumns = useMemo<ColumnDef<Insurance>[]>(
+    () => [
+      {
+        id: 'select',
+        header: () => (
+          <Checkbox
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAllChange}
+            className="justify-center"
+          />
+        ),
+        enableSorting: false,
+        enableResizing: false,
+        size: 56,
+        minSize: 56,
+        meta: {
+          headerCellClassName: 'w-14 whitespace-nowrap text-center',
+          cellClassName: 'w-14 text-center align-middle',
+          cellContentClassName: 'flex items-center justify-center',
+        },
+        cell: ({ row }) => {
+          const insurance = row.original;
 
-  if (!isOpen) return null;
+          return (
+            <Box onClick={(event) => event.stopPropagation()}>
+              <Checkbox
+                checked={globalSelectedInsuranceIds.has(insurance.id)}
+                onCheckedChange={() => handleCheckboxChange(insurance)}
+                className="justify-center"
+              />
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'name',
+        accessorFn: (insurance) => insurance?.name || '-',
+        header: 'Name',
+        enableSorting: false,
+        size: 360,
+        minSize: 220,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const insurance = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm font-medium leading-5 text-slate-900"
+              onClick={() => handleCheckboxChange(insurance)}
+            >
+              {insurance?.name || '-'}
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'brand',
+        accessorFn: (insurance) => insurance?.brand || '-',
+        header: 'Brand',
+        enableSorting: false,
+        size: 240,
+        minSize: 160,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const insurance = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm leading-5 text-slate-600"
+              onClick={() => handleCheckboxChange(insurance)}
+            >
+              {insurance?.brand || '-'}
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'logo',
+        accessorFn: (insurance) => insurance?.logo_url || '',
+        header: 'Logo',
+        enableSorting: false,
+        size: 160,
+        minSize: 120,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const insurance = row.original;
+
+          return insurance.logo_url ? (
+            <NextImage
+              src={insurance.logo_url}
+              alt={insurance.name || 'Insurance logo'}
+              className="h-12 w-12 rounded-md object-contain"
+              width={48}
+              height={48}
+            />
+          ) : (
+            <Box as="span" className="text-sm text-slate-500">
+              No Logo
+            </Box>
+          );
+        },
+      },
+    ],
+    [globalSelectedInsuranceIds, handleCheckboxChange, handleSelectAllChange, isAllSelected],
+  );
 
   return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
-          <FaTimes />
-        </button>
+    <Dialog open={isOpen} onClose={onClose}>
+      <DialogContent className="flex max-h-[calc(100vh-48px)] w-[1000px] max-w-full flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 bg-[#F8F8F8] py-3 px-4 sm:px-6">
+          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+            Select Insurances
+            <DialogClose className="ml-auto">
+              <Button
+                type="button"
+                variant="ghost"
+                className="bg-transparent hover:bg-transparent text-black p-0"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </DialogClose>
+          </DialogTitle>
+        </DialogHeader>
 
-        <h2 className="text-2xl font-semibold mb-4">
-          <span className="text-[#016DA1]">Select Insurances</span>
-        </h2>
-        <div className="flex-grow overflow-y-auto mb-4">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={handleSelectAllChange}
-                    className="form-checkbox"
-                  />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Brand
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Logo
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {data.length > 0 ? (
-                data.map((insurance) => (
-                  <tr key={insurance.id}>
-                    <td className="px-2 py-1 text-center whitespace-nowrap text-xs font-medium">
-                      <input
-                        type="checkbox"
-                        checked={localSelectedInsuranceIds.has(insurance.id)}
-                        onChange={() => handleCheckboxChange(insurance.id)}
-                        className="form-checkbox"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {insurance.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {insurance.brand}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {insurance.logo_url ? (
-                        <Image
-                          src={insurance.logo_url}
-                          alt={insurance.name}
-                          className="w-12 h-12 object-cover"
-                          width={100}
-                          height={50}
-                        />
-                      ) : (
-                        <span>No Logo</span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-4 text-center text-sm text-gray-500"
-                  >
-                    No insurances available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Box className="min-h-0 flex-1 overflow-y-auto p-4">
+          <DataTable
+            className="!gap-3 [&_td]:px-4 [&_td]:py-3 [&_th]:px-4 [&_th]:py-2.5"
+            data={data}
+            columns={insuranceModalColumns}
+            pagination={{
+              pageIndex: currentPageIns - 1,
+              pageSize: showInsPerPage,
+              pageCount: totalPages,
+              rowCount: totalItems,
+              onPageChange: (pageIndex) => {
+                onPageChangeIns(pageIndex + 1);
+              },
+              onPageSizeChange: (pageSize) => {
+                onInsurancePerPageChange(pageSize);
+              },
+            }}
+            pageSizeOptions={pageSizeOptions}
+            getRowClassName={({ row }) =>
+              globalSelectedInsuranceIds.has(row.original.id)
+                ? 'bg-slate-50 hover:!bg-slate-50'
+                : undefined
+            }
+            emptyState={
+              <Box className="sticky left-0 flex min-h-[14rem] w-[100cqw] items-center justify-center py-6">
+                <Box className="flex flex-col items-center justify-center gap-3">
+                  <Image alt="no data" src={noData.src} width={180} fit="contain" />
+                  <Box as="span">No insurances available</Box>
+                </Box>
+              </Box>
+            }
+            renderPagination={(table) => (
+              <Box className="-mt-1">
+                <CompactTablePagination table={table} pageSizeOptions={pageSizeOptions} />
+              </Box>
+            )}
+            tableOptions={{
+              manualPagination: true,
+              enableColumnResizing: false,
+              defaultColumn: {
+                minSize: 56,
+                size: 160,
+              },
+              getRowId: (insurance, index) => insurance?.id || `insurance-row-${index}`,
+            }}
+          />
+        </Box>
 
-        <div className="flex justify-center items-center gap-2 font-normal mb-4">
-          <label htmlFor="rowsPerPage">Showing:</label>
-          <select
-            id="rowsPerPage"
-            className="p-2 border rounded"
-            value={showInsPerPage}
-            onChange={(e) => onInsurancePerPageChange(Number(e.target.value))}
-          >
-            {[10, 20, 30, 50].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <span className="mr-2">of {totalItems} items</span>
-          <button
-            onClick={() => handlePageChange(currentPageIns - 1)}
-            disabled={currentPageIns === 1}
-            className="py-1 rounded flex items-center disabled:opacity-50"
-          >
-            <ChevronLeft />
-          </button>
-          {/* <span>{`Page ${currentPageIns} of ${totalPages}`}</span> */}
-          <button
-            onClick={() => handlePageChange(currentPageIns + 1)}
-            disabled={currentPageIns === totalPages}
-            className="py-1 rounded flex items-center disabled:opacity-50"
-          >
-            <ChevronRight />
-          </button>
-        </div>
-
-        <div className="flex justify-center mt-4">
-          <button
+        <DialogFooter className="shrink-0 sm:justify-center justify-center pb-4 sm:pb-6">
+          <Button
             type="button"
+            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
             onClick={handleApply}
-            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+            disabled={globalSelectedInsuranceIds.size === 0}
+            leftIcon={<Check className="w-4 h-4" />}
           >
-            <FaCheck className="mr-2" />
             Save
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

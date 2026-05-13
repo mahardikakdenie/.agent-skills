@@ -1,14 +1,15 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useAuth } from "@/context/auth.context";
-import AppURL from "@/constants/app-url.const";
-import { channelService } from "@/services/channel/api/channel.service";
-import { productService } from "@/services/product/api/product.service";
-import { promotionService } from "@/services/promotion/api/promotion.service";
-import { useDeleteCampaign } from "@/services/promotion/hooks/mutations/useDeleteCampaign";
-import { useCampaignSearch } from "@/services/promotion/hooks/queries/useCampaignSearch";
-import _ from "lodash";
+import { useQueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useState, useCallback, useEffect } from 'react';
+
+import AppURL from '@/constants/app-url.const';
+import { useAuth } from '@/context/auth.context';
+import { channelService } from '@/services/channel/api/channel.service';
+import { productService } from '@/services/product/api/product.service';
+import { promotionService } from '@/services/promotion/api/promotion.service';
+import { useDeleteCampaign } from '@/services/promotion/hooks/mutations/useDeleteCampaign';
+import { useCampaignSearch } from '@/services/promotion/hooks/queries/useCampaignSearch';
 
 interface PromotionItem {
   campaign_id: string;
@@ -22,10 +23,10 @@ interface PromotionItem {
   active: boolean;
   minimum_amount: number;
   maximum_amount: number;
-  embedded_discount_channels: { channel_id: string }[];
-  embedded_discount_insurances: { insurance_id: string }[];
-  embedded_discount_products: { product_id: string }[];
-  embedded_discount_plans: { plan_id: string }[];
+  embedded_discount_channels?: { channel_id: string; channel_name?: string }[];
+  embedded_discount_insurances?: { insurance_id: string; insurance_name?: string }[];
+  embedded_discount_products?: { product_id: string; product_name?: string }[];
+  embedded_discount_plans?: { plan_id: string; name?: string }[];
 }
 
 interface UseCampaignProps {
@@ -75,6 +76,104 @@ interface UseCampaignProps {
   renderStatus: (isActive: boolean) => string;
 }
 
+const normalizeCampaignDetail = (response: any): PromotionItem | null => {
+  return (
+    response?.data?.[0] ??
+    response?.data?.data?.[0] ??
+    response?.data?.data ??
+    response?.data ??
+    null
+  );
+};
+
+const toArray = <T,>(value: T[] | null | undefined): T[] => (Array.isArray(value) ? value : []);
+
+type UnknownRecord = Record<string, unknown>;
+
+const isRecord = (value: unknown): value is UnknownRecord =>
+  Boolean(value && typeof value === 'object' && !Array.isArray(value));
+
+const normalizeResponseItem = (response: unknown): UnknownRecord | null => {
+  if (!isRecord(response)) {
+    return null;
+  }
+
+  const data = response.data;
+
+  if (Array.isArray(data)) {
+    return isRecord(data[0]) ? data[0] : null;
+  }
+
+  if (isRecord(data)) {
+    if (Array.isArray(data.data)) {
+      return isRecord(data.data[0]) ? data.data[0] : null;
+    }
+
+    return data;
+  }
+
+  return response;
+};
+
+const getStringValue = (value: unknown) => (typeof value === 'string' ? value : '');
+
+const getNestedName = (item: UnknownRecord, key: string) => {
+  const nestedValue = item[key];
+  return isRecord(nestedValue) ? getStringValue(nestedValue.name) : '';
+};
+
+const getRelationName = (item: unknown, primaryNameKey: string) => {
+  if (!isRecord(item)) {
+    return '';
+  }
+
+  return (
+    getStringValue(item[primaryNameKey]) ||
+    getStringValue(item.name) ||
+    getNestedName(item, 'channel') ||
+    getNestedName(item, 'insurance') ||
+    getNestedName(item, 'product') ||
+    getNestedName(item, 'plan')
+  );
+};
+
+const buildRelationNameMap = (
+  relations: UnknownRecord[],
+  idKey: string,
+  nameKey: string,
+  responses: PromiseSettledResult<unknown>[],
+  responseAliasKeys: string[] = [],
+) => {
+  const entries: [string, string][] = [];
+
+  relations.forEach((relation, index) => {
+    const relationId = getStringValue(relation[idKey]);
+    const responseItem =
+      responses[index]?.status === 'fulfilled'
+        ? normalizeResponseItem(responses[index].value)
+        : null;
+    const responseName = getRelationName(responseItem, 'name');
+    const relationName = getRelationName(relation, nameKey) || responseName;
+
+    if (relationId && relationName) {
+      entries.push([relationId, relationName]);
+    }
+
+    if (!responseItem || !responseName) {
+      return;
+    }
+
+    Array.from(new Set(['id', idKey, ...responseAliasKeys])).forEach((aliasKey) => {
+      const aliasId = getStringValue(responseItem[aliasKey]);
+      if (aliasId) {
+        entries.push([aliasId, responseName]);
+      }
+    });
+  });
+
+  return new Map(entries);
+};
+
 export function useCampaign(): UseCampaignProps {
   const router = useRouter();
   const pathname = usePathname();
@@ -83,16 +182,15 @@ export function useCampaign(): UseCampaignProps {
   const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
-    return parseInt(searchParams.get("page") || "1", 10);
+    return parseInt(searchParams.get('page') || '1', 10);
   });
 
   const [rowsPerPage, setRowsPerPageState] = useState(() => {
-    return parseInt(searchParams.get("limit") || "10", 10);
+    return parseInt(searchParams.get('limit') || '10', 10);
   });
 
-  const [searchData, setSearchDataState] = useState("");
-  const [selectedPromotion, setSelectedPromotion] =
-    useState<PromotionItem | null>(null);
+  const [searchData, setSearchDataState] = useState('');
+  const [selectedPromotion, setSelectedPromotion] = useState<PromotionItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -100,15 +198,9 @@ export function useCampaign(): UseCampaignProps {
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [canEdit, setCanEdit] = useState<boolean>(false);
 
-  const [channelNames, setChannelNames] = useState<Map<string, string>>(
-    new Map()
-  );
-  const [insuranceNames, setInsuranceNames] = useState<Map<string, string>>(
-    new Map()
-  );
-  const [productNames, setProductNames] = useState<Map<string, string>>(
-    new Map()
-  );
+  const [channelNames, setChannelNames] = useState<Map<string, string>>(new Map());
+  const [insuranceNames, setInsuranceNames] = useState<Map<string, string>>(new Map());
+  const [productNames, setProductNames] = useState<Map<string, string>>(new Map());
   const [planNames, setPlanNames] = useState<Map<string, string>>(new Map());
   const [vouchers, setVouchers] = useState<
     { code: string; usage_limit: number; used_count: number }[]
@@ -126,7 +218,7 @@ export function useCampaign(): UseCampaignProps {
       const current = new URLSearchParams(Array.from(searchParams.entries()));
 
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
+        if (value !== undefined && value !== null && value !== '') {
           current.set(key, String(value));
         } else {
           current.delete(key);
@@ -134,11 +226,11 @@ export function useCampaign(): UseCampaignProps {
       });
 
       const search = current.toString();
-      const query = search ? `?${search}` : "";
+      const query = search ? `?${search}` : '';
 
       router.replace(`${pathname}${query}`, { scroll: false });
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   const setPage = useCallback(
@@ -146,7 +238,7 @@ export function useCampaign(): UseCampaignProps {
       setPageState(newPage);
       updateURL({ page: newPage });
     },
-    [updateURL]
+    [updateURL],
   );
 
   const setRowsPerPage = useCallback(
@@ -155,7 +247,7 @@ export function useCampaign(): UseCampaignProps {
       setPageState(1);
       updateURL({ limit: newRowsPerPage, page: 1 });
     },
-    [updateURL]
+    [updateURL],
   );
 
   const setSearchData = useCallback((newSearchData: string) => {
@@ -170,9 +262,9 @@ export function useCampaign(): UseCampaignProps {
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = permissionList.includes("Promotions.Read");
-      const deleteBtn = permissionList.includes("Promotions.Delete");
-      const editBtn = permissionList.includes("Promotions.Update");
+      const access = permissionList.includes('Promotions.Read');
+      const deleteBtn = permissionList.includes('Promotions.Delete');
+      const editBtn = permissionList.includes('Promotions.Update');
 
       setCanDelete(deleteBtn);
       setCanEdit(editBtn);
@@ -189,7 +281,7 @@ export function useCampaign(): UseCampaignProps {
   const campaignParams = {
     page: page,
     limit: rowsPerPage,
-    query: searchData ? searchData : "",
+    query: searchData ? searchData : '',
   };
 
   const {
@@ -214,34 +306,31 @@ export function useCampaign(): UseCampaignProps {
   const deleteMutation = useDeleteCampaign({
     onSuccess: async () => {
       await productService.syncEmbeddedDiscounts();
-      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
     },
     onError: (error) => {
-      console.error("Failed to delete campaign:", error);
+      console.error('Failed to delete campaign:', error);
     },
   });
 
   const getStatusColor = useCallback((status: boolean) => {
     switch (status) {
       case false:
-        return "text-[#FF0000]";
+        return 'text-[#FF0000]';
       case true:
-        return "text-[#00AB4F]";
+        return 'text-[#00AB4F]';
       default:
-        return "text-[#FF0000]";
+        return 'text-[#FF0000]';
     }
   }, []);
 
-  const renderStatus = useCallback(
-    (isActive: boolean) => (isActive ? "ACTIVE" : "NOT ACTIVE"),
-    []
-  );
+  const renderStatus = useCallback((isActive: boolean) => (isActive ? 'ACTIVE' : 'NOT ACTIVE'), []);
 
   const handleEditCampaign = useCallback(
     (id: string) => {
       router.push(`${AppURL.promotionCampaignEdit}/${id}`);
     },
-    [router]
+    [router],
   );
 
   const handleViewDetail = useCallback(async (id: string) => {
@@ -258,129 +347,109 @@ export function useCampaign(): UseCampaignProps {
 
     try {
       const response: any = await promotionService.getCampaignById(id);
-      const promotionData =
-        response?.data?.[0] ?? response?.data?.data?.[0] ?? null;
+      const promotionData = normalizeCampaignDetail(response);
       setSelectedPromotion(promotionData);
 
       if (!promotionData) {
-        setDetailError("Campaign details are not available.");
+        setDetailError('Campaign details are not available.');
         return;
       }
 
       const fetchNames = async () => {
-        const channelFetches = promotionData.embedded_discount_channels.map(
-          async (channel: { channel_id: string }) => {
-            const res: any = await channelService.getChannelByIdV1(
-              channel.channel_id
-            );
-            return res?.data ?? res;
-          }
-        );
-        const insuranceFetches = promotionData.embedded_discount_insurances.map(
-          async (insurance: { insurance_id: string }) => {
-            const res: any = await productService.getInsuranceById(
-              insurance.insurance_id
-            );
-            return res?.data ?? res;
-          }
-        );
-        const productFetches = promotionData.embedded_discount_products.map(
-          async (product: { product_id: string }) => {
-            return productService.getProductById(product.product_id);
-          }
-        );
-        const planFetches = promotionData.embedded_discount_plans.map(
-          async (plan: { plan_id: string }) => {
-            const res: any = await productService.getPlanById(
-              plan.plan_id
-            );
-            return res?.data ?? res;
-          }
-        );
+        const channels = toArray(promotionData.embedded_discount_channels);
+        const insurances = toArray(promotionData.embedded_discount_insurances);
+        const products = toArray(promotionData.embedded_discount_products);
+        const plans = toArray(promotionData.embedded_discount_plans);
 
-        const [
-          channelResponses,
-          insuranceResponses,
-          productResponses,
-          planResponses,
-        ] = await Promise.all([
-          Promise.all(channelFetches),
-          Promise.all(insuranceFetches),
-          Promise.all(productFetches),
-          Promise.all(planFetches),
-        ]);
+        const channelFetches = channels.map(async (channel: { channel_id: string }) => {
+          const res: any = await channelService.getChannelByIdV1(channel.channel_id);
+          return normalizeResponseItem(res);
+        });
+        const insuranceFetches = insurances.map(async (insurance: { insurance_id: string }) => {
+          const res: any = await productService.getInsuranceById(insurance.insurance_id);
+          return normalizeResponseItem(res);
+        });
+        const productFetches = products.map(async (product: { product_id: string }) => {
+          return productService.getProductById(product.product_id);
+        });
+        const planFetches = plans.map(async (plan: { plan_id: string }) => {
+          const res: any = await productService.getPlanById(plan.plan_id);
+          return normalizeResponseItem(res);
+        });
+
+        const [channelResponses, insuranceResponses, productResponses, planResponses] =
+          await Promise.all([
+            Promise.allSettled(channelFetches),
+            Promise.allSettled(insuranceFetches),
+            Promise.allSettled(productFetches),
+            Promise.allSettled(planFetches),
+          ]);
 
         setChannelNames(
-          new Map(
-            channelResponses
-              .map((res: any) => {
-                const normalized = res?.data ?? res;
-                return normalized?.id && normalized?.name
-                  ? [normalized.id, normalized.name]
-                  : null;
-              })
-              .filter(Boolean) as [string, string][]
-          )
+          buildRelationNameMap(
+            channels as UnknownRecord[],
+            'channel_id',
+            'channel_name',
+            channelResponses,
+          ),
         );
         setInsuranceNames(
-          new Map(
-            insuranceResponses
-              .map((res: any) => {
-                const normalized = res?.data ?? res;
-                return normalized?.id && normalized?.name
-                  ? [normalized.id, normalized.name]
-                  : null;
-              })
-              .filter(Boolean) as [string, string][]
-          )
+          buildRelationNameMap(
+            insurances as UnknownRecord[],
+            'insurance_id',
+            'insurance_name',
+            insuranceResponses,
+          ),
         );
         setProductNames(
-          new Map(
-            productResponses
-              .map((res: any) => {
-                const normalized = res?.data?.[0] ?? res?.data ?? res;
-                return normalized?.id && normalized?.name
-                  ? [normalized.id, normalized.name]
-                  : null;
-              })
-              .filter(Boolean) as [string, string][]
-          )
+          buildRelationNameMap(
+            products as UnknownRecord[],
+            'product_id',
+            'product_name',
+            productResponses,
+          ),
         );
         setPlanNames(
-          new Map(
-            planResponses
-              .map((res: any) => {
-                const normalized = res?.data ?? res;
-                return normalized?.id && normalized?.name
-                  ? [normalized.id, normalized.name]
-                  : null;
-              })
-              .filter(Boolean) as [string, string][]
-          )
+          buildRelationNameMap(plans as UnknownRecord[], 'plan_id', 'name', planResponses),
         );
       };
 
-      if (promotionData.type === "voucher") {
-        const vouchersResponse: any = await promotionService.getVoucherById(
-          promotionData.campaign_id
-        );
-        setVouchers(vouchersResponse?.data ?? vouchersResponse?.data?.data ?? []);
+      if (promotionData.type === 'voucher') {
+        try {
+          const vouchersResponse: any = await promotionService.getVoucherById(
+            promotionData.campaign_id,
+          );
+          setVouchers(vouchersResponse?.data?.data ?? vouchersResponse?.data ?? []);
+        } catch (err) {
+          console.warn('Failed to fetch campaign vouchers:', err);
+          setVouchers([]);
+        }
       }
 
-      if (promotionData.type === "embedded") {
-        const embeddedHistory: any = await promotionService.getCampaignHistory(id);
-        const embeddedData = embeddedHistory?.data ?? embeddedHistory;
-        if (embeddedData) {
-          setEmbeddedDiscount([embeddedData]);
-        } else {
+      if (promotionData.type === 'embedded') {
+        try {
+          const embeddedHistory: any = await promotionService.getCampaignHistory(id);
+          const embeddedData =
+            embeddedHistory?.data?.data ?? embeddedHistory?.data ?? embeddedHistory;
+          if (embeddedData) {
+            setEmbeddedDiscount(Array.isArray(embeddedData) ? embeddedData : [embeddedData]);
+          } else {
+            setEmbeddedDiscount([]);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch embedded campaign history:', err);
           setEmbeddedDiscount([]);
         }
       }
 
-      await fetchNames();
+      try {
+        await fetchNames();
+      } catch (err) {
+        console.warn('Failed to fetch campaign relation names:', err);
+      }
     } catch (err) {
-      console.error("Failed to fetch promotion details:", err);
-      setDetailError("Failed to load campaign details.");
+      console.error('Failed to fetch promotion details:', err);
+      setDetailError('Failed to load campaign details.');
     } finally {
       setIsDetailLoading(false);
     }
@@ -388,11 +457,11 @@ export function useCampaign(): UseCampaignProps {
 
   const handleDelete = useCallback(
     async (id: string) => {
-      if (window.confirm("Are you sure you want to delete this campaign?")) {
+      if (window.confirm('Are you sure you want to delete this campaign?')) {
         deleteMutation.mutate(id);
       }
     },
-    [deleteMutation]
+    [deleteMutation],
   );
 
   const addNewCampaign = useCallback(() => {
@@ -403,7 +472,7 @@ export function useCampaign(): UseCampaignProps {
     _.debounce((keyword: string) => {
       setSearchData(keyword);
     }, 500),
-    []
+    [],
   );
 
   return {

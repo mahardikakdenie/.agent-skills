@@ -203,7 +203,6 @@ export default function PromotionPage() {
               <Button
                 variant="ghost"
                 className="h-8 w-8 rounded-full p-0 shadow-none"
-                onClick={() => setDrawerOpen(false)}
               >
                 <X className="h-4.5 w-4.5" />
               </Button>
@@ -211,8 +210,10 @@ export default function PromotionPage() {
             <DrawerTitle className="pr-10 text-2xl font-bold tracking-tight text-black">
               Campaign Details
             </DrawerTitle>
-            <DrawerDescription className="mt-4 block text-inherit">
-              <Box className="flex flex-col w-full h-full max-h-[calc(100vh-8rem)] overflow-y-auto px-1 pt-1 pb-4">
+          </DrawerHeader>
+          <Box className="mt-4 flex-1 overflow-y-auto px-6 pt-1 pb-6 md:pb-8">
+            <DrawerDescription className="block text-inherit">
+              <Box className="flex w-full flex-col">
                 {isDetailLoading ? (
                   <Box className="flex flex-1 items-center justify-center py-10 text-sm font-medium text-black">
                     Loading campaign details...
@@ -469,7 +470,7 @@ export default function PromotionPage() {
                 )}
               </Box>
             </DrawerDescription>
-          </DrawerHeader>
+          </Box>
         </DrawerContent>
       </Drawer>
     </Box>

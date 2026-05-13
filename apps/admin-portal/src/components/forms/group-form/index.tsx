@@ -356,7 +356,7 @@ export default function GroupForm({
 
           return (
             <Box
-              className="min-w-0 cursor-pointer break-words text-sm leading-5 text-slate-600"
+              className="min-w-0 cursor-pointer break-words text-sm font-medium leading-5 text-slate-900"
               onClick={() => handleCheckboxChangeUser(user.id)}
             >
               {user?.name || '-'}

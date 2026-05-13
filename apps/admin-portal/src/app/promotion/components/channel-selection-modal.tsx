@@ -1,6 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
-import { FaCheck, FaTimes, FaPlus } from "react-icons/fa";
+import noData from '@public/images/no-data.webp';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Check, X } from 'react-feather';
+
+import {
+  Box,
+  Button,
+  Checkbox,
+  DataTable,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Image,
+  type ColumnDef,
+} from '@repo/ui';
+
+import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 
 interface Channel {
   id: string;
@@ -30,6 +47,8 @@ interface ChannelSelectionModalProps {
   onRemoveChannel: (channelId: string) => void;
 }
 
+const pageSizeOptions = [10, 20, 30, 50];
+
 const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   isOpen,
   onClose,
@@ -44,191 +63,276 @@ const ChannelSelectionModal: React.FC<ChannelSelectionModalProps> = ({
   onRemoveChannel,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectedChannelMap, setSelectedChannelMap] = useState<Map<string, Channel>>(new Map());
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const data = channels?.data || [];
+  const data = useMemo(() => channels?.data || [], [channels?.data]);
   const totalItems = channels?.total || 0;
-  const totalPages = Math.ceil(totalItems / showChannelsPerPage);
+  const totalPages = Math.max(
+    channels?.pageTotal || Math.ceil(totalItems / showChannelsPerPage),
+    1,
+  );
+  const selectedIds = globalSelectedChannels.size > 0 ? globalSelectedChannels : selectedChannelIds;
 
   useEffect(() => {
-    setSelectAll(
-      data.every((channel) => globalSelectedChannels.has(channel.id))
-    );
-  }, [data, globalSelectedChannels]);
+    if (!isOpen) {
+      return;
+    }
+
+    onPageChangeChannel(currentPage);
+  }, [currentPage, isOpen, onPageChangeChannel]);
 
   useEffect(() => {
-    if (isOpen) {
-      onPageChangeChannel(currentPage);
+    if (!isOpen) {
+      return;
     }
-  }, [isOpen, currentPage, onPageChangeChannel]);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      onPageChangeChannel(page);
-    }
-  };
+    setSelectedChannelMap((prevSelectedChannels) => {
+      const nextSelectedChannels = new Map(
+        Array.from(prevSelectedChannels).filter(([channelId]) => selectedIds.has(channelId)),
+      );
 
-  const handleCheckboxChange = (channelId: string) => {
-    setGlobalSelectedChannels((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(channelId)) {
-        newSelected.delete(channelId);
-        onRemoveChannel(channelId); // Call to remove the channel from main state
-      } else {
-        newSelected.add(channelId);
-      }
-      return newSelected;
+      data.forEach((channel) => {
+        if (selectedIds.has(channel.id)) {
+          nextSelectedChannels.set(channel.id, channel);
+        }
+      });
+
+      return nextSelectedChannels;
     });
-  };
+  }, [data, isOpen, selectedIds]);
 
-  const handleSelectAllChange = () => {
-    const newSelectAll = !selectAll; // Toggle selectAll state
-    setSelectAll(newSelectAll);
+  const isAllSelected =
+    data.length > 0 && data.every((channel) => globalSelectedChannels.has(channel.id));
 
-    const newSelected = new Set(globalSelectedChannels); // Copy the current selected channels
+  const handleCheckboxChange = React.useCallback(
+    (channel: Channel) => {
+      if (globalSelectedChannels.has(channel.id)) {
+        setSelectedChannelMap((prevSelectedChannels) => {
+          const nextSelectedChannels = new Map(prevSelectedChannels);
+          nextSelectedChannels.delete(channel.id);
+          return nextSelectedChannels;
+        });
+        onRemoveChannel(channel.id);
+        return;
+      }
 
-    if (newSelectAll) {
-      // Selecting all channels
-      data.forEach((channel) => {
-        newSelected.add(channel.id);
+      setSelectedChannelMap((prevSelectedChannels) => {
+        const nextSelectedChannels = new Map(prevSelectedChannels);
+        nextSelectedChannels.set(channel.id, channel);
+        return nextSelectedChannels;
       });
-    } else {
-      // Deselecting all channels
-      data.forEach((channel) => {
-        newSelected.delete(channel.id);
-        onRemoveChannel(channel.id); // Remove each channel from the main state
+      setGlobalSelectedChannels((prevSelectedChannels) => {
+        const nextSelectedChannels = new Set(prevSelectedChannels);
+        nextSelectedChannels.add(channel.id);
+        return nextSelectedChannels;
       });
+    },
+    [globalSelectedChannels, onRemoveChannel, setGlobalSelectedChannels],
+  );
+
+  const handleSelectAllChange = React.useCallback(() => {
+    if (isAllSelected) {
+      data.forEach((channel) => {
+        onRemoveChannel(channel.id);
+      });
+
+      setSelectedChannelMap((prevSelectedChannels) => {
+        const nextSelectedChannels = new Map(prevSelectedChannels);
+        data.forEach((channel) => {
+          nextSelectedChannels.delete(channel.id);
+        });
+        return nextSelectedChannels;
+      });
+      return;
     }
 
-    setGlobalSelectedChannels(newSelected); // Update the selected channels
-  };
+    setSelectedChannelMap((prevSelectedChannels) => {
+      const nextSelectedChannels = new Map(prevSelectedChannels);
+      data.forEach((channel) => {
+        nextSelectedChannels.set(channel.id, channel);
+      });
+      return nextSelectedChannels;
+    });
+    setGlobalSelectedChannels((prevSelectedChannels) => {
+      const nextSelectedChannels = new Set(prevSelectedChannels);
+      data.forEach((channel) => {
+        nextSelectedChannels.add(channel.id);
+      });
+      return nextSelectedChannels;
+    });
+  }, [data, isAllSelected, onRemoveChannel, setGlobalSelectedChannels]);
 
-  const handleApply = () => {
-    const selectedChannelsData: Channel[] = Array.from(globalSelectedChannels)
-      .map((channelId) => data.find((channel) => channel.id === channelId))
-      .filter((channel): channel is Channel => Boolean(channel));
-
-    onSelect(selectedChannelsData);
+  const handleApply = React.useCallback(() => {
+    onSelect(Array.from(selectedChannelMap.values()));
     onClose();
-  };
+  }, [onClose, onSelect, selectedChannelMap]);
 
-  if (!isOpen) return null;
+  const channelModalColumns = useMemo<ColumnDef<Channel>[]>(
+    () => [
+      {
+        id: 'select',
+        header: () => (
+          <Checkbox
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAllChange}
+            className="justify-center"
+          />
+        ),
+        enableSorting: false,
+        enableResizing: false,
+        size: 56,
+        minSize: 56,
+        meta: {
+          headerCellClassName: 'w-14 whitespace-nowrap text-center',
+          cellClassName: 'w-14 text-center align-middle',
+          cellContentClassName: 'flex items-center justify-center',
+        },
+        cell: ({ row }) => {
+          const channel = row.original;
+
+          return (
+            <Box onClick={(event) => event.stopPropagation()}>
+              <Checkbox
+                checked={globalSelectedChannels.has(channel.id)}
+                onCheckedChange={() => handleCheckboxChange(channel)}
+                className="justify-center"
+              />
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'name',
+        accessorFn: (channel) => channel?.name || '-',
+        header: 'Name',
+        enableSorting: false,
+        size: 520,
+        minSize: 240,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const channel = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm font-medium leading-5 text-slate-900"
+              onClick={() => handleCheckboxChange(channel)}
+            >
+              {channel?.name || '-'}
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'type',
+        accessorFn: (channel) => channel?.type || '-',
+        header: 'Type',
+        enableSorting: false,
+        size: 280,
+        minSize: 180,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const channel = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm leading-5 text-slate-600"
+              onClick={() => handleCheckboxChange(channel)}
+            >
+              {channel?.type || '-'}
+            </Box>
+          );
+        },
+      },
+    ],
+    [globalSelectedChannels, handleCheckboxChange, handleSelectAllChange, isAllSelected],
+  );
 
   return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-5xl h-[90vh] flex flex-col relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
-          <FaTimes />
-        </button>
-        <h2 className="text-2xl font-semibold mb-4">
-          <span className="text-[#016DA1]">Select Channels</span>
-        </h2>
+    <Dialog open={isOpen} onClose={onClose}>
+      <DialogContent className="flex max-h-[calc(100vh-48px)] w-[1000px] max-w-full flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 bg-[#F8F8F8] py-3 px-4 sm:px-6">
+          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
+            Select Channels
+            <DialogClose className="ml-auto">
+              <Button
+                type="button"
+                variant="ghost"
+                className="bg-transparent hover:bg-transparent text-black p-0"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </DialogClose>
+          </DialogTitle>
+        </DialogHeader>
 
-        <div className="overflow-y-auto flex-grow mb-4">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={handleSelectAllChange}
-                    className="form-checkbox"
-                  />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {data.length > 0 ? (
-                data.map((channel) => (
-                  <tr key={channel.id}>
-                    <td className="px-2 py-1 text-center whitespace-nowrap text-xs font-medium">
-                      <input
-                        type="checkbox"
-                        checked={globalSelectedChannels.has(channel.id)}
-                        onChange={() => handleCheckboxChange(channel.id)}
-                        className="form-checkbox"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {channel.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {channel.type}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="px-6 py-4 text-center text-sm text-gray-500"
-                  >
-                    No channels available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Box className="min-h-0 flex-1 overflow-y-auto p-4">
+          <DataTable
+            className="!gap-3 [&_td]:px-4 [&_td]:py-3 [&_th]:px-4 [&_th]:py-2.5"
+            data={data}
+            columns={channelModalColumns}
+            pagination={{
+              pageIndex: currentPage - 1,
+              pageSize: showChannelsPerPage,
+              pageCount: totalPages,
+              rowCount: totalItems,
+              onPageChange: (pageIndex) => {
+                setCurrentPage(pageIndex + 1);
+              },
+              onPageSizeChange: (pageSize) => {
+                setCurrentPage(1);
+                onChannelsPerPageChange(pageSize);
+              },
+            }}
+            pageSizeOptions={pageSizeOptions}
+            getRowClassName={({ row }) =>
+              globalSelectedChannels.has(row.original.id)
+                ? 'bg-slate-50 hover:!bg-slate-50'
+                : undefined
+            }
+            emptyState={
+              <Box className="sticky left-0 flex min-h-[14rem] w-[100cqw] items-center justify-center py-6">
+                <Box className="flex flex-col items-center justify-center gap-3">
+                  <Image alt="no data" src={noData.src} width={180} fit="contain" />
+                  <Box as="span">No channels available</Box>
+                </Box>
+              </Box>
+            }
+            renderPagination={(table) => (
+              <Box className="-mt-1">
+                <CompactTablePagination table={table} pageSizeOptions={pageSizeOptions} />
+              </Box>
+            )}
+            tableOptions={{
+              manualPagination: true,
+              enableColumnResizing: false,
+              defaultColumn: {
+                minSize: 56,
+                size: 160,
+              },
+              getRowId: (channel, index) => channel?.id || `channel-row-${index}`,
+            }}
+          />
+        </Box>
 
-        {/* Pagination controls */}
-        <div className="flex justify-center items-center gap-2 font-normal mt-4">
-          <label htmlFor="rowsPerPage">Showing:</label>
-          <select
-            id="rowsPerPage"
-            className="p-2 border rounded"
-            value={showChannelsPerPage}
-            onChange={(e) => onChannelsPerPageChange(Number(e.target.value))}
-          >
-            {[10, 20, 30, 50].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <span className="mr-2">of {totalItems} items</span>
-
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="py-1 rounded flex items-center disabled:opacity-50"
-          >
-            <ChevronLeft />
-          </button>
-          {/* <span>{`Page ${currentPage} of ${totalPages}`}</span> */}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="py-1 rounded flex items-center disabled:opacity-50"
-          >
-            <ChevronRight />
-          </button>
-        </div>
-
-        <div className="flex justify-center mt-4">
-          <button
+        <DialogFooter className="shrink-0 sm:justify-center justify-center pb-4 sm:pb-6">
+          <Button
             type="button"
+            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
             onClick={handleApply}
-            className="flex items-center bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full px-6 py-3"
+            disabled={globalSelectedChannels.size === 0}
+            leftIcon={<Check className="w-4 h-4" />}
           >
-            <FaCheck className="mr-2" />
             Save
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -16,9 +16,9 @@ export function useCreateCampaign(
   return useMutation({
     mutationFn: promotionService.createCampaign,
     ...options,
-    onSuccess: (data, variables, context, mutation) => {
-      queryClient.invalidateQueries({ queryKey: promotionKeys.campaigns() });
-      options?.onSuccess?.(data, variables, context, mutation);
+    onSuccess: async (data, variables, context, mutation) => {
+      await queryClient.invalidateQueries({ queryKey: promotionKeys.campaigns() });
+      await options?.onSuccess?.(data, variables, context, mutation);
     },
   });
 }
