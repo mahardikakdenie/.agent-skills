@@ -99,8 +99,7 @@ export const productService = {
         category,
       })
     ),
-  getPlanById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.plans, { id })),
+  getPlanById: (id: string) => get(PRODUCT_ENDPOINTS.planDetail(id)),
   createPlan: (payload: unknown) => post(PRODUCT_ENDPOINTS.plans, payload),
   updatePlan: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.planDetail(id), payload),

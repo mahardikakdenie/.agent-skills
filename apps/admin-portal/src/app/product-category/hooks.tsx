@@ -57,6 +57,20 @@ const formatCategoryLabel = (value: string | undefined) => {
     .join(" ");
 };
 
+const normalizeDetailResponse = (response: any) => {
+  const data = response?.data;
+
+  if (Array.isArray(data)) {
+    return data[0] || null;
+  }
+
+  if (Array.isArray(data?.data)) {
+    return data.data[0] || null;
+  }
+
+  return data || null;
+};
+
 export const useProducts = (props: UseProductCategoryProps = {}) => {
   const { category, planId, packageId } = props;
   const router = useRouter();
@@ -156,7 +170,7 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     enabled: !!planId,
     staleTime: 5 * 60 * 1000,
   });
-  const planData = (planResponse as any)?.data?.[0] || null;
+  const planData = normalizeDetailResponse(planResponse);
 
   const flattenTree = useCallback(
     (node: any, parent_id: string | null = null, level: number = 0) => {

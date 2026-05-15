@@ -108,7 +108,11 @@ export default function DetaildPage({
     }
 
     if (plan) {
-      const insuranceId = plan.products.insurances.id;
+      const insuranceId = plan.products?.insurances?.id;
+
+      if (!insuranceId) {
+        return;
+      }
 
       fetchProducts({ insuranceId });
       setValue('name', plan.name);
@@ -126,7 +130,10 @@ export default function DetaildPage({
     }
 
     if (plan) {
-      const productId = typeof plan.product === 'object' ? plan.product?.id : plan.product;
+      const productId =
+        typeof plan.product === 'object'
+          ? plan.product?.id
+          : plan.product || plan.products?.id;
 
       setValue('productId', productId ? String(productId) : '');
     }
