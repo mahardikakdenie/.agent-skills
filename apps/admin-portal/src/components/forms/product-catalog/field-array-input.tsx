@@ -1,11 +1,6 @@
-import {
-  useFieldArray,
-  Controller,
-  Control,
-  FieldErrors,
-} from "react-hook-form";
-import { Input } from "@repo/ui";
-import { Button } from "@repo/ui";
+import { useFieldArray, Controller, Control, FieldErrors } from 'react-hook-form';
+
+import { Box, Button, Input } from '@repo/ui';
 
 type ArrayFieldProps = {
   name: string;
@@ -14,28 +9,32 @@ type ArrayFieldProps = {
   errors: FieldErrors;
 };
 
-export function FieldArrayInput({
-  name,
-  label,
-  control,
-  errors,
-}: ArrayFieldProps) {
+export function FieldArrayInput({ name, label, control, errors }: ArrayFieldProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name,
   });
 
+  const getErrorMessage = (index: number) => {
+    const fieldErrors = errors[name];
+
+    if (!Array.isArray(fieldErrors)) {
+      return undefined;
+    }
+
+    const message = fieldErrors[index]?.message;
+
+    return typeof message === 'string' ? message : undefined;
+  };
+
   return (
-    <div>
-      <label
-        htmlFor={name}
-        className="block text-sm font-medium text-gray-700 mb-2"
-      >
-        {label}
-      </label>
+    <Box className="flex flex-col items-start gap-2">
       {fields.map((field, index) => (
-        <div key={field.id} className="flex gap-x-2 mb-2">
-          <div className="space-y-1 w-full">
+        <Box
+          key={field.id}
+          className="grid w-full grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+        >
+          <Box className="min-w-0">
             <Controller
               name={`${name}.${index}`}
               control={control}
@@ -43,35 +42,30 @@ export function FieldArrayInput({
               render={({ field }) => (
                 <Input
                   type="text"
+                  size="lg"
+                  label={index === 0 ? label : undefined}
                   placeholder={`Insert ${label}`}
+                  error={getErrorMessage(index)}
                   {...field}
-                  className={`mt-1 block w-full h-12 ${
-                    Array.isArray(errors[name]) && errors[name]?.[index]
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md shadow-sm`}
+                  className="bg-transparent"
                 />
               )}
             />
-            {Array.isArray(errors[name]) && errors[name]?.[index] && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors[name][index].message}
-              </p>
-            )}
-          </div>
+          </Box>
           <Button
             type="button"
             onClick={() => remove(index)}
             variant="destructive"
-            className="mt-2"
+            size="lg"
+            className={`h-12 w-fit px-4 ${index === 0 ? 'sm:mt-[22px]' : ''}`}
           >
             Remove
           </Button>
-        </div>
+        </Box>
       ))}
-      <Button type="button" onClick={() => append("")}>
+      <Button type="button" onClick={() => append('')} className="min-w-24 self-start px-5">
         Add
       </Button>
-    </div>
+    </Box>
   );
 }

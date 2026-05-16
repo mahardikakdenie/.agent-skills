@@ -1049,3 +1049,19 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box, Breadcrumb family, Button, Card family, Combobox, Input, and Tabs family primitives while PageHeader and ContentLoadingWrapper remain app-local.`
 - Verification note: `This logging update is based on the current product category detail route source changes, hooks consolidation, benefit form migration, and product service refactoring. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /product-category/[category]/detail/[id]/add-package Route Refactor - 2026-05-16
+
+- Route focus: `/product-category/[category]/detail/[id]/add-package`
+- Migration intent: `Refactor the product category add-package flow onto the current shared primitive stack, standardizing the dynamic package form layout, breadcrumb header, field-array controls, validation display, and save-state handling while preserving the existing create-package submission logic through useProducts.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-package/page.tsx` remains a thin permission-gated route wrapper and delegates package creation to `ProductCategoryPackageForm`, with import and formatting alignment to the current route style.
+  - `apps/admin-portal/src/components/forms/product-catalog/package.form.tsx` now standardizes the route header through the local `PageHeader` component with breadcrumbs back to Product Catalog, the current category, and product catalog detail.
+  - `ProductCategoryPackageForm` now composes the form with shared `@repo/ui` `Box`, `Button`, `Input`, and `Select` primitives, uses `ContentLoadingWrapper` for save/update loading state, disables the submit action while saving, and renders the Save/Check icon state through the PageHeader action slot.
+  - The premium, currency, dynamic search-config, range, active period, and active period unit fields now use `react-hook-form` `Controller` composition with shared input error props via a local `getFieldErrorMessage` helper.
+  - `apps/admin-portal/src/components/forms/product-catalog/field-array-input.tsx` now adopts shared `Box`, `Button`, and `Input` primitives, renders field-array validation through the shared `Input` error prop, and stabilizes the responsive Add/Remove control layout.
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx` receives matching wrapper import and formatting alignment as part of the adjacent product-catalog add-route cleanup.
+- Files changed (route-focused): [`apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-package/page.tsx`, `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx`, `apps/admin-portal/src/components/forms/product-catalog/package.form.tsx`, `apps/admin-portal/src/components/forms/product-catalog/field-array-input.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The add-package route now adopts existing shared Box, Button, Input, and Select primitives while PageHeader and ContentLoadingWrapper remain app-local.`
+- Verification note: `This logging update is based on the current product category add-package route source changes and supporting package form/field-array refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id]/add-package as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
