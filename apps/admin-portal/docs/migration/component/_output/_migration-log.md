@@ -1151,3 +1151,25 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The upload-benefit route now adopts existing shared Box, Button, FileUpload, Table, TableHeader, TableBody, TableRow, TableHead, and TableCell primitives while ContentLoadingWrapper and useProducts remain app-local.`
 - Verification note: `This logging update is based on the current upload-benefit page source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id]/upload-benefit as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /product-category/[category]/detail/[id]/upload-detail Route Refactor - 2026-05-16
+
+- Route focus: `/product-category/[category]/detail/[id]/upload-detail`
+- Migration intent: `Refactor the product category upload plan details page onto the current shared primitive stack, standardizing the type selection, CSV file upload, preview table, and action button layout with shared Box, Button, Select, FileUpload, and Table primitives and the consolidated useProducts hook while preserving the existing PapaParse-driven CSV preview and plan-detail upload submission logic.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-detail/page.tsx` now renders the route shell entirely with shared `@repo/ui` `Box`, `Button`, `FileUpload`, `Select`, `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, and `TableCell` primitives, replacing any legacy container markup.
+  - The page fetches plan data and exposes the `uploadPlanDetails` mutation and `isLoadingUploadPlanDetails` state via the consolidated `useProducts` hook using the `planId` and `category` derived from `useParams`, consistent with the hook contract established in adjacent product-category detail route refactors.
+  - The pipe-separated plan name string is split into individual `Box as="span"` segments rendered as `block`-display lines beneath the "Upload Plan Details" section heading, preserving multi-line plan name display.
+  - A shared `Select` primitive with `label="Detail Type"`, `size="lg"`, and `DETAIL_TYPE_OPTIONS` (tnc, how-to-claim, exception, persentase) handles detail type selection; changing the type resets the CSV preview state via `handleTypeChange`.
+  - A `FileUpload` primitive with `accept=".csv"` and `clearable` handles file selection; the `handleChooseFile` handler normalises single and array file values and resets the CSV preview state on each new selection.
+  - A two-action button row renders "Preview" (disabled until a file is chosen and no preview yet exists) and "Upload" (disabled until preview data is present), both using shared `Button` primitives with responsive `w-full sm:w-auto` width control.
+  - CSV parsing is performed by PapaParse in `header: true` / `skipEmptyLines: true` mode inside `handlePreview`, populating the `csvData` state that drives the preview table columns and rows.
+  - The preview table is composed from shared `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, and `TableCell` primitives, with `whitespace-nowrap bg-slate-50` on header cells and `whitespace-nowrap` on data cells, and a sentinel empty-state row rendered when no preview data is available.
+  - A grid layout `lg:grid-cols-[minmax(0,1fr)_auto]` is used for the FileUpload and action buttons row, providing responsive layout with the button group right-aligned on large screens.
+  - On successful upload, `router.push(AppURL.productCatalogDetail(category, id))` navigates back to the product catalog detail page, consistent with the adjacent upload-benefit route.
+  - The route wraps in `ContentLoadingWrapper` covering the `isLoadingUploadPlanDetails` state from `useProducts`, consistent with the loading-wrapper convention used across the product-catalog detail family.
+  - Layout uses `Box`-based card shells with `rounded-lg border border-slate-200 bg-white shadow-sm` styling consistent with the rest of the product-catalog detail family.
+- Files changed (route-focused): [`apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-detail/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The upload-detail route now adopts existing shared Box, Button, FileUpload, Select, Table, TableHeader, TableBody, TableRow, TableHead, and TableCell primitives while ContentLoadingWrapper and useProducts remain app-local.`
+- Verification note: `This logging update is based on the current upload-detail page source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id]/upload-detail as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
