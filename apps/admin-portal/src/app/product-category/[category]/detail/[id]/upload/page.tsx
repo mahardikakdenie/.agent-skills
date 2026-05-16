@@ -1,59 +1,67 @@
-"use client";
-import { useProducts } from "@/app/product-category/hooks";
-import { Input } from "@repo/ui";
-import { useEffect, useState } from "react";
-import Papa from "papaparse";
-import { Button } from "@repo/ui";
+'use client';
+
+import { useParams, useRouter } from 'next/navigation';
+import Papa from 'papaparse';
+import { useState } from 'react';
+
 import {
-  TableHeader,
-  TableRow,
-  TableHead,
+  Box,
+  Button,
+  FileUpload,
+  Table,
   TableBody,
   TableCell,
-  Table,
-} from "@repo/ui";
-import { useScreen } from "@/context/screen.context";
-import { useParams, useRouter } from "next/navigation";
-import AppURL from "@/constants/app-url.const";
-import { ContentLoadingWrapper } from "@/components/ui/loading";
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@repo/ui';
+
+import { useProducts } from '@/app/product-category/hooks';
+import { ContentLoadingWrapper } from '@/components/ui/loading';
+
+type CsvRow = Record<string, string>;
 
 export default function UploadPackage() {
   const params = useParams();
   const idParam = params.id;
   const categoryParam = params.category;
-  const id =
-    typeof idParam === "string"
-      ? idParam
-      : Array.isArray(idParam)
-      ? idParam[0]
-      : "";
+  const id = typeof idParam === 'string' ? idParam : Array.isArray(idParam) ? idParam[0] : '';
   const category =
-    typeof categoryParam === "string"
+    typeof categoryParam === 'string'
       ? categoryParam
       : Array.isArray(categoryParam)
-      ? categoryParam[0]
-      : "";
+        ? categoryParam[0]
+        : '';
 
   const { plan, uploadPackage, isLoadingUploadPackage } = useProducts({
     planId: id,
     category,
   });
-  const [csvData, setCsvData] = useState<any[]>([]);
+  const [csvData, setCsvData] = useState<CsvRow[]>([]);
+  const [file, setFile] = useState<File | null>(null);
 
-  const [file, setFile] = useState<any>(null);
-  const handleChooseFile = (event: any) => {
-    setFile(event.target.files[0]);
+  const planName = typeof plan?.name === 'string' ? plan.name : '';
+  const planNameLines = planName.split('|').filter(Boolean);
+  const tableColumns = csvData.length > 0 ? Object.keys(csvData[0] ?? {}) : [];
+  const hasPreview = csvData.length > 0;
+
+  const handleChooseFile = (selectedFile: File | File[] | null) => {
+    const nextFile = Array.isArray(selectedFile) ? (selectedFile[0] ?? null) : selectedFile;
+
+    setFile(nextFile);
+    setCsvData([]);
   };
+
   const handlePreview = () => {
     if (file) {
-      Papa.parse(file, {
+      Papa.parse<CsvRow>(file, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
           setCsvData(results.data);
         },
         error: (error) => {
-          console.error("Error parsing CSV file:", error);
+          console.error('Error parsing CSV file:', error);
         },
       });
     }
@@ -63,66 +71,115 @@ export default function UploadPackage() {
   const handleUpload = async () => {
     try {
       await uploadPackage({ category, id, data: csvData });
-      alert("Package uploaded successfully");
+      alert('Package uploaded successfully');
       router.back();
     } catch (error) {
       console.error(error);
-      alert("Failed to upload package");
+      alert('Failed to upload package');
     }
   };
   return (
     <ContentLoadingWrapper isLoading={isLoadingUploadPackage}>
-      <div className="p-6 bg-white rounded-lg shadow-md w-full h-full overflow-auto">
-        <h1>Upload Package</h1>
-        <h1 className="text-primary font-bold mb-4">
-          {plan?.name.split("|").map((item: any, i: any) => {
-            return (
-              <span key={i}>
-                {item}
-                <br />
-              </span>
-            );
-          })}
-        </h1>
-        <Input type="file" onChange={handleChooseFile} />
-        <Button
-          disabled={!!!file || csvData.length > 0}
-          className="btn-primary mt-5"
-          onClick={handlePreview}
-        >
-          Preview
-        </Button>
-        <Button
-          disabled={csvData.length === 0}
-          className="btn-primary mt-5 ml-2"
-          onClick={handleUpload}
-        >
-          Upload
-        </Button>
+      <Box className="flex w-full flex-col gap-4 px-4 py-4 md:px-6 md:py-5">
+        <Box className="rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <Box className="flex flex-col gap-2.5">
+            <Box as="h2" className="text-sm font-semibold text-slate-950">
+              Upload Package
+            </Box>
 
-        <div className="mt-5 overflow-auto">
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                {csvData.length > 0 &&
-                  Object.keys(csvData[0]).map((item, i) => (
-                    <TableHead key={i}>{item}</TableHead>
-                  ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {csvData.length > 0 &&
-                csvData.map((item, i) => (
-                  <TableRow key={i}>
-                    {Object.values(item).map((value: any, j) => (
-                      <TableCell key={j}>{value}</TableCell>
-                    ))}
-                  </TableRow>
+            {planNameLines.length > 0 && (
+              <Box
+                as="h1"
+                className="max-w-2xl text-lg font-bold leading-6 text-primary sm:text-xl"
+              >
+                {planNameLines.map((item: string, index: number) => (
+                  <Box key={`${item}-${index}`} as="span" className="block">
+                    {item}
+                  </Box>
                 ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        <Box className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <Box className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+            <FileUpload
+              accept=".csv"
+              value={file}
+              onChange={handleChooseFile}
+              clearable
+              label="CSV File"
+            />
+
+            <Box className="flex flex-col gap-2 sm:flex-row lg:justify-end">
+              <Button
+                disabled={!file || hasPreview}
+                className="w-full sm:w-auto"
+                onClick={handlePreview}
+              >
+                Preview
+              </Button>
+              <Button disabled={!hasPreview} className="w-full sm:w-auto" onClick={handleUpload}>
+                Upload
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+
+        <Box className="rounded-lg border border-slate-200 bg-white shadow-sm">
+          <Box className="flex flex-col gap-1 border-b border-slate-200 px-4 py-3 md:px-5">
+            <Box as="h3" className="text-sm font-semibold text-slate-950">
+              Preview
+            </Box>
+            {hasPreview ? (
+              <Box as="p" className="text-xs text-slate-500">
+                {csvData.length} rows ready to upload
+              </Box>
+            ) : (
+              <Box as="p" className="text-xs text-slate-500">
+                Choose a CSV file and preview it before upload.
+              </Box>
+            )}
+          </Box>
+
+          <Box className="overflow-auto">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow>
+                  {tableColumns.map((item) => (
+                    <TableHead key={item} className="whitespace-nowrap bg-slate-50">
+                      {item}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {hasPreview ? (
+                  csvData.map((item, rowIndex) => (
+                    <TableRow key={`csv-row-${rowIndex}`}>
+                      {tableColumns.map((column) => (
+                        <TableCell key={`${rowIndex}-${column}`} className="whitespace-nowrap">
+                          {item[column]}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={1}
+                      className="h-24 text-center text-sm text-muted-foreground"
+                    >
+                      No preview data
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Box>
+        </Box>
+      </Box>
     </ContentLoadingWrapper>
   );
 }
