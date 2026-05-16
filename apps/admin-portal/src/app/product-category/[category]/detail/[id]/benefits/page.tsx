@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useProducts } from "@/app/product-category/hooks";
+import { useParams } from 'next/navigation';
+
+import { Box } from '@repo/ui';
+
+import { useProducts } from '@/app/product-category/hooks';
 
 export default function PlanBenefit() {
   const { id } = useParams();
@@ -10,17 +12,28 @@ export default function PlanBenefit() {
     planId: id as string,
   });
 
+  const planName = typeof plan?.name === 'string' ? plan.name : '';
+  const planNameLines = planName.split('|').filter(Boolean);
+
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2>Plan Benefit</h2>
-      <h1 className="text-primary font-bold mb-4 mt-5">
-        {plan?.name.split("|").map((item: string, i: number) => (
-          <span key={i}>
-            {item}
-            <br />
-          </span>
-        ))}
-      </h1>
-    </div>
+    <Box className="flex w-full flex-col px-4 py-4 md:px-6 md:py-5">
+      <Box className="rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-sm">
+        <Box className="flex flex-col gap-2.5">
+          <Box as="h2" className="text-sm font-semibold text-slate-950">
+            Plan Benefit
+          </Box>
+
+          {planNameLines.length > 0 && (
+            <Box as="h1" className="max-w-2xl text-lg font-bold leading-6 text-primary sm:text-xl">
+              {planNameLines.map((item: string, index: number) => (
+                <Box key={`${item}-${index}`} as="span" className="block">
+                  {item}
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Box>
   );
 }

@@ -1065,3 +1065,17 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. The add-package route now adopts existing shared Box, Button, Input, and Select primitives while PageHeader and ContentLoadingWrapper remain app-local.`
 - Verification note: `This logging update is based on the current product category add-package route source changes and supporting package form/field-array refactor. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id]/add-package as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - /product-category/[category]/detail/[id]/benefits Route Refactor - 2026-05-16
+
+- Route focus: `/product-category/[category]/detail/[id]/benefits`
+- Migration intent: `Refactor the product category plan benefits display page onto the current shared primitive stack, standardizing the plan name header and benefit card layout with shared Box primitives and the consolidated useProducts hook while preserving existing plan benefit view behavior.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefits/page.tsx` now renders the route shell entirely with shared `@repo/ui` `Box` primitives, replacing any legacy container markup.
+  - The page fetches plan data via the consolidated `useProducts` hook using the `planId` derived from `useParams`, consistent with the hook contract established in the adjacent detail route refactor.
+  - The pipe-separated plan name string is split into individual `Box as="span"` segments, each rendered as a `block`-display labeled line beneath the "Plan Benefit" section heading, preserving multi-line plan name display.
+  - Layout uses a `Box`-based card shell with `rounded-lg border border-slate-200 bg-white shadow-sm` styling consistent with the rest of the product-catalog detail family.
+- Files changed (route-focused): [`apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefits/page.tsx`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The route adopts existing shared Box primitives and the consolidated useProducts hook while the plan name parsing remains route-local.`
+- Verification note: `This logging update is based on the current benefits page source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat /product-category/[category]/detail/[id]/benefits as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
