@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 106 |
+| PASS | 107 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 8 |
+| NOT_STARTED | 7 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -139,7 +139,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/product-category/[category]/detail/[id]/add-benefit` | `product-category-category-detail-id-add-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-benefit/page.tsx` | NO | NO | `PASS` | 2026-05-15 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-05-15 updates migrate the shared benefit form used by this route onto PageHeader, ContentLoadingWrapper, shared Box, Button, Card family, and Input primitives with recursive react-hook-form/zod sub-benefit support, while preserving the existing create-benefit submission through useProducts. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/product-category/[category]/detail/[id]/add-package` | `product-category-category-detail-id-add-package` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/add-package/page.tsx` | NO | NO | `PASS` | 2026-05-16 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-05-16 updates migrate the package form used by this route onto PageHeader, ContentLoadingWrapper, shared Box, Button, Input, and Select primitives, refresh field-array validation/layout through shared Input error props, and preserve the existing create-package submission through useProducts. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/product-category/[category]/detail/[id]/benefits` | `product-category-category-detail-id-benefits` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/benefits/page.tsx` | NO | NO | `PASS` | 2026-05-16 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-05-16 updates refactor the benefits display page onto shared Box primitives and the consolidated useProducts hook, parsing the pipe-separated plan name into individual labeled spans and rendering the Plan Benefit header with shared Box semantics. This route is treated as PASS for the current Batch 9 tracking pass. |
-| `/product-category/[category]/detail/[id]/details` | `product-category-category-detail-id-details` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/details/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
+| `/product-category/[category]/detail/[id]/details` | `product-category-category-detail-id-details` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/details/page.tsx` | NO | NO | `PASS` | 2026-05-16 | migration-log: present; comparison-log: none; screenshots: none | Latest 2026-05-16 updates refactor the plan details display page onto shared Box primitives and the consolidated useProducts hook, parsing the pipe-separated plan name into individual labeled spans and rendering the Plan Detail header with shared Box semantics. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/product-category/[category]/detail/[id]/edit-package/[packageId]` | `product-category-category-detail-id-edit-package-packageid` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/edit-package/[packageId]/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/detail/[id]/upload` | `product-category-category-detail-id-upload` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
 | `/product-category/[category]/detail/[id]/upload-benefit` | `product-category-category-detail-id-upload-benefit` | `apps/admin-portal/src/app/product-category/[category]/detail/[id]/upload-benefit/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: present; comparison-log: none; screenshots: none | No explicit Batch 9 route-stabilization evidence found. |
@@ -1524,14 +1524,14 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 - Route label: `product-category-category-detail-id-details`
 - Smoke route: `NO`
 - DataTable dependency: `NO`
-- Status: `NOT_STARTED`
-- Last checked: `2026-03-30`
+- Status: `PASS`
+- Last checked: `2026-05-16`
 - Evidence:
-  - _migration-log.md: `none`
+  - _migration-log.md: `present`
   - comparison-log.md: `none`
   - screenshots: `none`
 - Blocker type: `none`
-- Notes: No explicit Batch 9 route-stabilization evidence found.
+- Notes: Latest 2026-05-16 updates refactor the plan details display page onto shared `@repo/ui` `Box` primitives and the consolidated `useProducts` hook, parsing the pipe-separated plan name into individual `Box as="span"` block segments beneath the "Plan Detail" section heading, and wrapping the layout in a `Box`-based card shell consistent with the product-catalog detail family. This route is treated as PASS for the current Batch 9 tracking pass.
 
 ### /product-category/[category]/detail/[id]/edit-package/[packageId]
 
