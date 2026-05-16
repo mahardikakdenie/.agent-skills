@@ -123,8 +123,7 @@ export const productService = {
 
   getPackages: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.packages, params)),
-  getPackageById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.packages, { id })),
+  getPackageById: (id: string) => get(PRODUCT_ENDPOINTS.packageDetail(id)),
   createPackage: (payload: unknown) => post(PRODUCT_ENDPOINTS.packages, payload),
   updatePackage: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.packageDetail(id), payload),

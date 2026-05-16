@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-import { useAuth } from "@/context/auth.context";
-import AppURL from "@/constants/app-url.const";
-import ProductCategoryPackageForm from "@/components/forms/product-catalog/package.form";
+import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+
+import ProductCategoryPackageForm from '@/components/forms/product-catalog/package.form';
+import AppURL from '@/constants/app-url.const';
+import { useAuth } from '@/context/auth.context';
 
 export default function EditProductCatalogPackage({
   params,
@@ -21,7 +22,7 @@ export default function EditProductCatalogPackage({
 
   useEffect(() => {
     const checkAccess = async () => {
-      const access = permissionList.includes("Product Category.Update");
+      const access = permissionList.includes('Product Category.Update');
 
       if (!access) {
         router.push(AppURL.forbidden);
@@ -39,4 +40,4 @@ export default function EditProductCatalogPackage({
       packageID={packageId}
     />
   );
-};
+}

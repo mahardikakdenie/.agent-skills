@@ -190,20 +190,22 @@ const ProductCategoryPackageForm = ({
   const [schema, setSchema] = useState<ZodSchema<any>>();
   const [defaultValues, setDefaultValues] = useState<Record<string, any>>({});
   const [formFields, setFormFields] = useState<FormFieldType>([]);
-  const [fetchedPackageDetail, setFetchedPackageDetail] = useState<any>(null);
 
   const {
     savePackage,
     updatePackage,
     productConfig,
+    packageDetail,
     isLoadingSavePackage,
     isLoadingUpdatePackage,
+    isLoadingPackage,
   } = useProducts({
     category,
     packageId: packageID,
   });
   const isEdit = method === 'update';
   const isSaving = isLoadingSavePackage || isLoadingUpdatePackage;
+  const isLoadingForm = isSaving || (isEdit && isLoadingPackage);
   const title = `${isEdit ? 'Edit' : 'Add'} Package`;
   const categoryLabel = category
     .split('-')
@@ -255,39 +257,40 @@ const ProductCategoryPackageForm = ({
   }, [defaultValues, reset]);
 
   useEffect(() => {
-    if (fetchedPackageDetail) {
-      const packageData = Array.isArray(fetchedPackageDetail)
-        ? fetchedPackageDetail[0]
-        : fetchedPackageDetail;
+    if (method !== 'update' || !packageDetail) return;
 
-      if (!packageData) return;
+    const packageData = Array.isArray(packageDetail) ? packageDetail[0] : packageDetail;
 
-      setValue('currency', packageData.currency || '');
-      setValue('premium', formatCurrency(packageData.premium?.toString() || '0'));
+    if (!packageData) return;
 
-      for (const key in packageData.search_params) {
-        if (key.includes('_from') || key.includes('_to')) {
-          const keyArray = key.split('_');
-          const baseKey = keyArray[0];
+    setValue('currency', packageData.currency || '');
+    setValue('premium', formatCurrency(packageData.premium?.toString() || '0'));
+    setValue('active_period', packageData.active_period?.toString() || '');
+    setValue('active_period_unit', packageData.active_period_unit || '');
 
-          if (key.includes('_from')) {
-            setValue(`${baseKey}.from`, packageData.search_params[key]?.toString() || '');
-          }
-          if (key.includes('_to')) {
-            setValue(`${baseKey}.to`, packageData.search_params[key]?.toString() || '');
-          }
-        } else {
-          let value = packageData.search_params[key];
+    const searchParams = packageData.search_params || {};
 
-          if (typeof value === 'number') {
-            value = value.toString();
-          }
+    for (const key in searchParams) {
+      if (key.endsWith('_from') || key.endsWith('_to')) {
+        const baseKey = key.replace(/_(from|to)$/, '');
 
-          setValue(key, value);
+        if (key.endsWith('_from')) {
+          setValue(`${baseKey}.from`, searchParams[key]?.toString() || '');
         }
+        if (key.endsWith('_to')) {
+          setValue(`${baseKey}.to`, searchParams[key]?.toString() || '');
+        }
+      } else {
+        let value = searchParams[key];
+
+        if (typeof value === 'number') {
+          value = value.toString();
+        }
+
+        setValue(key, value);
       }
     }
-  }, [fetchedPackageDetail, setValue]);
+  }, [method, packageDetail, setValue]);
 
   const onSubmit = async (data: any) => {
     const attributesWithRange = getAttributeWithRangeType(data);
@@ -296,6 +299,8 @@ const ProductCategoryPackageForm = ({
     };
     delete newSearchParams.premium;
     delete newSearchParams.currency;
+    delete newSearchParams.active_period;
+    delete newSearchParams.active_period_unit;
     delete newSearchParams[attributesWithRange[0]];
 
     if (attributesWithRange.length > 0) {
@@ -307,6 +312,8 @@ const ProductCategoryPackageForm = ({
       plan: productCategoryID,
       premium: data.premium.replace(/\./g, ''),
       currency: data.currency,
+      active_period: data.active_period,
+      active_period_unit: data.active_period_unit,
       search_params: newSearchParams,
     };
 
@@ -332,7 +339,7 @@ const ProductCategoryPackageForm = ({
   }, [saveSuccess, router]);
 
   return (
-    <ContentLoadingWrapper isLoading={isSaving}>
+    <ContentLoadingWrapper isLoading={isLoadingForm}>
       <Box className="flex flex-col w-full">
         <Box as="form" noValidate onSubmit={handleSubmit(onSubmit)}>
           <PageHeader

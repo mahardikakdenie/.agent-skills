@@ -266,13 +266,14 @@ export const useProducts = (props: UseProductCategoryProps = {}) => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: packageData, isLoading: isLoadingPackage } = usePackageDetail(
+  const { data: packageResponse, isLoading: isLoadingPackage } = usePackageDetail(
     packageId || "",
     {
       enabled: !!packageId,
       staleTime: 5 * 60 * 1000,
     },
   );
+  const packageData = normalizeDetailResponse(packageResponse);
 
   const { data: productConfigResponse, isLoading: isLoadingProductConfig } =
     useProductConfig(category || "", {
