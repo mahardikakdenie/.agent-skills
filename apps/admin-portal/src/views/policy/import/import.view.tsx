@@ -1,33 +1,29 @@
+import { saveAs } from 'file-saver';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronLeft } from 'react-feather';
+import * as XLSX from 'xlsx';
+
+import { Box } from '@repo/ui';
+
 import Button from '@/components/button';
+// import { useCSVReader } from 'react-papaparse';
+import { DragDropExcel } from '@/components/drag-drop-excel';
+import AlertCircleIcon from '@/components/icons/alert-circle-icon';
+import EditIcon from '@/components/icons/edit-icon';
 import Input from '@/components/input';
 import Modal from '@/components/modal';
 import NotFound from '@/components/not-found';
 import Select from '@/components/select';
 import { Tooltip } from '@/components/tooltip';
-import {
-  primary,
-  primaryRed,
-  primaryRedLightForeground,
-} from '@/constants/app-common.const';
+import { primary, primaryRed, primaryRedLightForeground } from '@/constants/app-common.const';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
 import { useScreen } from '@/context/screen.context';
-import {
-  capitalizeStringWithChar,
-  toastNotification,
-} from '@/helpers/app.helper';
-import AlertCircleIcon from '@/components/icons/alert-circle-icon';
-import EditIcon from '@/components/icons/edit-icon';
+import { capitalizeStringWithChar, toastNotification } from '@/helpers/app.helper';
+import DownloadIcon from '@/images/download.icon';
 import { claimsService } from '@/services/claims/api/claims.service';
 import { productService } from '@/services/product/api/product.service';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { ChevronLeft } from 'react-feather';
-// import { useCSVReader } from 'react-papaparse';
-import {DragDropExcel} from "@/components/drag-drop-excel";
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import DownloadIcon from "@/images/download.icon";
 
 const GREY = '#CCC';
 const GREY_LIGHT = 'rgba(255, 255, 255, 0.4)';
@@ -113,17 +109,15 @@ export const ClaimImportView = () => {
       required: boolean;
     }[]
   >([]);
-  const [optionDataTypeList, setOptionDataTypeList] = useState<
-    { label: string; value: string }[]
-  >([
+  const [optionDataTypeList, setOptionDataTypeList] = useState<{ label: string; value: string }[]>([
     { label: 'Text', value: 'text' },
     { label: 'Number', value: 'number' },
     { label: 'Date', value: 'date' },
     { label: 'Boolean', value: 'boolean' },
   ]);
-  const [optionCategoryList, setOptionCategoryList] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [optionCategoryList, setOptionCategoryList] = useState<{ label: string; value: string }[]>(
+    [],
+  );
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [validateHeader, setValidateHeader] = useState<boolean[]>([]);
@@ -138,9 +132,7 @@ export const ClaimImportView = () => {
     const filterHeaderSubmitedSet = validateHeader.length
       ? new Set(filterHeaderSubmited)
       : new Set(listHeaderCSV || [...headerCSV]);
-    return filterRequiredHeader.every((item) =>
-      filterHeaderSubmitedSet.has(item.field),
-    );
+    return filterRequiredHeader.every((item) => filterHeaderSubmitedSet.has(item.field));
   };
   const [fileName, setFileName] = useState<string>();
   useEffect(() => {
@@ -197,7 +189,7 @@ export const ClaimImportView = () => {
             };
           }),
         );
-        setJsonHeader(responseHeader)
+        setJsonHeader(responseHeader);
       } else {
         toastNotification('Header guide not found!!', 'error');
         setCheckedHeaderList([]);
@@ -219,13 +211,11 @@ export const ClaimImportView = () => {
     try {
       setLoading(true);
       const filteredHeaders = headerCSV
-          .map((key, index) => (validateHeader[index] ? { key, index } : null))
-          .filter((item): item is { key: string; index: number } => item !== null);
+        .map((key, index) => (validateHeader[index] ? { key, index } : null))
+        .filter((item): item is { key: string; index: number } => item !== null);
 
       const result = dataCSV.map((row) =>
-          Object.fromEntries(
-              filteredHeaders.map(({ key, index }) => [key, row[index]])
-          )
+        Object.fromEntries(filteredHeaders.map(({ key, index }) => [key, row[index]])),
       );
       const payload = {
         channel: user?.channel || '',
@@ -237,10 +227,7 @@ export const ClaimImportView = () => {
       toastNotification('Success!!', 'success');
       router.push(AppURL.claimList);
     } catch (error: any) {
-      toastNotification(
-        `${error?.response?.data?.message || 'Error!!'}`,
-        'error',
-      );
+      toastNotification(`${error?.response?.data?.message || 'Error!!'}`, 'error');
       handleResponseError(error);
     } finally {
       setLoading(false);
@@ -307,9 +294,7 @@ export const ClaimImportView = () => {
       fieldCount[field] = (fieldCount[field] || 0) + 1;
     });
 
-    return listHeader.map((field) =>
-      fieldCount[field] > 1 ? false : fieldMap.has(field),
-    );
+    return listHeader.map((field) => (fieldCount[field] > 1 ? false : fieldMap.has(field)));
   };
 
   const handleImport = async (results: any) => {
@@ -361,16 +346,14 @@ export const ClaimImportView = () => {
   };
   const handleExcelData = (data: Record<string, any>[]) => {
     const headers = Object.keys(data[0]);
-    setHeaderCSV(Object.keys(data[0]))
-    const formattedData = data.map((row) =>
-        headers.map((key) => String(row[key] ?? ""))
-    );
+    setHeaderCSV(Object.keys(data[0]));
+    const formattedData = data.map((row) => headers.map((key) => String(row[key] ?? '')));
     setValidateHeader(new Array(headers.length).fill(true));
     setDataCSV(formattedData);
   };
 
   const exportToExcel = () => {
-    const headers = jsonHeader.map(item => item?.field);
+    const headers = jsonHeader.map((item) => item?.field);
 
     const dataAsObject = headers.reduce((acc, header, index) => {
       acc[header] = '';
@@ -379,83 +362,94 @@ export const ClaimImportView = () => {
 
     const worksheet = XLSX.utils.json_to_sheet([dataAsObject]);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
     const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array"
+      bookType: 'xlsx',
+      type: 'array',
     });
 
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "example-template.xlsx");
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, 'example-template.xlsx');
   };
 
   return (
-    <div className="mx-auto py-5 px-7">
-      <div className="lg:flex lg:items-center lg:justify-between lg:mb-3">
-        <div className="flex items-center justify-between mb-5">
-          <p className="font-bold text-lg lg:mt-2">Import Claim List</p>
+    <Box className="mx-auto py-5 px-7">
+      <Box className="lg:flex lg:items-center lg:justify-between lg:mb-3">
+        <Box className="flex items-center justify-between mb-5">
+          <Box as="p" className="font-bold text-lg lg:mt-2">
+            Import Claim List
+          </Box>
 
           {isMobileView && (
-            <div
+            <Box
               onClick={() => router.push(AppURL.claimList)}
               className="ml-auto items-center flex gap-1 text-red-500 text-sm cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               Back
-            </div>
+            </Box>
           )}
-        </div>
+        </Box>
 
         {!isMobileView && (
-          <div
+          <Box
             onClick={() => router.push(AppURL.claimList)}
             className="ml-auto items-center flex gap-1 text-red-500 text-sm cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
             Back
-          </div>
+          </Box>
         )}
 
-        { selectedCategory &&
-            <div className="lg:ml-5">
-              <Button
-                  className="w-full lg:w-fit flex justify-center lg:justify-between mr-0 mb-3 lg:mb-0"
-                  onClick={exportToExcel}>
-                <span className={`flex gap-2`}>{DownloadIcon("#ffffff")} Download Template</span>
-              </Button>
-            </div>
-        }
+        {selectedCategory && (
+          <Box className="lg:ml-5">
+            <Button
+              className="w-full lg:w-fit flex justify-center lg:justify-between mr-0 mb-3 lg:mb-0"
+              onClick={exportToExcel}
+            >
+              <Box as="span" className={`flex gap-2`}>
+                {DownloadIcon('#ffffff')} Download Template
+              </Box>
+            </Button>
+          </Box>
+        )}
 
         {!!headerCSV.length && !!dataCSV.length && (
           <>
-            <div className="lg:ml-5">
+            <Box className="lg:ml-5">
               <Button
                 variant="danger"
                 additionalClassName="w-full lg:w-fit justify-center lg:justify-between mr-0 mb-3 lg:mb-0"
                 onClick={() => clear()}
               >
-                <span className="mx-3.5">Cancel</span>
+                <Box as="span" className="mx-3.5">
+                  Cancel
+                </Box>
               </Button>
-            </div>
-            <div className="mb-5 lg:mb-0 lg:ml-3">
+            </Box>
+            <Box className="mb-5 lg:mb-0 lg:ml-3">
               <Button
                 additionalClassName="w-full lg:w-fit justify-center lg:justify-between mr-0 mb-3 lg:mb-0"
                 onClick={submitImport}
                 disabled={!!errorMessage}
               >
-                <span className="mx-3.5">Upload</span>
+                <Box as="span" className="mx-3.5">
+                  Upload
+                </Box>
               </Button>
-            </div>
+            </Box>
           </>
         )}
-      </div>
+      </Box>
 
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
-        <div className="mb-3 w-full">
-          <p className="mb-2 text-sm font-medium">Select Category</p>
-          <div className={`flex items-center gap-2`}>
-            <div className={`flex-1`}>
+      <Box className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
+        <Box className="mb-3 w-full">
+          <Box as="p" className="mb-2 text-sm font-medium">
+            Select Category
+          </Box>
+          <Box className={`flex items-center gap-2`}>
+            <Box className={`flex-1`}>
               <Select
                 chevronColor={primary}
                 placeholderSelectClassName="truncate"
@@ -464,165 +458,159 @@ export const ClaimImportView = () => {
                 onChange={(value) => handleSelectCategory(value.toString())}
                 options={optionCategoryList}
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
 
-      {selectedCategory &&
-        (!!checkedHeaderList.length || !!optionHeaderList.length) && (
-          <div className="w-full rounded-lg mb-5">
-            {headerCSV.length && dataCSV.length ? (
-              <>
-                <div className={`mb-5`}>
-                <DragDropExcel disabled={true} onDataParsed={handleExcelData} setFileName={setFileName} fileName={fileName}/>
-                </div>
-                <div className="flex">
-                  {errorMessage ? (
-                    <p className="mb-2 text-xs text-red-500">{errorMessage}</p>
-                  ) : (
-                    <p className="mb-2 text-xs">
-                      <span className="font-semibold">
-                        {`${validateHeader.filter(Boolean).length} `}
-                      </span>
-                      columns will be imported.
-                      <span className="font-semibold">
-                        {` ${validateHeader.filter((v) => !v).length} `}
-                      </span>{' '}
-                      columns will not be imported.
-                    </p>
-                  )}
-                </div>
-                <div className="overflow-x-auto sm:scrollable">
-                  <table
-                    style={stylesClaimData.table}
-                    ref={reportTemplateRef}
-                    border={1}
-                  >
-                    <thead>
-                      <tr>
-                        {headerCSV.map((header, index) => (
-                          <td
-                            key={index}
+      {selectedCategory && (!!checkedHeaderList.length || !!optionHeaderList.length) && (
+        <Box className="w-full rounded-lg mb-5">
+          {headerCSV.length && dataCSV.length ? (
+            <>
+              <Box className={`mb-5`}>
+                <DragDropExcel
+                  disabled={true}
+                  onDataParsed={handleExcelData}
+                  setFileName={setFileName}
+                  fileName={fileName}
+                />
+              </Box>
+              <Box className="flex">
+                {errorMessage ? (
+                  <Box as="p" className="mb-2 text-xs text-red-500">
+                    {errorMessage}
+                  </Box>
+                ) : (
+                  <Box as="p" className="mb-2 text-xs">
+                    <Box as="span" className="font-semibold">
+                      {`${validateHeader.filter(Boolean).length} `}
+                    </Box>
+                    columns will be imported.
+                    <Box as="span" className="font-semibold">
+                      {` ${validateHeader.filter((v) => !v).length} `}
+                    </Box>{' '}
+                    columns will not be imported.
+                  </Box>
+                )}
+              </Box>
+              <Box className="overflow-x-auto sm:scrollable">
+                <Box as="table" style={stylesClaimData.table} ref={reportTemplateRef} border={1}>
+                  <Box as="thead">
+                    <Box as="tr">
+                      {headerCSV.map((header, index) => (
+                        <Box
+                          as="td"
+                          key={index}
+                          style={{
+                            ...stylesClaimData.th,
+                            background: !checkSameHeader(header) ? primaryRed : '#e7e7e7',
+                          }}
+                          valign="middle"
+                        >
+                          <Tooltip
+                            content="Edit the column name to resolve the error"
+                            position="top"
+                            isShow={!checkSameHeader(header)}
+                          >
+                            <Box className="flex items-center p-2 gap-2">
+                              <Box
+                                as="span"
+                                onClick={() => handleSelectedHeader(index, header)}
+                                style={{
+                                  color: !checkSameHeader(header) ? primaryRedLightForeground : '',
+                                }}
+                                className={`flex items-center p-2 gap-x-0.5 cursor-pointer truncate ${
+                                  checkSameHeader(header) && `hover:bg-primary-foreground`
+                                }
+                                  `}
+                              >
+                                {EditIcon(
+                                  checkSameHeader(header) ? primary : primaryRedLightForeground,
+                                  '20',
+                                  '20',
+                                  '0 0 24 24',
+                                )}
+                                {header}
+                              </Box>
+                              {checkSameHeader(header) ? (
+                                <Box
+                                  as="input"
+                                  type="checkbox"
+                                  className="custom-checkbox"
+                                  checked={!!validateHeader[index]}
+                                  onChange={() => handleCheckSelectedHeader(index)}
+                                />
+                              ) : (
+                                AlertCircleIcon(primaryRedLightForeground, '20', '20', '0 0 24 24')
+                              )}
+                            </Box>
+                          </Tooltip>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                  <Box as="tbody">
+                    {dataCSV.map((item, index) => (
+                      <Box as="tr" key={index}>
+                        {[...item].map((subItem, subIndex) => (
+                          <Box
+                            as="td"
+                            key={subIndex}
                             style={{
-                              ...stylesClaimData.th,
-                              background: !checkSameHeader(header)
-                                ? primaryRed
-                                : '#e7e7e7',
+                              ...stylesClaimData.td,
+                              background: validateHeader[subIndex]
+                                ? 'bg-white'
+                                : !checkSameHeader('', subIndex) && !validateHeader[subIndex]
+                                  ? primaryRedLightForeground
+                                  : 'bg-[#e7e7e7]',
                             }}
                             valign="middle"
                           >
-                            <Tooltip
-                              content="Edit the column name to resolve the error"
-                              position="top"
-                              isShow={!checkSameHeader(header)}
-                            >
-                              <div className="flex items-center p-2 gap-2">
-                                <span
-                                  onClick={() =>
-                                    handleSelectedHeader(index, header)
-                                  }
-                                  style={{
-                                    color: !checkSameHeader(header)
-                                      ? primaryRedLightForeground
-                                      : '',
-                                  }}
-                                  className={`flex items-center p-2 gap-x-0.5 cursor-pointer truncate ${
-                                    checkSameHeader(header) &&
-                                    `hover:bg-primary-foreground`
-                                  }
-                                  `}
-                                >
-                                  {EditIcon(
-                                    checkSameHeader(header)
-                                      ? primary
-                                      : primaryRedLightForeground,
-                                    '20',
-                                    '20',
-                                    '0 0 24 24',
-                                  )}
-                                  {header}
-                                </span>
-                                {checkSameHeader(header) ? (
-                                  <input
-                                    type="checkbox"
-                                    className="custom-checkbox"
-                                    checked={!!validateHeader[index]}
-                                    onChange={() =>
-                                      handleCheckSelectedHeader(index)
-                                    }
-                                  />
-                                ) : (
-                                  AlertCircleIcon(
-                                    primaryRedLightForeground,
-                                    '20',
-                                    '20',
-                                    '0 0 24 24',
-                                  )
-                                )}
-                              </div>
-                            </Tooltip>
-                          </td>
+                            {subItem}
+                          </Box>
                         ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dataCSV.map((item, index) => (
-                        <tr key={index}>
-                          {[...item].map((subItem, subIndex) => (
-                            <td
-                              key={subIndex}
-                              style={{
-                                ...stylesClaimData.td,
-                                background: validateHeader[subIndex]
-                                  ? 'bg-white'
-                                  : !checkSameHeader('', subIndex) &&
-                                    !validateHeader[subIndex]
-                                  ? primaryRedLightForeground
-                                  : 'bg-[#e7e7e7]',
-                              }}
-                              valign="middle"
-                            >
-                              {subItem}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            ) : (
-              // <CSVReader
-              //   onUploadAccepted={(results: any) => handleImport(results)}
-              //   onDragOver={(event: DragEvent) => {
-              //     event.preventDefault();
-              //   }}
-              //   onDragLeave={(event: DragEvent) => {
-              //     event.preventDefault();
-              //   }}
-              //   onUploadRejected={() =>
-              //     toastNotification('File must be csv!!', 'error')
-              //   }
-              //   config={{
-              //     skipEmptyLines: true,
-              //   }}
-              // >
-              //   {({ getRootProps }: any) => (
-              //     <>
-              //       <div {...getRootProps()} style={styles.zone}>
-              //         Drop CSV file here or click to upload
-              //       </div>
-              //     </>
-              //   )}
-              // </CSVReader>
-                <DragDropExcel disabled={false} onDataParsed={handleExcelData} setFileName={setFileName} fileName={fileName}/>
-            )}
-          </div>
-        )}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            </>
+          ) : (
+            // <CSVReader
+            //   onUploadAccepted={(results: any) => handleImport(results)}
+            //   onDragOver={(event: DragEvent) => {
+            //     event.preventDefault();
+            //   }}
+            //   onDragLeave={(event: DragEvent) => {
+            //     event.preventDefault();
+            //   }}
+            //   onUploadRejected={() =>
+            //     toastNotification('File must be csv!!', 'error')
+            //   }
+            //   config={{
+            //     skipEmptyLines: true,
+            //   }}
+            // >
+            //   {({ getRootProps }: any) => (
+            //     <>
+            //       <div {...getRootProps()} style={styles.zone}>
+            //         Drop CSV file here or click to upload
+            //       </div>
+            //     </>
+            //   )}
+            // </CSVReader>
+            <DragDropExcel
+              disabled={false}
+              onDataParsed={handleExcelData}
+              setFileName={setFileName}
+              fileName={fileName}
+            />
+          )}
+        </Box>
+      )}
 
       {dataCSV.length < 1 && (
-        <div className="flex items-center justify-center bg-white rounded-md py-20 shadow mt-2">
+        <Box className="flex items-center justify-center bg-white rounded-md py-20 shadow mt-2">
           <NotFound
             width={isMobileView && '143'}
             height={isMobileView && '144'}
@@ -632,7 +620,7 @@ export const ClaimImportView = () => {
             text="No data available"
             textClassName={isMobileView && 'text-xs'}
           />
-        </div>
+        </Box>
       )}
 
       <Modal
@@ -641,15 +629,15 @@ export const ClaimImportView = () => {
         widthClassName="w-full lg:w-[500px]"
         heightClassName="h-fit"
       >
-        <div className="py-6 px-4">
-          <h1 className="font-bold text-lg text-center mb-5">
+        <Box className="py-6 px-4">
+          <Box as="h1" className="font-bold text-lg text-center mb-5">
             Edit column label
-          </h1>
-          <div className="grid mb-5">
-            <div className="mb-3">
-              <p className="mb-2 text-sm font-medium">
+          </Box>
+          <Box className="grid mb-5">
+            <Box className="mb-3">
+              <Box as="p" className="mb-2 text-sm font-medium">
                 Select a field for this column
-              </p>
+              </Box>
               <Select
                 chevronColor={primary}
                 placeholderSelectClassName="truncate"
@@ -660,26 +648,27 @@ export const ClaimImportView = () => {
                 }}
                 options={optionHeaderList}
               />
-            </div>
+            </Box>
 
             {selectedHeader === 'add' && (
-              <div className="">
-                <div className="mb-3">
-                  <p className="mb-2 text-sm font-medium">
+              <Box className="">
+                <Box className="mb-3">
+                  <Box as="p" className="mb-2 text-sm font-medium">
                     Create a field label
-                  </p>
+                  </Box>
                   <Input
                     value={newLabelHeader}
                     onChange={(value) => {
-                      if (value.toString() !== 'add')
-                        setNewLabelHeader(value.toString());
+                      if (value.toString() !== 'add') setNewLabelHeader(value.toString());
                     }}
                     onClear={() => setNewLabelHeader('')}
                     placeholder="Input your field"
                   />
-                </div>
-                <div className="mb3">
-                  <p className="mb-2 text-sm font-medium">Select a data type</p>
+                </Box>
+                <Box className="mb3">
+                  <Box as="p" className="mb-2 text-sm font-medium">
+                    Select a data type
+                  </Box>
                   <Select
                     chevronColor={primary}
                     placeholderSelectClassName="truncate"
@@ -690,17 +679,19 @@ export const ClaimImportView = () => {
                     }}
                     options={optionDataTypeList}
                   />
-                </div>
-              </div>
+                </Box>
+              </Box>
             )}
-          </div>
-          <div className="flex items-center justify-center text-center">
+          </Box>
+          <Box className="flex items-center justify-center text-center">
             <Button
               variant="danger"
               additionalClassName="mr-2"
               onClick={() => setIsModalEditHeader(false)}
             >
-              <span className="mx-3.5">Cancel</span>
+              <Box as="span" className="mx-3.5">
+                Cancel
+              </Box>
             </Button>
             <Button
               onClick={() => {
@@ -723,8 +714,7 @@ export const ClaimImportView = () => {
                   setOptionHeaderlist((prev) => [...prev, newData]);
                 }
                 const newValidateHeader = [...validateHeader];
-                newValidateHeader[indexHeader] =
-                  !newValidateHeader[indexHeader];
+                newValidateHeader[indexHeader] = !newValidateHeader[indexHeader];
 
                 setValidateHeader(newValidateHeader);
                 setIsModalEditHeader(false);
@@ -732,11 +722,13 @@ export const ClaimImportView = () => {
                 setNewTypeHeader('');
               }}
             >
-              <span className={`mx-3 `}>Confirm</span>
+              <Box as="span" className={`mx-3 `}>
+                Confirm
+              </Box>
             </Button>
-          </div>
-        </div>
+          </Box>
+        </Box>
       </Modal>
-    </div>
+    </Box>
   );
 };

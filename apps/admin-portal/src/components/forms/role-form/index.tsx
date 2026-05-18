@@ -324,7 +324,7 @@ export default function RoleForm({
                               </TableCell>
 
                               <TableCell className="py-4 pl-1 pr-4 text-center border-none align-top">
-                                <div className="flex gap-2 justify-center pt-1">
+                                <Box className="flex gap-2 justify-center pt-1">
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -343,7 +343,7 @@ export default function RoleForm({
                                   >
                                     <Trash2 className="w-5 h-5" />
                                   </Button>
-                                </div>
+                                </Box>
                               </TableCell>
                             </>
                           ) : (
@@ -352,12 +352,13 @@ export default function RoleForm({
                                 {item.menu}
                               </TableCell>
                               <TableCell className="py-4 px-1 border-none">
-                                <div className="flex flex-wrap gap-2">
+                                <Box className="flex flex-wrap gap-2">
                                   {permissionOptions[item.menuId]?.map(
                                     (perm: MenuPermissionOption) => {
                                       if (perm.id) {
                                         return (
-                                          <span
+                                          <Box
+                                            as="span"
                                             key={perm.id}
                                             className="inline-flex items-center gap-2 rounded-full bg-slate-50 border border-slate-200 py-1.5 px-4 text-sm font-medium text-slate-700 shadow-sm"
                                           >
@@ -371,17 +372,17 @@ export default function RoleForm({
                                             >
                                               <X className="w-3.5 h-3.5" />
                                             </Button>
-                                          </span>
+                                          </Box>
                                         );
                                       } else {
                                         return null;
                                       }
                                     },
                                   )}
-                                </div>
+                                </Box>
                               </TableCell>
                               <TableCell className="py-4 pl-1 pr-4 text-center border-none align-top">
-                                <div className="flex gap-2 justify-center pt-1">
+                                <Box className="flex gap-2 justify-center pt-1">
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -400,7 +401,7 @@ export default function RoleForm({
                                   >
                                     <Trash2 className="w-5 h-5" />
                                   </Button>
-                                </div>
+                                </Box>
                               </TableCell>
                             </>
                           )}

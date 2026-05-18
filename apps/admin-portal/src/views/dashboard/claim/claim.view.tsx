@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 
+import { Box } from '@repo/ui';
+
 import DatePickerDropdown from '@/components/date-range-picker';
 import Select from '@/components/select';
 import DetailTable from '@/components/table-policy';
@@ -269,13 +271,15 @@ export const DashboardClaim = () => {
     : [];
 
   return (
-    <div className="mx-auto py-5 px-7 bg-[#ebf6ff] min-h-screen">
-      <div className="text-center bg-white px-5 py-4 rounded-md shadow-sm mb-5">
-        <h5 className="text-2xl font-bold text-primary">Insurance Claim Performance Dashboard</h5>
-      </div>
+    <Box className="mx-auto py-5 px-7 bg-[#ebf6ff] min-h-screen">
+      <Box className="text-center bg-white px-5 py-4 rounded-md shadow-sm mb-5">
+        <Box as="h5" className="text-2xl font-bold text-primary">
+          Insurance Claim Performance Dashboard
+        </Box>
+      </Box>
 
-      <div className="flex gap-3">
-        <div className="grid grid-cols-4 gap-4 mb-4 w-full">
+      <Box className="flex gap-3">
+        <Box className="grid grid-cols-4 gap-4 mb-4 w-full">
           <Select
             chevronColor={primary}
             placeholderSelectClassName="truncate"
@@ -312,65 +316,83 @@ export const DashboardClaim = () => {
             options={planOptions}
           />
           <DatePickerDropdown onDateChange={handleDateChange} />
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <div className="grid grid-cols-4 gap-4 mb-4">
-        <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">
+      <Box className="grid grid-cols-4 gap-4 mb-4">
+        <Box className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+          <Box as="p" className="text-3xl font-bold text-center">
             {numberSimpleFormatter(totalClaimAmount)}
-          </p>
-          <h5 className="text-xs">Total Claim Amount</h5>
-        </div>
-        <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">
+          </Box>
+          <Box as="h5" className="text-xs">
+            Total Claim Amount
+          </Box>
+        </Box>
+        <Box className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+          <Box as="p" className="text-3xl font-bold text-center">
             {numberSimpleFormatter(totalClaimAmountApproved)}
-          </p>
-          <h5 className="text-xs">Total Claim Amount Approved</h5>
-        </div>
-        <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">{numberSimpleFormatter(totalClaim)}</p>
-          <h5 className="text-xs">Total Claim</h5>
-        </div>
-        <div className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-center">
+          </Box>
+          <Box as="h5" className="text-xs">
+            Total Claim Amount Approved
+          </Box>
+        </Box>
+        <Box className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+          <Box as="p" className="text-3xl font-bold text-center">
+            {numberSimpleFormatter(totalClaim)}
+          </Box>
+          <Box as="h5" className="text-xs">
+            Total Claim
+          </Box>
+        </Box>
+        <Box className="bg-white p-5 rounded-md shadow-sm text-center flex flex-col items-center justify-center">
+          <Box as="p" className="text-3xl font-bold text-center">
             {numberSimpleFormatter(totalClaimApproved)}
-          </p>
-          <h5 className="text-xs">Total Claim Approved</h5>
-        </div>
-      </div>
-      <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-4">
-          <div className="flex flex-col gap-4">
-            <div className="bg-white p-5 rounded-md shadow-sm">
-              <h5 className="font-semibold">Claim Type</h5>
-              <div className="w-full h-[312px]">
+          </Box>
+          <Box as="h5" className="text-xs">
+            Total Claim Approved
+          </Box>
+        </Box>
+      </Box>
+      <Box className="grid grid-cols-12 gap-4 mb-4">
+        <Box className="col-span-4">
+          <Box className="flex flex-col gap-4">
+            <Box className="bg-white p-5 rounded-md shadow-sm">
+              <Box as="h5" className="font-semibold">
+                Claim Type
+              </Box>
+              <Box className="w-full h-[312px]">
                 <PieChart data={pieChart} />
-              </div>
-            </div>
-            <div className="bg-white p-5 rounded-md shadow-sm">
-              <h5 className="font-semibold">Claim Status</h5>
-              <div className="w-full h-[503px]">
+              </Box>
+            </Box>
+            <Box className="bg-white p-5 rounded-md shadow-sm">
+              <Box as="h5" className="font-semibold">
+                Claim Status
+              </Box>
+              <Box className="w-full h-[503px]">
                 <VerticalBarChart data={barChart} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-8">
-          <div className="flex flex-col gap-4">
-            <div className="bg-white py-5 rounded-md shadow-sm w-full mb-4">
-              <h5 className="font-semibold mb-3 pl-5">Claim Trends</h5>
-              <div className="h-[300px]">
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+        <Box className="col-span-8">
+          <Box className="flex flex-col gap-4">
+            <Box className="bg-white py-5 rounded-md shadow-sm w-full mb-4">
+              <Box as="h5" className="font-semibold mb-3 pl-5">
+                Claim Trends
+              </Box>
+              <Box className="h-[300px]">
                 <LineChart data={lineChart} series={claimLineChartSeries} />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-5 rounded-md shadow-sm w-full table-claim">
-            <h5 className="font-semibold mb-3">Detail Claim</h5>
+              </Box>
+            </Box>
+          </Box>
+          <Box className="bg-white p-5 rounded-md shadow-sm w-full table-claim">
+            <Box as="h5" className="font-semibold mb-3">
+              Detail Claim
+            </Box>
             <DetailTable data={tableData} columns={claimColumns} />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };

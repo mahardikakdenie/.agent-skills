@@ -159,7 +159,8 @@ export default function UploadEndorsement() {
             </Box>
             <Box className="flex items-center h-10 bg-white border border-slate-200 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
               <Box className="flex-1 flex items-center h-full min-w-0">
-                <input
+                <Box
+                  as="input"
                   ref={fileInputRef}
                   id="file-upload"
                   type="file"

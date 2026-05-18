@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import React from 'react';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
+import { Box, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
 
 import { countries } from '@/app/masterdata/user/user.const';
 
@@ -23,7 +23,7 @@ const SelectPhoneCode: React.FC<SelectPhoneCodeProps> = ({
   contentClassName = '',
 }) => {
   return (
-    <div className={`h-full w-full ${className}`}>
+    <Box className={`h-full w-full ${className}`}>
       <Select
         name="countryCodes"
         value={value}
@@ -37,7 +37,7 @@ const SelectPhoneCode: React.FC<SelectPhoneCodeProps> = ({
         <SelectContent className={contentClassName}>
           {countries.map((country: any) => (
             <SelectItem key={country.code} value={country.code}>
-              <div className="flex gap-2 items-center justify-center">
+              <Box className="flex gap-2 items-center justify-center">
                 <Image
                   alt={country.name}
                   width={32}
@@ -45,12 +45,12 @@ const SelectPhoneCode: React.FC<SelectPhoneCodeProps> = ({
                   className="flex-shrink-0 rounded-md h-6"
                   src={country.logo}
                 />
-              </div>
+              </Box>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-    </div>
+    </Box>
   );
 };
 

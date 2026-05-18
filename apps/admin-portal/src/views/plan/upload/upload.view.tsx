@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { ChevronLeft } from "react-feather";
-import { productService } from "@/services/product/api/product.service";
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import Papa from 'papaparse';
+import React, { useEffect, useState } from 'react';
+import { ChevronLeft } from 'react-feather';
+
+import { Box } from '@repo/ui';
+
+import Button from '@/components/button';
+import Input from '@/components/input';
+import Select from '@/components/select';
+import { primary, templateFileLink } from '@/constants/app-common.const';
+import { useAuth } from '@/context/auth.context';
+import { useScreen } from '@/context/screen.context';
 import {
   capitalizeString,
   capitalizeStringWithChar,
   getBreadcrumbs,
   toastNotification,
   toCamelCase,
-} from "@/helpers/app.helper";
-import { useScreen } from "@/context/screen.context";
-import { useAuth } from "@/context/auth.context";
-import Input from "@/components/input";
-import Button from "@/components/button";
-import Papa from "papaparse";
-import { primary, templateFileLink } from "@/constants/app-common.const";
-import Select from "@/components/select";
+} from '@/helpers/app.helper';
+import { productService } from '@/services/product/api/product.service';
 
 export const UploadPlanView = () => {
-  const [selectedDetailOption, setSelectedDetailOption] = useState("");
-  const [templateFileUrl, setTemplateFileUrl] = useState("");
+  const [selectedDetailOption, setSelectedDetailOption] = useState('');
+  const [templateFileUrl, setTemplateFileUrl] = useState('');
   const [plan, setPlan] = useState<any>({});
   const [isReadyToUpload, setIsReadyToUpload] = useState(false);
   const [fileToUpload, setFileToUpload] = useState<any | null>(null);
@@ -31,20 +34,20 @@ export const UploadPlanView = () => {
   const { handleResponseError } = useAuth();
   const detailOptions = [
     {
-      label: "Terms and Conditions",
-      value: "tnc",
+      label: 'Terms and Conditions',
+      value: 'tnc',
     },
     {
-      label: "How to Claim",
-      value: "how-to-claim",
+      label: 'How to Claim',
+      value: 'how-to-claim',
     },
     {
-      label: "Exception",
-      value: "exception",
+      label: 'Exception',
+      value: 'exception',
     },
     {
-      label: "Percentage",
-      value: "persentase",
+      label: 'Percentage',
+      value: 'persentase',
     },
   ];
 
@@ -53,13 +56,12 @@ export const UploadPlanView = () => {
       try {
         setLoading(true);
         if (!id) return;
-        const responsePlanDetails: any = await productService.getPlanById(
-          id.toString()
-        );
+        const responsePlanDetails: any = await productService.getPlanById(id.toString());
         if (responsePlanDetails) {
-          const planData = responsePlanDetails?.data?.[0] || responsePlanDetails?.data || responsePlanDetails;
+          const planData =
+            responsePlanDetails?.data?.[0] || responsePlanDetails?.data || responsePlanDetails;
           const key = toCamelCase(
-            `${planData?.products?.categories?.name || ""} ${doc?.toString() || ""}`
+            `${planData?.products?.categories?.name || ''} ${doc?.toString() || ''}`,
           );
           setPlan(planData);
           setTemplateFileUrl(templateFileLink[key]);
@@ -81,30 +83,27 @@ export const UploadPlanView = () => {
       const category = plan.products.categories.name;
       let response: any;
       if (!id || !doc) return;
-      if (doc.toString() === "benefits")
-        response = await productService.bulkCreatePlanBenefits(
-          id.toString(),
-          csvData
-        );
-      else if (doc.toString() === "packages")
+      if (doc.toString() === 'benefits')
+        response = await productService.bulkCreatePlanBenefits(id.toString(), csvData);
+      else if (doc.toString() === 'packages')
         response = await productService.bulkCreatePackagesByCategory(
           category,
           id.toString(),
-          csvData
+          csvData,
         );
       else
         response = await productService.bulkCreatePlanDetails(
           id.toString(),
           selectedDetailOption,
-          csvData
+          csvData,
         );
 
       if (response) {
-        toastNotification("Upload file successfully!");
+        toastNotification('Upload file successfully!');
         goToPlanDetailPage();
       }
     } catch (error: any) {
-      toastNotification("Failed to upload file!", "error");
+      toastNotification('Failed to upload file!', 'error');
     } finally {
       setLoading(false);
     }
@@ -124,7 +123,7 @@ export const UploadPlanView = () => {
         setIsReadyToUpload(true);
       },
       error: () => {
-        toastNotification("Error parsing CSV file.", "error");
+        toastNotification('Error parsing CSV file.', 'error');
       },
     });
   };
@@ -138,40 +137,46 @@ export const UploadPlanView = () => {
     if (str1 && str2)
       return `Download ${capitalizeStringWithChar(
         str1,
-        "-"
-      ).toLowerCase()} ${capitalizeStringWithChar(str2, "-").toLowerCase()}`;
-    else return "Download";
+        '-',
+      ).toLowerCase()} ${capitalizeStringWithChar(str2, '-').toLowerCase()}`;
+    else return 'Download';
   };
 
-  const downloadTemplate = () => window.open(templateFileUrl, "_blank");
+  const downloadTemplate = () => window.open(templateFileUrl, '_blank');
 
   const goToPlanDetailPage = () => {
-    router.push(path.split("/").slice(0, -2).join("/"));
+    router.push(path.split('/').slice(0, -2).join('/'));
   };
 
   return (
-    <div className="mx-auto">
-      <div className="overflow-x-auto sm:scrollable bg-white flex items-center justify-between mb-5 py-5 px-7">
-        <div>
-          {getBreadcrumbs(["Plan", "List", "Detail", "Upload"])}
-          <p className="font-bold text-lg">
-            Upload {capitalizeString(doc ? doc.toString() : "")}
-          </p>
-        </div>
-        <div
+    <Box className="mx-auto">
+      <Box className="overflow-x-auto sm:scrollable bg-white flex items-center justify-between mb-5 py-5 px-7">
+        <Box>
+          {getBreadcrumbs(['Plan', 'List', 'Detail', 'Upload'])}
+          <Box as="p" className="font-bold text-lg">
+            Upload {capitalizeString(doc ? doc.toString() : '')}
+          </Box>
+        </Box>
+        <Box
           onClick={goToPlanDetailPage}
           className="flex items-center justify-between cursor-pointer"
         >
           <ChevronLeft color="red" width="30" height="15" />
-          <p className="text-sm text-red-500">Back</p>
-        </div>
-      </div>
-      <div className="pb-5 px-7 mb-5">
-        <div className="p-5 bg-white rounded-md shadow">
-          <p className="font-semibold">{plan.name}</p>
-          {doc && doc.toString() === "details" && (
-            <div className="mt-4">
-              <p className="text-sm font-medium mb-2">Type</p>
+          <Box as="p" className="text-sm text-red-500">
+            Back
+          </Box>
+        </Box>
+      </Box>
+      <Box className="pb-5 px-7 mb-5">
+        <Box className="p-5 bg-white rounded-md shadow">
+          <Box as="p" className="font-semibold">
+            {plan.name}
+          </Box>
+          {doc && doc.toString() === 'details' && (
+            <Box className="mt-4">
+              <Box as="p" className="text-sm font-medium mb-2">
+                Type
+              </Box>
               <Select
                 chevronColor={primary}
                 placeholderSelectClassName="truncate"
@@ -180,106 +185,111 @@ export const UploadPlanView = () => {
                 onChange={(value) => setSelectedDetailOption(value.toString())}
                 options={detailOptions}
               />
-            </div>
+            </Box>
           )}
           {!!templateFileUrl && doc && (
-            <div className="mt-2">
-              <p className="text-xs">
-                {filenameTemplate(
-                  plan?.products?.categories?.name,
-                  doc?.toString()
-                )}{" "}
-                template{" "}
-                <span
+            <Box className="mt-2">
+              <Box as="p" className="text-xs">
+                {filenameTemplate(plan?.products?.categories?.name, doc?.toString())} template{' '}
+                <Box
+                  as="span"
                   className="text-primary font-medium clickable"
                   onClick={downloadTemplate}
                 >
                   here
-                </span>
+                </Box>
                 .
-              </p>
-            </div>
+              </Box>
+            </Box>
           )}
-          <div className="mt-4">
-            <p className="text-sm font-medium mb-2">CSV File</p>
-            <Input
-              value=""
-              type="file"
-              onChangeFile={handleSelectFile}
-              onClear={handleOnClear}
-            />
-          </div>
-          <div className="flex items-center text-center mt-4">
+          <Box className="mt-4">
+            <Box as="p" className="text-sm font-medium mb-2">
+              CSV File
+            </Box>
+            <Input value="" type="file" onChangeFile={handleSelectFile} onClear={handleOnClear} />
+          </Box>
+          <Box className="flex items-center text-center mt-4">
             <Button
               variant="warning"
               additionalClassName="mr-2"
               disabled={
-                doc && doc.toString() === "details"
+                doc && doc.toString() === 'details'
                   ? !fileToUpload || !selectedDetailOption
                   : !fileToUpload
               }
               onClick={handlePreview}
             >
-              <span
+              <Box
+                as="span"
                 className={`mx-3.5 ${
-                  doc && doc.toString() === "details"
-                    ? (!fileToUpload || !selectedDetailOption) && "text-white"
-                    : !fileToUpload && "text-white"
+                  doc && doc.toString() === 'details'
+                    ? (!fileToUpload || !selectedDetailOption) && 'text-white'
+                    : !fileToUpload && 'text-white'
                 }`}
               >
                 Preview
-              </span>
+              </Box>
             </Button>
             <Button disabled={!isReadyToUpload} onClick={uploadToServer}>
-              <span className="mx-3">Upload</span>
+              <Box as="span" className="mx-3">
+                Upload
+              </Box>
             </Button>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
       {isReadyToUpload && (
-        <div className="pb-5 px-7 mb-5">
-          <div className="relative bg-white rounded-md shadow-md">
-            <div className="overflow-x-auto sm:scrollable">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-white">
-                  <tr>
-                    <th className="w-1/12 px-6 py-6 whitespace-nowrap text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <Box className="pb-5 px-7 mb-5">
+          <Box className="relative bg-white rounded-md shadow-md">
+            <Box className="overflow-x-auto sm:scrollable">
+              <Box as="table" className="min-w-full divide-y divide-gray-200">
+                <Box as="thead" className="bg-white">
+                  <Box as="tr">
+                    <Box
+                      as="th"
+                      className="w-1/12 px-6 py-6 whitespace-nowrap text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >
                       No.
-                    </th>
+                    </Box>
                     {csvData.length > 0 &&
                       Object.keys(csvData[0]).map((d, idx) => (
-                        <th
+                        <Box
+                          as="th"
                           key={`header-${idx}`}
                           className="px-6 py-6 whitespace-nowrap text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
                         >
                           {d}
-                        </th>
+                        </Box>
                       ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                  </Box>
+                </Box>
+                <Box as="tbody" className="bg-white divide-y divide-gray-200">
                   {csvData.length > 0 &&
                     csvData.map((d, idx) => (
-                      <tr key={`data-${idx}`}>
-                        <td className="w-1/12 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
+                      <Box as="tr" key={`data-${idx}`}>
+                        <Box
+                          as="td"
+                          className="w-1/12 px-6 py-3 whitespace-nowrap text-sm text-gray-500"
+                        >
                           {idx + 1}
-                        </td>
+                        </Box>
                         {Object.values(d).map((s: any, sIdx) => (
-                          <td
+                          <Box
+                            as="td"
                             key={`subdata-${sIdx}`}
                             className="w-1/12 px-6 py-3 whitespace-nowrap text-sm text-gray-500"
                           >
                             {s}
-                          </td>
+                          </Box>
                         ))}
-                      </tr>
+                      </Box>
                     ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };

@@ -1,22 +1,4 @@
-import { Button } from "@repo/ui";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@repo/ui";
-import {
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableFooter,
-  Table,
-} from "@repo/ui";
+import Image, { StaticImageData } from 'next/image';
 import {
   AlertCircle,
   Check,
@@ -26,10 +8,29 @@ import {
   Search,
   Trash2,
   X,
-} from "react-feather";
-import { Input } from "@repo/ui";
-import Image, { StaticImageData } from "next/image";
-import { useParams } from "react-router-dom";
+} from 'react-feather';
+import { useParams } from 'react-router-dom';
+
+import { Box, Button } from '@repo/ui';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@repo/ui';
+import {
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  TableFooter,
+  Table,
+} from '@repo/ui';
+import { Input } from '@repo/ui';
 
 export const UserRoles = (props: {
   groupRole: any[];
@@ -81,24 +82,18 @@ export const UserRoles = (props: {
   } = props;
 
   return (
-    <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
-      <div className="flex gap-4 items-center mt-6">
-        <div>
-          <div className="text-primary font-bold mb-2">
-            Additional Role ({groupRole.length})
-          </div>
-          <p className="text-sm text-black/60">
+    <Box className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+      <Box className="flex gap-4 items-center mt-6">
+        <Box>
+          <Box className="text-primary font-bold mb-2">Additional Role ({groupRole.length})</Box>
+          <Box as="p" className="text-sm text-black/60">
             <i>
-              Assigned users to specific roles. If you are unable to find the
-              one you require, please request the superadmin to create a new
-              role
+              Assigned users to specific roles. If you are unable to find the one you require,
+              please request the superadmin to create a new role
             </i>
-          </p>
-        </div>
-        <Dialog
-          open={isModalOpenUser}
-          onClose={() => setIsModalOpenUser(false)}
-        >
+          </Box>
+        </Box>
+        <Dialog open={isModalOpenUser} onClose={() => setIsModalOpenUser(false)}>
           <DialogTrigger asChild>
             <Button
               color="warning"
@@ -126,12 +121,9 @@ export const UserRoles = (props: {
               </DialogTitle>
             </DialogHeader>
 
-            <div
-              className="p-4 overflow-auto"
-              style={{ maxHeight: "calc(100vh - 180px)" }}
-            >
-              <div className="grid grid-cols-1 gap-4 mb-4">
-                <div className="relative">
+            <Box className="p-4 overflow-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
+              <Box className="grid grid-cols-1 gap-4 mb-4">
+                <Box className="relative">
                   <Input
                     type="text"
                     placeholder="Search"
@@ -140,18 +132,13 @@ export const UserRoles = (props: {
                     className="px-4 text-sm border rounded-lg h-11"
                   />
                   <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
-                </div>
-                <div className="flex gap-4 italic text-xs items-center font-light bg-white shadow rounded py-2 px-4">
-                  <AlertCircle
-                    className="text-blue-600"
-                    width="35"
-                    height="35"
-                  />
-                  Assigned users to specific roles. If you are unable to find
-                  the one you require, please request the superadmin to create a
-                  new role
-                </div>
-              </div>
+                </Box>
+                <Box className="flex gap-4 italic text-xs items-center font-light bg-white shadow rounded py-2 px-4">
+                  <AlertCircle className="text-blue-600" width="35" height="35" />
+                  Assigned users to specific roles. If you are unable to find the one you require,
+                  please request the superadmin to create a new role
+                </Box>
+              </Box>
 
               <Table className="table-claims">
                 <TableHeader>
@@ -184,20 +171,18 @@ export const UserRoles = (props: {
                         </TableCell>
                         <TableCell>
                           {role.name
-                            .replace(/-/g, " ")
-                            .replace(/\b\w/g, (char: any) =>
-                              char.toUpperCase()
-                            ) || "-"}
+                            .replace(/-/g, ' ')
+                            .replace(/\b\w/g, (char: any) => char.toUpperCase()) || '-'}
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow className="hover:!bg-white">
                       <TableCell colSpan={4}>
-                        <div className="flex flex-col gap-4 items-center justify-center py-14">
+                        <Box className="flex flex-col gap-4 items-center justify-center py-14">
                           <Image alt="no data" src={noData} width={200} />
                           No transaction data available
-                        </div>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   )}
@@ -206,22 +191,28 @@ export const UserRoles = (props: {
                 <TableFooter>
                   <TableRow>
                     <TableCell colSpan={8}>
-                      <div className="flex justify-center items-center gap-2 font-normal">
-                        <label htmlFor="rowsPerPage">Showing:</label>
-                        <select
+                      <Box className="flex justify-center items-center gap-2 font-normal">
+                        <Box as="label" htmlFor="rowsPerPage">
+                          Showing:
+                        </Box>
+                        <Box
+                          as="select"
                           id="rowsPerPage"
                           value={rowsPerPage}
                           onChange={handleRowsPerPageChange}
                           className="p-2 border rounded"
                         >
                           {[10, 20, 30, 50].map((option) => (
-                            <option key={option} value={option}>
+                            <Box as="option" key={option} value={option}>
                               {option}
-                            </option>
+                            </Box>
                           ))}
-                        </select>
-                        <span className="mr-2">of {totalItemsUser} items</span>
-                        <button
+                        </Box>
+                        <Box as="span" className="mr-2">
+                          of {totalItemsUser} items
+                        </Box>
+                        <Box
+                          as="button"
                           onClick={() => {
                             selectRole(page - 1);
                             setPage((prevState) => Math.max(prevState - 1, 1));
@@ -230,25 +221,24 @@ export const UserRoles = (props: {
                           title="Prev"
                         >
                           <ChevronLeft />
-                        </button>
-                        <button
+                        </Box>
+                        <Box
+                          as="button"
                           onClick={() => {
                             selectRole(page + 1);
-                            setPage((prevState) =>
-                              Math.min(prevState + 1, totalPages)
-                            );
+                            setPage((prevState) => Math.min(prevState + 1, totalPages));
                           }}
                           disabled={page === totalPages}
                           title="Next"
                         >
                           <ChevronRight />
-                        </button>
-                      </div>
+                        </Box>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 </TableFooter>
               </Table>
-            </div>
+            </Box>
 
             <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
               <DialogClose asChild>
@@ -263,9 +253,9 @@ export const UserRoles = (props: {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </Box>
       {groupRole.length > 0 && (
-        <div className="w-full bg-white rounded-lg overflow-auto mt-5">
+        <Box className="w-full bg-white rounded-lg overflow-auto mt-5">
           <Table className="table-search-params">
             <TableHeader>
               <TableRow>
@@ -278,9 +268,8 @@ export const UserRoles = (props: {
                 <TableRow key={role.id}>
                   <TableCell className="py-1">
                     {role?.roles?.name
-                      .replace(/-/g, " ")
-                      .replace(/\b\w/g, (char: any) => char.toUpperCase()) ||
-                      "-"}
+                      .replace(/-/g, ' ')
+                      .replace(/\b\w/g, (char: any) => char.toUpperCase()) || '-'}
                   </TableCell>
                   <TableCell className="py-1 text-center">
                     <Button
@@ -297,8 +286,8 @@ export const UserRoles = (props: {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };

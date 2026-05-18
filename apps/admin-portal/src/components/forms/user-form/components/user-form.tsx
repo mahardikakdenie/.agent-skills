@@ -4,6 +4,7 @@ import { EyeOff, Eye } from 'react-feather';
 import { Controller, Control, FieldErrors } from 'react-hook-form';
 
 import {
+  Box,
   Combobox,
   Input,
   Select,
@@ -83,15 +84,19 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
     }));
 
     return (
-      <form id="user-form" ref={ref} onSubmit={handleSubmit(onSubmit)}>
-        <div className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-x-6 gap-y-4 shadow-sm border border-slate-100">
-          <div>
-            <label
+      <Box as="form" id="user-form" ref={ref} onSubmit={handleSubmit(onSubmit)}>
+        <Box className="p-4 sm:p-6 bg-white rounded-lg grid sm:grid-cols-2 gap-x-6 gap-y-4 shadow-sm border border-slate-100">
+          <Box>
+            <Box
+              as="label"
               htmlFor="name"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
-              Name <span className="text-red-500">*</span>
-            </label>
+              Name{' '}
+              <Box as="span" className="text-red-500">
+                *
+              </Box>
+            </Box>
             <Controller
               name="name"
               control={control}
@@ -111,16 +116,22 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
               )}
             />
             {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name.message?.toString()}</p>
+              <Box as="p" className="text-red-500 text-xs mt-1">
+                {errors.name.message?.toString()}
+              </Box>
             )}
-          </div>
-          <div>
-            <label
+          </Box>
+          <Box>
+            <Box
+              as="label"
               htmlFor="email"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
-              Email <span className="text-red-500">*</span>
-            </label>
+              Email{' '}
+              <Box as="span" className="text-red-500">
+                *
+              </Box>
+            </Box>
             <Controller
               name="email"
               control={control}
@@ -146,17 +157,23 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
               )}
             />
             {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message?.toString()}</p>
+              <Box as="p" className="text-red-500 text-xs mt-1">
+                {errors.email.message?.toString()}
+              </Box>
             )}
-          </div>
-          <div>
-            <label
+          </Box>
+          <Box>
+            <Box
+              as="label"
               htmlFor="phone_number"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
-              Phone Number <span className="text-red-500">*</span>
-            </label>
-            <div>
+              Phone Number{' '}
+              <Box as="span" className="text-red-500">
+                *
+              </Box>
+            </Box>
+            <Box>
               <Controller
                 name="phone_number"
                 control={control}
@@ -204,19 +221,23 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
                 )}
               />
               {errors.phone_number && (
-                <p className="text-red-500 text-xs mt-1">
+                <Box as="p" className="text-red-500 text-xs mt-1">
                   {errors.phone_number.message?.toString()}
-                </p>
+                </Box>
               )}
-            </div>
-          </div>
-          <div>
-            <label
+            </Box>
+          </Box>
+          <Box>
+            <Box
+              as="label"
               htmlFor="status"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
-              Status <span className="text-red-500">*</span>
-            </label>
+              Status{' '}
+              <Box as="span" className="text-red-500">
+                *
+              </Box>
+            </Box>
             <Controller
               name="status"
               control={control}
@@ -250,16 +271,22 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
               )}
             />
             {errors.status && (
-              <p className="text-red-500 text-xs mt-1">{errors.status.message?.toString()}</p>
+              <Box as="p" className="text-red-500 text-xs mt-1">
+                {errors.status.message?.toString()}
+              </Box>
             )}
-          </div>
-          <div>
-            <label
+          </Box>
+          <Box>
+            <Box
+              as="label"
               htmlFor="role"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
-              Role <span className="text-red-500">*</span>
-            </label>
+              Role{' '}
+              <Box as="span" className="text-red-500">
+                *
+              </Box>
+            </Box>
             <Controller
               name="role"
               control={control}
@@ -289,16 +316,22 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
               )}
             />
             {errors.role && (
-              <p className="text-red-500 text-xs mt-1">{errors.role.message?.toString()}</p>
+              <Box as="p" className="text-red-500 text-xs mt-1">
+                {errors.role.message?.toString()}
+              </Box>
             )}
-          </div>
-          <div>
-            <label
+          </Box>
+          <Box>
+            <Box
+              as="label"
               htmlFor="channel"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
-              Channel <span className="text-red-500">*</span>
-            </label>
+              Channel{' '}
+              <Box as="span" className="text-red-500">
+                *
+              </Box>
+            </Box>
             <Controller
               name="channel"
               control={control}
@@ -320,17 +353,25 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
               )}
             />
             {errors.channel && (
-              <p className="text-red-500 text-xs mt-1">{errors.channel.message?.toString()}</p>
+              <Box as="p" className="text-red-500 text-xs mt-1">
+                {errors.channel.message?.toString()}
+              </Box>
             )}
-          </div>
-          <div className="relative">
-            <label
+          </Box>
+          <Box className="relative">
+            <Box
+              as="label"
               htmlFor="password"
               className="inline-block text-sm font-medium text-slate-700 mb-2 cursor-pointer"
             >
               Password
-              {watch('role') === 'admin' && <span className="text-red-500"> *</span>}
-            </label>
+              {watch('role') === 'admin' && (
+                <Box as="span" className="text-red-500">
+                  {' '}
+                  *
+                </Box>
+              )}
+            </Box>
             <Controller
               name="password"
               control={control}
@@ -357,8 +398,8 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
                 },
               }}
               render={({ field }) => (
-                <div className="flex w-full gap-1.5 items-center">
-                  <div className="relative flex-[3]">
+                <Box className="flex w-full gap-1.5 items-center">
+                  <Box className="relative flex-[3]">
                     <Input
                       type={showPassword ? 'text' : 'password'}
                       id="password"
@@ -375,7 +416,8 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
                       }`}
                       inputClassName="text-base"
                     />
-                    <button
+                    <Box
+                      as="button"
                       type="button"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       className="absolute inset-y-0 right-11 flex cursor-pointer items-center"
@@ -386,17 +428,18 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
                       ) : (
                         <Eye size={18} className="text-[#015B86]" />
                       )}
-                    </button>
-                    <button
+                    </Box>
+                    <Box
+                      as="button"
                       type="button"
                       aria-label="Copy password"
                       className="absolute inset-y-0 right-3 flex cursor-pointer items-center"
                       onClick={() => copyPassword()}
                     >
                       <Image alt="copy" src={iconCopy} width={18} />
-                    </button>
-                  </div>
-                  <div className="flex-[1]">
+                    </Box>
+                  </Box>
+                  <Box className="flex-[1]">
                     <Button
                       className="h-10 rounded-full bg-[#F5BA41] px-4 text-sm font-medium text-black hover:bg-[#e6a92d]"
                       onClick={(e) => {
@@ -406,16 +449,18 @@ const UserFormComponent = forwardRef<HTMLFormElement, UserFormProps>(
                     >
                       Generate Password
                     </Button>
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               )}
             />
             {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password.message?.toString()}</p>
+              <Box as="p" className="text-red-500 text-xs mt-1">
+                {errors.password.message?.toString()}
+              </Box>
             )}
-          </div>
-        </div>
-      </form>
+          </Box>
+        </Box>
+      </Box>
     );
   },
 );

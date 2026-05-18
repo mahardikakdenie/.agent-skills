@@ -6,6 +6,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Menu } from 'react-feather';
 
+import { Box } from '@repo/ui';
+
 // TODO: change for customization in env
 import Button from '@/components/button';
 import OptimizeImage from '@/components/image';
@@ -154,19 +156,19 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
 
     return (
       <>
-        <div className="text-xs font-medium mt-0.5 mb-2">Password Requirements</div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Box className="text-xs font-medium mt-0.5 mb-2">Password Requirements</Box>
+        <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {requirements.map((req, index) => (
-            <div key={index} className="flex items-center gap-2 text-xs">
-              <div>
+            <Box key={index} className="flex items-center gap-2 text-xs">
+              <Box>
                 {req.isValid
                   ? ChecklistIcon('#00AB4F', '16', '16')
                   : XIcon(primaryRed, '16', '16', '0 0 23 23')}
-              </div>
+              </Box>
               {req.text}
-            </div>
+            </Box>
           ))}
-        </div>
+        </Box>
       </>
     );
   };
@@ -177,7 +179,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
   }, [user]);
 
   return (
-    <div>
+    <Box>
       {!isAuthenticated && !searchParams.get('session_code') && (
         <Modal
           bgColor="bg-[#F3FBFF]"
@@ -194,9 +196,9 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
           isOpen={true}
           onClose={() => {}}
         >
-          <div className="bg-white rounded-md shadow flex flex-col items-center justify-center py-10">
-            <div className="flex items-center justify-center mb-3 -ml-5">
-              <div className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-4 px-2'}`}>
+          <Box className="bg-white rounded-md shadow flex flex-col items-center justify-center py-10">
+            <Box className="flex items-center justify-center mb-3 -ml-5">
+              <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-4 px-2'}`}>
                 {/*TODO: change for customization in env*/}
                 {process.env.NEXT_PUBLIC_MODE === 'whitelable' ? (
                   <OptimizeImage
@@ -215,32 +217,36 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                     src={logo}
                   />
                 )}
-              </div>
-            </div>
-            <div className="w-3/4">
+              </Box>
+            </Box>
+            <Box className="w-3/4">
               {!isEmpty(loginProviders) && (
                 <>
-                  <p className="text-center mb-4">Welcome!</p>
-                  <div>
+                  <Box as="p" className="text-center mb-4">
+                    Welcome!
+                  </Box>
+                  <Box>
                     {loginProviders.map((provider) => (
-                      <div key={`provider-${provider.client_id}`} className="w-full mt-2">
+                      <Box key={`provider-${provider.client_id}`} className="w-full mt-2">
                         <MicrosoftLoginButton
                           clientId={provider.client_id || ''}
                           tenantId={provider.tenant_id || ''}
                           redirectUri={provider.redirect_url || ''}
                         />
-                      </div>
+                      </Box>
                     ))}
-                  </div>
-                  <div className="flex items-center w-full text-gray-300 my-5">
-                    <div className="flex-grow h-px bg-gray-300" />
-                    <span className="px-4 text-sm">Or</span>
-                    <div className="flex-grow h-px bg-gray-300" />
-                  </div>
+                  </Box>
+                  <Box className="flex items-center w-full text-gray-300 my-5">
+                    <Box className="flex-grow h-px bg-gray-300" />
+                    <Box as="span" className="px-4 text-sm">
+                      Or
+                    </Box>
+                    <Box className="flex-grow h-px bg-gray-300" />
+                  </Box>
                 </>
               )}
 
-              <div className="mb-5">
+              <Box className="mb-5">
                 <Input
                   value={email}
                   onChange={(value) => setEmail(value.toString())}
@@ -248,8 +254,8 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   placeholder="Email"
                   withBorder={true}
                 />
-              </div>
-              <div>
+              </Box>
+              <Box>
                 <Input
                   type="password"
                   value={password}
@@ -258,53 +264,60 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   placeholder="Password"
                   withBorder={true}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
             <Button additionalClassName="my-5 w-3/4 py-3" onClick={doLogin} variant="warning">
               Login
             </Button>
-          </div>
+          </Box>
         </Modal>
       )}
 
-      <nav
+      <Box
+        as="nav"
         className={`px-6 navbar-top bg-primary sticky top-0 left-0 ${
           isMenuOpen && !isMobileView ? 'sm:w-[calc(100%-20%)] sm:ml-[20%]' : 'w-full'
         } ${!user && 'w-full'} transition-all duration-300 z-50`}
         ref={navbarRef}
       >
-        <div className="w-full outline-none">
-          <div className="py-2">
-            <div className="items-center flex">
-              <button onClick={toggleModal} className="min-w-10 px-0 text-bluedark mr-auto">
+        <Box className="w-full outline-none">
+          <Box className="py-2">
+            <Box className="items-center flex">
+              <Box
+                as="button"
+                onClick={toggleModal}
+                className="min-w-10 px-0 text-bluedark mr-auto"
+              >
                 <Menu color="white" />
-              </button>
-              <div
+              </Box>
+              <Box
                 className="relative flex items-center gap-1 cursor-pointer"
                 onClick={() => setShowDropdown(!showDropdown)}
                 ref={dropdownRef}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center justify-between mr-3">
-                    <p className="text-sm text-white">Hi, {user?.name || 'Anonymous'}</p>
-                    <div
+                <Box className="flex items-center justify-between">
+                  <Box className="flex items-center justify-between mr-3">
+                    <Box as="p" className="text-sm text-white">
+                      Hi, {user?.name || 'Anonymous'}
+                    </Box>
+                    <Box
                       className={`transition-transform duration-300 ${
                         showDropdown ? 'rotate-180' : 'rotate-0'
                       }`}
                     >
                       <ChevronDown color="white" width="30" height="15" />
-                    </div>
-                  </div>
-                  <div className="rounded-full h-8 w-8 bg-primary-light-foreground flex items-center justify-center">
-                    <p className="text-primary font-semibold">
+                    </Box>
+                  </Box>
+                  <Box className="rounded-full h-8 w-8 bg-primary-light-foreground flex items-center justify-center">
+                    <Box as="p" className="text-primary font-semibold">
                       {user?.name?.charAt(0).toUpperCase() || 'A'}
-                    </p>
-                  </div>
-                </div>
+                    </Box>
+                  </Box>
+                </Box>
 
                 {showDropdown && (
-                  <div className="w-52 absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md py-5 px-7">
-                    <div className="flex flex-col items-center justify-center">
+                  <Box className="w-52 absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md py-5 px-7">
+                    <Box className="flex flex-col items-center justify-center">
                       <Button
                         variant="warning"
                         onClick={() => setIsModalChangePassword(true)}
@@ -315,16 +328,17 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                       <Button variant="danger" onClick={doLogout} additionalClassName="w-full mt-3">
                         Logout
                       </Button>
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
 
-      <main
+      <Box
+        as="main"
         className={`flex flex-col overflow-y-auto sm:scrollable bg-[#F8F8F8] ${
           isMenuOpen && !isMobileView ? 'sm:w-[calc(100%-20%)] sm:ml-[20%]' : 'w-full'
         } transition-all duration-300`}
@@ -338,17 +352,21 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
       >
         {/* {children} */}
         {isForbidden ? (
-          <div className="h-[calc(100vh-50px)] flex flex-col items-center justify-center">
-            <h1 className="font-bold text-3xl">403 - Forbidden</h1>
-            <p className="mx-5 text-center">Oops! You don&apos;t have permission for this page.</p>
-          </div>
+          <Box className="h-[calc(100vh-50px)] flex flex-col items-center justify-center">
+            <Box as="h1" className="font-bold text-3xl">
+              403 - Forbidden
+            </Box>
+            <Box as="p" className="mx-5 text-center">
+              Oops! You don&apos;t have permission for this page.
+            </Box>
+          </Box>
         ) : isAuthenticated && user ? (
           children
         ) : path.startsWith('/oauth/') ? (
           // Allow OAuth callback pages to render without authentication
           children
         ) : null}
-      </main>
+      </Box>
 
       {isModalChangePassword && (
         <Modal
@@ -357,15 +375,15 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
           isOpen={isModalChangePassword}
           onClose={() => setIsModalChangePassword(false)}
         >
-          <div className="flex justify-center items-center mb-3 bg-white rounded-t-md">
-            <div className="pt-5 pb-3 px-2 text-xl font-bold">Change Password</div>
-          </div>
-          <div className="h-fit max-h-[calc(70vh-50px)] overflow-y-auto sm:scrollable mb-5">
-            <div className="text-sm mb-5">
+          <Box className="flex justify-center items-center mb-3 bg-white rounded-t-md">
+            <Box className="pt-5 pb-3 px-2 text-xl font-bold">Change Password</Box>
+          </Box>
+          <Box className="h-fit max-h-[calc(70vh-50px)] overflow-y-auto sm:scrollable mb-5">
+            <Box className="text-sm mb-5">
               Choose a strong password and don&#39;t reuse it for other accounts.
-            </div>
-            <div className="w-full">
-              <div className="mb-5">
+            </Box>
+            <Box className="w-full">
+              <Box className="mb-5">
                 <Input
                   type="password"
                   value={oldPassword}
@@ -373,8 +391,8 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   placeholder="Old Password"
                   withBorder={true}
                 />
-              </div>
-              <div className="mb-5">
+              </Box>
+              <Box className="mb-5">
                 <Input
                   type="password"
                   value={newPassword}
@@ -383,8 +401,8 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   withBorder={true}
                 />
                 {showPasswordRequirements ? renderPasswordRequirements() : null}
-              </div>
-              <div className="mb-5">
+              </Box>
+              <Box className="mb-5">
                 <Input
                   type="password"
                   value={confirmNewPassword}
@@ -397,18 +415,18 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                       : undefined
                   }
                 />
-              </div>
-            </div>
-            <div className="text-sm mb-5">
+              </Box>
+            </Box>
+            <Box className="text-sm mb-5">
               Once your password has been changed, please log back in with the new password on all
               your devices.
-            </div>
-            <div className="flex justify-center items-center">
+            </Box>
+            <Box className="flex justify-center items-center">
               <Button variant="warning" onClick={changePassword}>
                 Change Password
               </Button>
-            </div>
-          </div>
+            </Box>
+          </Box>
         </Modal>
       )}
 
@@ -419,8 +437,8 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
           isOpen={isMenuOpen}
           onClose={() => setMenu(false)}
         >
-          <div className="flex justify-center items-center mb-3 bg-white rounded-t-md">
-            <div className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-5 px-2'}`}>
+          <Box className="flex justify-center items-center mb-3 bg-white rounded-t-md">
+            <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-5 px-2'}`}>
               {/*TODO: change for customization in env*/}
               {process.env.NEXT_PUBLIC_MODE === 'whitelable' ? (
                 <OptimizeImage
@@ -439,18 +457,20 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   src={logo}
                 />
               )}
-            </div>
-          </div>
-          <div className="h-fit max-h-[calc(70vh-50px)] overflow-y-auto sm:scrollable mb-5">
+            </Box>
+          </Box>
+          <Box className="h-fit max-h-[calc(70vh-50px)] overflow-y-auto sm:scrollable mb-5">
             {AppMenu.menu.map(
               (menuMobile, menuMobileIndex) =>
                 menuList.includes(menuMobile.name) && (
-                  <div key={menuMobileIndex} className={`${menuMobileIndex !== 0 && 'mt-5'}`}>
-                    <p className="font-semibold mb-3 text-sm">{menuMobile.name}</p>
+                  <Box key={menuMobileIndex} className={`${menuMobileIndex !== 0 && 'mt-5'}`}>
+                    <Box as="p" className="font-semibold mb-3 text-sm">
+                      {menuMobile.name}
+                    </Box>
                     {menuMobile.submenu.map(
                       (submenuMobile, submenuIndex) =>
                         submenuList.includes(submenuMobile.name) && (
-                          <div
+                          <Box
                             key={submenuIndex}
                             onClick={() => goToPage(submenuMobile.url)}
                             className={`flex items-center justify-start py-2 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
@@ -461,8 +481,9 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                               'bg-primary-foreground'
                             }`}
                           >
-                            <div className="flex items-center mr-3">{submenuMobile.icon}</div>
-                            <p
+                            <Box className="flex items-center mr-3">{submenuMobile.icon}</Box>
+                            <Box
+                              as="p"
                               className={`${
                                 (path.includes(submenuMobile.url) ||
                                   submenuMobile.additionalPages?.some((page) =>
@@ -472,25 +493,25 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                               } text-sm`}
                             >
                               {submenuMobile.name}
-                            </p>
-                          </div>
+                            </Box>
+                          </Box>
                         ),
                     )}
-                  </div>
+                  </Box>
                 ),
             )}
-          </div>
+          </Box>
         </Modal>
       ) : (
-        <div
+        <Box
           className={`fixed top-0 left-0 h-full px-4 py-2 hidden sm:inline bg-white transition-transform duration-300 ease-out ${
             isMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           style={{ width: '20%' }}
         >
-          <div className="h-full flex flex-col">
-            <div className="flex justify-center items-center">
-              <div className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-5 px-2 mb-3'}`}>
+          <Box className="h-full flex flex-col">
+            <Box className="flex justify-center items-center">
+              <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-5 px-2 mb-3'}`}>
                 {/*TODO: change for customization in env*/}
                 {process.env.NEXT_PUBLIC_MODE === 'whitelable' ? (
                   <OptimizeImage
@@ -509,18 +530,20 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                     src={logo}
                   />
                 )}
-              </div>
-            </div>
-            <div className="overflow-y-auto sm:scrollable flex-1">
+              </Box>
+            </Box>
+            <Box className="overflow-y-auto sm:scrollable flex-1">
               {AppMenu.menu.map(
                 (menu, menuIndex) =>
                   menuList.includes(menu.name) && (
-                    <div key={menuIndex} className="mb-5">
-                      <p className="font-semibold mb-3 text-sm">{menu.name}</p>
+                    <Box key={menuIndex} className="mb-5">
+                      <Box as="p" className="font-semibold mb-3 text-sm">
+                        {menu.name}
+                      </Box>
                       {menu.submenu.map(
                         (submenu, submenuIndex) =>
                           submenuList.includes(submenu.name) && (
-                            <div
+                            <Box
                               key={submenuIndex}
                               onClick={() => goToPage(submenu.url)}
                               className={`flex items-center justify-start p-2 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
@@ -531,8 +554,9 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                                 'bg-primary-foreground'
                               }`}
                             >
-                              <div className="flex items-center mr-3">{submenu.icon}</div>
-                              <p
+                              <Box className="flex items-center mr-3">{submenu.icon}</Box>
+                              <Box
+                                as="p"
                                 className={`${
                                   (path == submenu.url ||
                                     submenu.additionalPages?.some((page) =>
@@ -542,17 +566,17 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                                 } text-sm`}
                               >
                                 {submenu.name}
-                              </p>
-                            </div>
+                              </Box>
+                            </Box>
                           ),
                       )}
-                    </div>
+                    </Box>
                   ),
               )}
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };

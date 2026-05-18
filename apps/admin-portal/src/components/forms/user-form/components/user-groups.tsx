@@ -1,4 +1,8 @@
-import { Button } from "@repo/ui";
+import { StaticImageData } from 'next/image';
+import { Plus, X, Search, ChevronLeft, ChevronRight, Check, Trash2 } from 'react-feather';
+import { useParams } from 'react-router-dom';
+
+import { Box, Button } from '@repo/ui';
 import {
   Dialog,
   DialogClose,
@@ -7,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@repo/ui";
+} from '@repo/ui';
 import {
   Table,
   TableHeader,
@@ -16,19 +20,8 @@ import {
   TableBody,
   TableCell,
   TableFooter,
-} from "@repo/ui";
-import {
-  Plus,
-  X,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Check,
-  Trash2,
-} from "react-feather";
-import { useParams } from "react-router-dom";
-import { Input } from "@repo/ui";
-import { StaticImageData } from "next/image";
+} from '@repo/ui';
+import { Input } from '@repo/ui';
 
 export const UserGroups = (props: {
   userGroup: any[];
@@ -45,9 +38,7 @@ export const UserGroups = (props: {
   handleCheckboxChange: (id: string) => void;
   isGroupSelected: (id: string) => boolean;
   rowsPerPageGroup: number;
-  handleRowsPerPageChangeGroup: (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => void;
+  handleRowsPerPageChangeGroup: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   totalItemsRoles: number;
   setPageRoles: (value: number | ((prevState: number) => number)) => void;
   page: number;
@@ -83,23 +74,18 @@ export const UserGroups = (props: {
   } = props;
 
   return (
-    <div className="p-4 sm:p-6 bg-white rounded-lg gap-4">
-      <div className="flex gap-4 items-center">
-        <div>
-          <div className="text-primary font-bold mb-2">
-            User&apos;s Group ({userGroup.length})
-          </div>
-          <p className="text-sm text-black/60">
+    <Box className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+      <Box className="flex gap-4 items-center">
+        <Box>
+          <Box className="text-primary font-bold mb-2">User&apos;s Group ({userGroup.length})</Box>
+          <Box as="p" className="text-sm text-black/60">
             <i>
-              All the users in the group will have permissions that are defined
-              in the selected group roles
+              All the users in the group will have permissions that are defined in the selected
+              group roles
             </i>
-          </p>
-        </div>
-        <Dialog
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        >
+          </Box>
+        </Box>
+        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <DialogTrigger asChild>
             <Button
               color="warning"
@@ -127,9 +113,9 @@ export const UserGroups = (props: {
               </DialogTitle>
             </DialogHeader>
 
-            <div className="p-4">
-              <div className="grid gap-4 mb-4">
-                <div className="relative">
+            <Box className="p-4">
+              <Box className="grid gap-4 mb-4">
+                <Box className="relative">
                   <Input
                     type="text"
                     placeholder="Search"
@@ -138,8 +124,8 @@ export const UserGroups = (props: {
                     className="px-4 text-sm border rounded-lg h-11"
                   />
                   <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
-                </div>
-              </div>
+                </Box>
+              </Box>
 
               <Table className="table-claims">
                 <TableHeader>
@@ -170,16 +156,16 @@ export const UserGroups = (props: {
                             className="w-4 h-4"
                           />
                         </TableCell>
-                        <TableCell>{group?.name || "-"}</TableCell>
+                        <TableCell>{group?.name || '-'}</TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow className="hover:!bg-white">
                       <TableCell colSpan={10}>
-                        <div className="flex flex-col gap-4 items-center justify-center py-14">
-                          <img alt="no data" src={noData.src} width={200} />
+                        <Box className="flex flex-col gap-4 items-center justify-center py-14">
+                          <Box as="img" alt="no data" src={noData.src} width={200} />
                           No transaction data available
-                        </div>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   )}
@@ -188,49 +174,50 @@ export const UserGroups = (props: {
                 <TableFooter>
                   <TableRow>
                     <TableCell colSpan={8}>
-                      <div className="flex justify-center items-center gap-2 font-normal">
-                        <label htmlFor="rowsPerPageGroup">Showing:</label>
-                        <select
+                      <Box className="flex justify-center items-center gap-2 font-normal">
+                        <Box as="label" htmlFor="rowsPerPageGroup">
+                          Showing:
+                        </Box>
+                        <Box
+                          as="select"
                           id="rowsPerPageGroup"
                           value={rowsPerPageGroup}
                           onChange={handleRowsPerPageChangeGroup}
                           className="p-2 border rounded"
                         >
                           {[10, 20, 30, 50].map((option, index) => (
-                            <option key={index} value={option}>
+                            <Box as="option" key={index} value={option}>
                               {option}
-                            </option>
+                            </Box>
                           ))}
-                        </select>
-                        <span className="mr-2">of {totalItemsRoles} items</span>
-                        <button
-                          onClick={() =>
-                            setPageRoles((prevState) =>
-                              Math.max(prevState - 1, 1)
-                            )
-                          }
+                        </Box>
+                        <Box as="span" className="mr-2">
+                          of {totalItemsRoles} items
+                        </Box>
+                        <Box
+                          as="button"
+                          onClick={() => setPageRoles((prevState) => Math.max(prevState - 1, 1))}
                           disabled={page === 1}
                           title="Prev"
                         >
                           <ChevronLeft />
-                        </button>
-                        <button
+                        </Box>
+                        <Box
+                          as="button"
                           onClick={() =>
-                            setPageRoles((prevState) =>
-                              Math.min(prevState + 1, totalPages)
-                            )
+                            setPageRoles((prevState) => Math.min(prevState + 1, totalPages))
                           }
                           disabled={page === totalPages}
                           title="Next"
                         >
                           <ChevronRight />
-                        </button>
-                      </div>
+                        </Box>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 </TableFooter>
               </Table>
-            </div>
+            </Box>
 
             <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
               <DialogClose asChild>
@@ -245,16 +232,14 @@ export const UserGroups = (props: {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </Box>
 
       {userGroup.length > 0 && (
-        <div className="w-full bg-white rounded-lg overflow-auto mt-5">
+        <Box className="w-full bg-white rounded-lg overflow-auto mt-5">
           <Table className="table-search-params">
             <TableHeader>
               <TableRow>
-                <TableHead className="whitespace-nowrap py-2 w-52">
-                  Group
-                </TableHead>
+                <TableHead className="whitespace-nowrap py-2 w-52">Group</TableHead>
                 <TableHead className="py-2">Role</TableHead>
                 <TableHead className="py-2"></TableHead>
               </TableRow>
@@ -262,24 +247,21 @@ export const UserGroups = (props: {
             <TableBody>
               {userGroup.map((group, index) => (
                 <TableRow key={index}>
+                  <TableCell className="py-1">{group?.groups?.name || '-'}</TableCell>
                   <TableCell className="py-1">
-                    {group?.groups?.name || "-"}
-                  </TableCell>
-                  <TableCell className="py-1">
-                    <div className="flex flex-wrap gap-2">
+                    <Box className="flex flex-wrap gap-2">
                       {group?.groups?.group_roles?.length > 0
-                        ? group.groups.group_roles.map(
-                            (groupRole: any, indexY: number) => (
-                              <span
-                                key={indexY}
-                                className="border border-gray-300 bg-gray-100 rounded py-1 px-2"
-                              >
-                                {groupRole.roles?.name || "-"}
-                              </span>
-                            )
-                          )
-                        : "-"}
-                    </div>
+                        ? group.groups.group_roles.map((groupRole: any, indexY: number) => (
+                            <Box
+                              as="span"
+                              key={indexY}
+                              className="border border-gray-300 bg-gray-100 rounded py-1 px-2"
+                            >
+                              {groupRole.roles?.name || '-'}
+                            </Box>
+                          ))
+                        : '-'}
+                    </Box>
                   </TableCell>
                   <TableCell className="py-1 text-center">
                     <Button
@@ -296,8 +278,8 @@ export const UserGroups = (props: {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };

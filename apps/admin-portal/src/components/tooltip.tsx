@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
+import { Box } from '@repo/ui';
+
 interface TooltipProps {
   content: ReactNode;
   children: ReactNode;
@@ -90,8 +92,8 @@ export function Tooltip({
   }
 
   return (
-    <div className="relative inline-block">
-      <div
+    <Box className="relative inline-block">
+      <Box
         ref={targetRef}
         onMouseEnter={showTooltip}
         onMouseLeave={hideTooltip}
@@ -100,9 +102,9 @@ export function Tooltip({
         className="inline-block"
       >
         {children}
-      </div>
+      </Box>
       {isVisible && (
-        <div
+        <Box
           ref={tooltipRef}
           role="tooltip"
           style={{
@@ -118,7 +120,7 @@ export function Tooltip({
           ].join(' ')}
         >
           {content}
-          <div
+          <Box
             className={[
               'absolute w-2 h-2 rotate-45',
               arrowColor || backgroundColor,
@@ -128,8 +130,8 @@ export function Tooltip({
               position === 'right' && 'left-[-4px] top-1/2 -translate-y-1/2',
             ].join(' ')}
           />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

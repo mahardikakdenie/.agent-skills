@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 
+import { Box } from '@repo/ui';
+
 import DatePickerDropdown from '@/components/date-range-picker';
 import Select from '@/components/select';
 import DetailTable from '@/components/table-policy';
@@ -247,12 +249,14 @@ export const DashboardTransaction = () => {
     : [];
 
   return (
-    <div className="mx-auto py-5 px-7 bg-[#ebf6ff] min-h-screen">
-      <div className="text-center bg-white px-5 py-4 rounded-md shadow-sm mb-5">
-        <h5 className="text-2xl font-bold text-primary">Insurance Sales Performance Dashboard</h5>
-      </div>
-      <div className="flex gap-3">
-        <div className="grid grid-cols-4 gap-4 mb-4 w-full">
+    <Box className="mx-auto py-5 px-7 bg-[#ebf6ff] min-h-screen">
+      <Box className="text-center bg-white px-5 py-4 rounded-md shadow-sm mb-5">
+        <Box as="h5" className="text-2xl font-bold text-primary">
+          Insurance Sales Performance Dashboard
+        </Box>
+      </Box>
+      <Box className="flex gap-3">
+        <Box className="grid grid-cols-4 gap-4 mb-4 w-full">
           <Select
             chevronColor={primary}
             placeholderSelectClassName="truncate"
@@ -289,46 +293,54 @@ export const DashboardTransaction = () => {
             options={planOptions}
           />
           <DatePickerDropdown onDateChange={handleDateChange} />
-        </div>
-      </div>
-      <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-6">
-          <div className="bg-white py-5 rounded-md shadow-sm w-full">
-            <h5 className="font-semibold mb-3 pl-5">Daily Sales Performance</h5>
-            <div className="h-[400px]">
+        </Box>
+      </Box>
+      <Box className="grid grid-cols-12 gap-4 mb-4">
+        <Box className="col-span-6">
+          <Box className="bg-white py-5 rounded-md shadow-sm w-full">
+            <Box as="h5" className="font-semibold mb-3 pl-5">
+              Daily Sales Performance
+            </Box>
+            <Box className="h-[400px]">
               <LineChart data={lineChart} seriesLabel="Transactions" />
-            </div>
-          </div>
-        </div>
-        <div className="col-span-6">
-          <div className="bg-white pt-5 rounded-md shadow-sm">
-            <h5 className="font-semibold pl-5">Daily GWP Performance</h5>
-            <div className="w-full h-[431px]">
+            </Box>
+          </Box>
+        </Box>
+        <Box className="col-span-6">
+          <Box className="bg-white pt-5 rounded-md shadow-sm">
+            <Box as="h5" className="font-semibold pl-5">
+              Daily GWP Performance
+            </Box>
+            <Box className="w-full h-[431px]">
               <BarChartComp
                 data={barChart}
                 seriesLabel="GWP"
                 valueFormatter={(value) => `IDR ${formatMoney(Number(value) || 0)}`}
               />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-1">
-          <div className="bg-white p-5 rounded-md shadow-sm">
-            <h5 className="font-semibold">Total Sales by Plan Name</h5>
-            <div className="w-full h-[403px]">
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      <Box className="grid grid-cols-3 gap-4">
+        <Box className="col-span-1">
+          <Box className="bg-white p-5 rounded-md shadow-sm">
+            <Box as="h5" className="font-semibold">
+              Total Sales by Plan Name
+            </Box>
+            <Box className="w-full h-[403px]">
               <PieChart data={pieChart} />
-            </div>
-          </div>
-        </div>
-        <div className="col-span-2">
-          <div className="bg-white p-5 rounded-md shadow-sm w-full table-transaction">
-            <h5 className="font-semibold mb-3">Latest Transactions</h5>
+            </Box>
+          </Box>
+        </Box>
+        <Box className="col-span-2">
+          <Box className="bg-white p-5 rounded-md shadow-sm w-full table-transaction">
+            <Box as="h5" className="font-semibold mb-3">
+              Latest Transactions
+            </Box>
             <DetailTable data={tableData} columns={policyColumns} />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };

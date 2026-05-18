@@ -1,8 +1,23 @@
-import { Button } from "@repo/ui";
-import { DialogHeader, DialogFooter, DialogContent, Dialog, DialogClose, DialogTitle } from "@repo/ui";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
-import { Spinner } from "@repo/ui";
-import { X, Check } from "react-feather";
+import { X, Check } from 'react-feather';
+
+import { Box, Button } from '@repo/ui';
+import {
+  DialogHeader,
+  DialogFooter,
+  DialogContent,
+  Dialog,
+  DialogClose,
+  DialogTitle,
+} from '@repo/ui';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui';
+import { Spinner } from '@repo/ui';
 
 export const InsurerModal = (props: {
   isInsurerModalOpen: boolean;
@@ -39,20 +54,20 @@ export const InsurerModal = (props: {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-4">
-          <div className="grid gap-4">
+        <Box className="p-4">
+          <Box className="grid gap-4">
             {insurersLoading ? (
-              <div className="flex justify-center items-center py-4">
+              <Box className="flex justify-center items-center py-4">
                 <Spinner
                   inline
                   className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
                 />
                 Loading...
-              </div>
+              </Box>
             ) : (
               <Select
                 onValueChange={(value) => {
-                  const selectedInsurer = insurers.find(insurer => insurer.id === value);
+                  const selectedInsurer = insurers.find((insurer) => insurer.id === value);
                   if (selectedInsurer) {
                     setSelectedInsurers([value]);
                   }
@@ -72,8 +87,8 @@ export const InsurerModal = (props: {
                 </SelectContent>
               </Select>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
           <DialogClose asChild>

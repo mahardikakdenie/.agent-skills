@@ -1,12 +1,7 @@
-import Image from "next/image";
-import { Trash } from "react-feather";
+import Image from 'next/image';
+import { Trash } from 'react-feather';
 
-import {
-  Box,
-  Button,
-  Skeleton,
-  type ColumnDef,
-} from "@repo/ui";
+import { Box, Button, Skeleton, type ColumnDef } from '@repo/ui';
 
 interface InsuranceTableConfigProps {
   handleEdit: (id: string) => void;
@@ -15,7 +10,7 @@ interface InsuranceTableConfigProps {
   canDelete: boolean;
 }
 
-const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat("id-ID").format(value);
+const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);
 
 export const createInsuranceTableColumns = ({
   handleEdit,
@@ -24,16 +19,16 @@ export const createInsuranceTableColumns = ({
   canDelete,
 }: InsuranceTableConfigProps): ColumnDef<any>[] => [
   {
-    id: "id",
-    header: "No.",
+    id: 'id',
+    header: 'No.',
     enableSorting: false,
     enableResizing: false,
     size: 44,
     minSize: 44,
     meta: {
-      headerCellClassName: "whitespace-nowrap",
-      cellClassName: "align-middle text-slate-500",
-      cellContentClassName: "whitespace-nowrap",
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle text-slate-500',
+      cellContentClassName: 'whitespace-nowrap',
       loadingSkeleton: (
         <Box className="flex min-w-0 items-center">
           <Skeleton className="h-4 w-5 rounded-full" />
@@ -43,41 +38,39 @@ export const createInsuranceTableColumns = ({
     cell: ({ row }) => formatTableOrdinalNumber(row.index + 1),
   },
   {
-    id: "name",
-    accessorFn: (item) => item?.name || "-",
-    header: "Category Name",
+    id: 'name',
+    accessorFn: (item) => item?.name || '-',
+    header: 'Category Name',
     enableSorting: false,
     size: 164,
     minSize: 144,
     meta: {
-      cellClassName: "align-middle",
-      cellContentClassName: "whitespace-normal break-words",
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
     },
     cell: ({ row }) => {
       const item = row.original;
       const formattedName = item?.name
         ? item.name
-            .split("-")
+            .split('-')
             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")
-        : "-";
+            .join(' ')
+        : '-';
 
       return (
-        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">
-          {formattedName}
-        </Box>
+        <Box className="min-w-0 break-words text-sm leading-5 text-slate-700">{formattedName}</Box>
       );
     },
   },
   {
-    id: "logo_url",
-    header: "Logo File",
+    id: 'logo_url',
+    header: 'Logo File',
     enableSorting: false,
     size: 164,
     minSize: 144,
     meta: {
-      cellClassName: "align-middle",
-      cellContentClassName: "whitespace-normal break-words",
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-normal break-words',
       loadingSkeleton: (
         <Box className="flex items-center">
           <Skeleton className="h-12 w-[100px] rounded-md" />
@@ -97,7 +90,8 @@ export const createInsuranceTableColumns = ({
 
       return (
         <Box className="flex items-center min-w-0 break-words text-sm leading-5 text-slate-700">
-          <a
+          <Box
+            as="a"
             href={item.logo_url}
             target="_blank"
             rel="noopener noreferrer"
@@ -105,27 +99,27 @@ export const createInsuranceTableColumns = ({
           >
             <Image
               src={item.logo_url}
-              alt={item.name || "Insurance logo"}
+              alt={item.name || 'Insurance logo'}
               fill
               sizes="100px"
               className="object-contain object-left"
             />
-          </a>
+          </Box>
         </Box>
       );
     },
   },
   {
-    id: "action",
-    header: "Action",
+    id: 'action',
+    header: 'Action',
     enableSorting: false,
     enableResizing: false,
     size: 120,
     minSize: 120,
     meta: {
-      headerCellClassName: "whitespace-nowrap !px-1 text-center",
-      cellClassName: "align-middle whitespace-nowrap !px-1 text-center",
-      cellContentClassName: "whitespace-nowrap flex justify-center",
+      headerCellClassName: 'whitespace-nowrap !px-1 text-center',
+      cellClassName: 'align-middle whitespace-nowrap !px-1 text-center',
+      cellContentClassName: 'whitespace-nowrap flex justify-center',
       loadingSkeleton: (
         <Box className="flex items-center justify-center gap-2">
           <Skeleton className="h-7 w-[60px] rounded-full" />

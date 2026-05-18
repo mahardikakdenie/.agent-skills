@@ -268,11 +268,7 @@ export default function UploadMembership() {
               >
                 Action
               </Box>
-              <Select
-                id="action-select"
-                value={action}
-                onValueChange={(value) => setAction(value)}
-              >
+              <Select id="action-select" value={action} onValueChange={(value) => setAction(value)}>
                 <SelectTrigger className="w-full h-10 shadow-none border-slate-200 bg-white">
                   <SelectValue placeholder="Feedback" />
                 </SelectTrigger>
@@ -447,7 +443,8 @@ export default function UploadMembership() {
             </Box>
             <Box className="flex items-center h-10 bg-white border border-slate-200 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
               <Box className="flex-1 flex items-center h-full min-w-0">
-                <input
+                <Box
+                  as="input"
                   ref={fileInputRef}
                   id="file-upload"
                   type="file"

@@ -228,13 +228,14 @@ const CampaignAnalyticsPage = () => {
             disabled={!selectedCampaign || isUpdatingCampaign}
             className={cn(
               'h-10 rounded-full bg-[#F5BA41] px-5 text-black hover:bg-[#e6a92d]',
-              (!selectedCampaign || isUpdatingCampaign) && 'opacity-50 cursor-not-allowed'
+              (!selectedCampaign || isUpdatingCampaign) && 'opacity-50 cursor-not-allowed',
             )}
             leftIcon={<Upload size={18} />}
           >
-            <label htmlFor="excel-upload">
+            <Box as="label" htmlFor="excel-upload">
               {isUpdatingCampaign ? 'Updating...' : 'Update Campaign'}
-              <input
+              <Box
+                as="input"
                 disabled={!selectedCampaign || isUpdatingCampaign}
                 id="excel-upload"
                 type="file"
@@ -242,7 +243,7 @@ const CampaignAnalyticsPage = () => {
                 onChange={handleExcelUpload}
                 className="hidden"
               />
-            </label>
+            </Box>
           </Button>
         </Box>
       </Box>

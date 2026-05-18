@@ -1,31 +1,56 @@
-import React from "react";
-import OptimizeImage from "@/components/image";
+import React from 'react';
+
+import { Box } from '@repo/ui';
+
+import OptimizeImage from '@/components/image';
 
 interface ImageOrDefaultProps {
-    onClick?: () => void;
-    alt: string;
-    src: any;
-    additionalClassNameImg?: string;
-    additionalClassNameP?: string;
-    text?: string;
-    width?: number;
-    height?: number;
-    priority?: boolean;
-    layout?: string;
+  onClick?: () => void;
+  alt: string;
+  src: any;
+  additionalClassNameImg?: string;
+  additionalClassNameP?: string;
+  text?: string;
+  width?: number;
+  height?: number;
+  priority?: boolean;
+  layout?: string;
 }
 
-const ImageOrDefault: React.FC<ImageOrDefaultProps> = ({ onClick, alt, src, additionalClassNameImg, additionalClassNameP, text, width, height, priority, layout }) => {
-    return (
-        <div onClick={onClick} className={onClick && "cursor-pointer"}>
-            {src ? (
-                <OptimizeImage width={width} height={height} priority={priority} alt={alt} src={src} className={additionalClassNameImg} layout={layout} />
-            ) : (
-                <p className={`text-center text-gray-400 font-semibold text-sm border border-gray-300 rounded-md ${additionalClassNameP}`}>
-                    {text ? text : "No image available"}
-                </p>
-            )}
-        </div>
-    );
+const ImageOrDefault: React.FC<ImageOrDefaultProps> = ({
+  onClick,
+  alt,
+  src,
+  additionalClassNameImg,
+  additionalClassNameP,
+  text,
+  width,
+  height,
+  priority,
+  layout,
+}) => {
+  return (
+    <Box onClick={onClick} className={onClick && 'cursor-pointer'}>
+      {src ? (
+        <OptimizeImage
+          width={width}
+          height={height}
+          priority={priority}
+          alt={alt}
+          src={src}
+          className={additionalClassNameImg}
+          layout={layout}
+        />
+      ) : (
+        <Box
+          as="p"
+          className={`text-center text-gray-400 font-semibold text-sm border border-gray-300 rounded-md ${additionalClassNameP}`}
+        >
+          {text ? text : 'No image available'}
+        </Box>
+      )}
+    </Box>
+  );
 };
 
 export default ImageOrDefault;

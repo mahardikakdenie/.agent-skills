@@ -1,5 +1,8 @@
-import React from "react";
-import OptimizeImage from "./image";
+import React from 'react';
+
+import { Box } from '@repo/ui';
+
+import OptimizeImage from './image';
 
 interface ImageOrDefaultProps {
   onClick?: () => void;
@@ -25,7 +28,7 @@ const ImageOrDefault: React.FC<ImageOrDefaultProps> = ({
   priority,
 }) => {
   return (
-    <div onClick={onClick} className={onClick && "cursor-pointer"}>
+    <Box onClick={onClick} className={onClick && 'cursor-pointer'}>
       {src ? (
         <OptimizeImage
           width={width}
@@ -36,13 +39,14 @@ const ImageOrDefault: React.FC<ImageOrDefaultProps> = ({
           className={additionalClassNameImg}
         />
       ) : (
-        <p
+        <Box
+          as="p"
           className={`text-center text-gray-400 font-semibold text-sm border border-gray-300 rounded-md ${additionalClassNameP}`}
         >
-          {text ? text : "No image available"}
-        </p>
+          {text ? text : 'No image available'}
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

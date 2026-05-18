@@ -1,17 +1,23 @@
-import React, { useState, useRef, useEffect } from "react";
-import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
-import { format } from "date-fns";
-import { Calendar } from "react-feather";
+import { format } from 'date-fns';
+import React, { useState, useRef, useEffect } from 'react';
+import { DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { Calendar } from 'react-feather';
 
-const DatePickerDropdown = ({ onDateChange }: { onDateChange: (from: string, to: string) => void }) => {
+import { Box } from '@repo/ui';
+
+const DatePickerDropdown = ({
+  onDateChange,
+}: {
+  onDateChange: (from: string, to: string) => void;
+}) => {
   const [showPicker, setShowPicker] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
       endDate: new Date(),
-      key: "selection",
+      key: 'selection',
     },
   ]);
 
@@ -24,9 +30,9 @@ const DatePickerDropdown = ({ onDateChange }: { onDateChange: (from: string, to:
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -34,35 +40,39 @@ const DatePickerDropdown = ({ onDateChange }: { onDateChange: (from: string, to:
     const newStartDate = item.selection.startDate ?? new Date();
     const newEndDate = item.selection.endDate ?? new Date();
 
-    setDateRange([{ startDate: newStartDate, endDate: newEndDate, key: "selection" }]);
+    setDateRange([{ startDate: newStartDate, endDate: newEndDate, key: 'selection' }]);
 
-    onDateChange(format(newStartDate, "yyyy-MM-dd"), format(newEndDate, "yyyy-MM-dd"));
+    onDateChange(format(newStartDate, 'yyyy-MM-dd'), format(newEndDate, 'yyyy-MM-dd'));
   };
 
   return (
-    <div className="relative w-full text-base">
-      <div className="relative bg-white rounded-md shadow h-12 overflow-hidden">
-        <input
+    <Box className="relative w-full text-base">
+      <Box className="relative bg-white rounded-md shadow h-12 overflow-hidden">
+        <Box
+          as="input"
           type="text"
           readOnly
-          value={`${format(dateRange[0].startDate ?? new Date(), "dd/MM/yyyy")} - ${format(dateRange[0].endDate ?? new Date(), "dd/MM/yyyy")}`}
+          value={`${format(dateRange[0].startDate ?? new Date(), 'dd/MM/yyyy')} - ${format(dateRange[0].endDate ?? new Date(), 'dd/MM/yyyy')}`}
           onClick={() => setShowPicker(!showPicker)}
           className="w-full px-4 cursor-pointer rounded-md h-full shadow-none bg-transparent text-base z-10 relative"
         />
         <Calendar className="w-4 h-4 absolute right-3 top-[15px] text-primary z-0" />
-      </div>
+      </Box>
 
       {showPicker && (
-        <div ref={pickerRef} className="absolute right-0 z-10 mt-2 bg-white border rounded shadow-lg">
+        <Box
+          ref={pickerRef}
+          className="absolute right-0 z-10 mt-2 bg-white border rounded shadow-lg"
+        >
           <DateRange
             editableDateInputs={true}
             onChange={handleDateChange}
             moveRangeOnFirstSelection={false}
             ranges={dateRange}
           />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

@@ -1,4 +1,6 @@
-import { Button } from "@repo/ui";
+import { X, Check } from 'react-feather';
+
+import { Box, Button } from '@repo/ui';
 import {
   DialogHeader,
   DialogFooter,
@@ -6,7 +8,7 @@ import {
   Dialog,
   DialogClose,
   DialogTitle,
-} from "@repo/ui";
+} from '@repo/ui';
 import {
   Select,
   SelectContent,
@@ -14,9 +16,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
-import { Spinner } from "@repo/ui";
-import { X, Check } from "react-feather";
+} from '@repo/ui';
+import { Spinner } from '@repo/ui';
 
 export const ChannelModal = (props: {
   isChannelModalOpen: boolean;
@@ -43,32 +44,27 @@ export const ChannelModal = (props: {
           <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center justify-between">
             Select Channel
             <DialogClose>
-              <Button
-                type="button"
-                className="bg-transparent hover:bg-transparent text-black p-0"
-              >
+              <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
                 <X className="w-5 h-5" />
               </Button>
             </DialogClose>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-4">
-          <div className="grid gap-4">
+        <Box className="p-4">
+          <Box className="grid gap-4">
             {channelsLoading ? (
-              <div className="flex justify-center items-center py-4">
+              <Box className="flex justify-center items-center py-4">
                 <Spinner
                   inline
                   className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
                 />
                 Loading...
-              </div>
+              </Box>
             ) : (
               <Select
                 onValueChange={(value) => {
-                  const selectedChannel = accountChannels.find(
-                    (channel) => channel.id === value
-                  );
+                  const selectedChannel = accountChannels.find((channel) => channel.id === value);
                   if (selectedChannel) {
                     setSelectedChannels([value]);
                   }
@@ -88,8 +84,8 @@ export const ChannelModal = (props: {
                 </SelectContent>
               </Select>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
           <DialogClose asChild>

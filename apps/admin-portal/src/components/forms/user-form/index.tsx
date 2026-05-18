@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, Save } from 'react-feather';
 
-import { Button } from '@repo/ui';
+import { Box, Button } from '@repo/ui';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@repo/ui';
 
 import { PageHeader } from '@/components/page-header';
@@ -288,7 +288,7 @@ export function UserFormWrapper({
 
   return (
     <ContentLoadingWrapper isLoading={isLoading}>
-      <div className="flex flex-col w-full">
+      <Box className="flex flex-col w-full">
         <PageHeader
           title={isEdit ? 'Detail User' : 'Add User'}
           breadcrumbs={breadcrumbs}
@@ -305,7 +305,7 @@ export function UserFormWrapper({
           </Button>
         </PageHeader>
 
-        <div className="flex flex-col w-full p-4 md:p-6 gap-6">
+        <Box className="flex flex-col w-full p-4 md:p-6 gap-6">
           <UserForm
             control={control}
             handleSubmit={handleSubmit}
@@ -416,7 +416,7 @@ export function UserFormWrapper({
               )}
             </>
           )}
-        </div>
+        </Box>
 
         {isEdit && onAddChannel && (
           <ChannelModal
@@ -449,7 +449,7 @@ export function UserFormWrapper({
               <DialogHeader>
                 <DialogTitle>Delete Channel</DialogTitle>
               </DialogHeader>
-              <div className="py-3">Are you sure you want to delete this channel?</div>
+              <Box className="py-3">Are you sure you want to delete this channel?</Box>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setChannelToDelete(null)}>
                   Cancel
@@ -472,7 +472,7 @@ export function UserFormWrapper({
               <DialogHeader>
                 <DialogTitle>Delete Insurer</DialogTitle>
               </DialogHeader>
-              <div className="py-3">Are you sure you want to delete this insurer?</div>
+              <Box className="py-3">Are you sure you want to delete this insurer?</Box>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setInsurerToDelete(null)}>
                   Cancel
@@ -488,7 +488,7 @@ export function UserFormWrapper({
             </DialogContent>
           </Dialog>
         )}
-      </div>
+      </Box>
     </ContentLoadingWrapper>
   );
 }
