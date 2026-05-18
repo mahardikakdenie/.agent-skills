@@ -2,7 +2,7 @@
 
 > Batch: Batch 3 - Migration Plan
 > Branch: `feat/ui`
-> Last reconciled: 2026-04-23
+> Last reconciled: 2026-05-18
 > Scope: Foundation-level decisions and doc-alignment updates that change how the `_output` set should be interpreted
 
 ---
@@ -1568,3 +1568,16 @@ Impact:
 - Downstream apps can now use the same `size` vocabulary across the full field-entry surface without local CSS overrides for textarea density.
 - Styling overrides for complex primitives are now canonically supported through dedicated class name slots, reducing reliance on brittle global CSS selectors.
 - Verification gates for `Checkbox` and `Input` now explicitly include sizing-family tests as part of the standard baseline.
+
+---
+
+## 2026-05-18 - Combobox Clear Button Guard
+
+Changed:
+
+- Tightened `Combobox` clear button visibility so it only renders when `value` is a non-empty string. Previously the affordance could appear when `value` was `""` (empty string), which is not a meaningful selection.
+
+Impact:
+
+- The public `clearable` contract is unchanged; downstream apps passing `undefined` or omitting `value` continue to see no clear button as before.
+- Apps that previously passed `""` as a reset sentinel will no longer see a stale clear button — they should use `undefined` to signal no selection, consistent with the `onValueChange(undefined)` cleared-state contract.

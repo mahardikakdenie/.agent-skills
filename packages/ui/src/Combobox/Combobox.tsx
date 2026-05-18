@@ -114,7 +114,8 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
         ? createOptionLabel(trimmedSearchValue)
         : createOptionLabel ?? `Create "${trimmedSearchValue}"`;
     const labelTone = invalid && !interactiveDisabled ? 'destructive' : interactiveDisabled ? 'muted' : 'default';
-    const showClearButton = clearable && !interactiveDisabled && currentValue !== undefined;
+    const hasSelectedValue = typeof currentValue === 'string' && currentValue.length > 0;
+    const showClearButton = clearable && !interactiveDisabled && hasSelectedValue;
 
     React.useImperativeHandle(ref, () => triggerRef.current as HTMLButtonElement);
 
