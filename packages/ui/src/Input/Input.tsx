@@ -1,4 +1,6 @@
-﻿import * as React from 'react';
+'use client';
+
+import * as React from 'react';
 import { LoaderCircle, X } from 'lucide-react';
 
 import { cn } from '@repo/helper';

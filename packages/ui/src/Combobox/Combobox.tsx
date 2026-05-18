@@ -1,4 +1,6 @@
-﻿import { Command as CommandPrimitive } from 'cmdk';
+﻿'use client';
+
+import { Command as CommandPrimitive } from 'cmdk';
 import { Check, ChevronsUpDown, LoaderCircle, Plus, Search, X } from 'lucide-react';
 import * as React from 'react';
 
@@ -46,7 +48,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
       onValueChange,
       options,
       placeholder = 'Select an option',
-      searchPlaceholder = 'Search options…',
+      searchPlaceholder = 'Search options...',
       searchValue,
       onSearchValueChange,
       variant = 'outline',
@@ -365,7 +367,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                     className={comboboxLoadingRowVariants()}
                   >
                     <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
-                    Loading options…
+                    Loading options...
                   </Box>
                 ) : (
                   <>

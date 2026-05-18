@@ -1,3 +1,5 @@
+'use client';
+
 import type { Header, RowData } from '@tanstack/react-table';
 import * as React from 'react';
 

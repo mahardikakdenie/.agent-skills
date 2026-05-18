@@ -1,3 +1,5 @@
+'use client';
+
 import { ChevronLeft, ChevronRight, CalendarDays, X } from 'lucide-react';
 import * as React from 'react';
 import { isSameMonth } from 'date-fns';

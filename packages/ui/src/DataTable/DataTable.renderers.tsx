@@ -1,3 +1,5 @@
+'use client';
+
 import { flexRender, type Cell, type Header, type Row, type RowData } from '@tanstack/react-table';
 import {
   ArrowDown,

@@ -1,3 +1,5 @@
+'use client';
+
 import { type RowData } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import * as React from 'react';

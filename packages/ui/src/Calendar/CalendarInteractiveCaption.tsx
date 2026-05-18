@@ -1,3 +1,5 @@
+'use client';
+
 import { format, isAfter, isBefore, setYear, startOfMonth } from 'date-fns';
 import * as React from 'react';
 import { type CaptionProps, useDayPicker, useNavigation } from 'react-day-picker';

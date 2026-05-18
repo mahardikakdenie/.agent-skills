@@ -1,3 +1,5 @@
+'use client';
+
 import { CalendarDays, X } from 'lucide-react';
 import * as React from 'react';
 import { isSameDay, startOfDay, startOfMonth } from 'date-fns';
