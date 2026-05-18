@@ -571,6 +571,30 @@ class AppMenu {
         },
       ],
     },
+    {
+      name: "Configurations",
+      url: "",
+      submenu: [
+        {
+          name: "Communication Providers",
+          url: AppURL.configurations,
+          icon: renderImageIcon(iconClaim, "Communication Providers"),
+          additionalPages: [],
+        },
+        {
+          name: "Third Party Config",
+          url: AppURL.configurationsThirdParty,
+          icon: renderImageIcon(iconClaim, "Third Party Config"),
+          additionalPages: [],
+        },
+        {
+          name: "Channel Mapping",
+          url: AppURL.configurationsChannelMapping,
+          icon: renderImageIcon(iconClaim, "Channel Mapping"),
+          additionalPages: [],
+        },
+      ],
+    },
   ];
 
   private static renderProductCategoryIcon(

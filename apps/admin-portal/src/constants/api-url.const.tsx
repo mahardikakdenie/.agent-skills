@@ -1,6 +1,6 @@
 class ApiURL {
   static maxRetries = 3;
-  static maxTimeout = 300000; //5 min
+  static maxTimeout = 1800000; //30 min
   static timeoutInterval = 1000;
   static errorStatusCodeToGetToken = [401, 403];
 
@@ -355,6 +355,28 @@ class ApiURL {
 
   static customers = "/customers";
   static v1Customers = `/v1${ApiURL.customers}`;
+
+  // Third Party Configuration (CRM Providers)
+  static v1Configuration = "/v1/configuration";
+  static v1ConfigurationDetails = (id: string) => {
+    return `${ApiURL.v1Configuration}/${id}`;
+  };
+  static v1ConfigurationByCode = (code: string) => {
+    return `${ApiURL.v1Configuration}/code/${code}`;
+  };
+
+  // Channel Mapping (CRM Routing)
+  static v1ChannelMapping = "/v1/channel-mapping";
+  static v1ChannelMappingDetails = (id: string) => {
+    return `${ApiURL.v1ChannelMapping}/${id}`;
+  };
+
+  // Communication Service - Channel Providers
+  static channelProviders = "/channel-providers";
+  static channelProviderDetails = (channelId: string) => {
+    return `${ApiURL.channelProviders}/${channelId}`;
+  };
+  static channelProviderAvailableProviders = `${ApiURL.channelProviders}/available-providers`;
 }
 
 export default ApiURL;

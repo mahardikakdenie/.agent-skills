@@ -309,7 +309,7 @@ export function useUserForm(
         phone_number: `${phoneCode}${formData.phone_number}`,
       };
 
-      if (payload.role !== "Admin" && !payload.password?.trim()) {
+      if (payload.role !== "Admin" || !payload.password?.trim()) {
         delete payload.password;
       }
 

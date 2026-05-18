@@ -1,9 +1,18 @@
-import { useState, useCallback, useEffect } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import { useChannelsV1 } from "@/services/channel/hooks/queries";
 import { useDeleteChannel } from "@/services/channel/hooks/mutations";
+import { CommunicationService } from "@/services/communication.service";
+import { toastNotification } from "@/lib/toast";
 
 interface Channel {
   id: string;
@@ -11,6 +20,27 @@ interface Channel {
   type: string;
   created_at?: string;
   updated_at?: string;
+}
+
+interface ChannelProvider {
+  id: string;
+  channelId: string;
+  type: string;
+  provider: string;
+}
+
+async function getProvidersByChannelId(channelId: string): Promise<ChannelProvider[]> {
+  const response = await CommunicationService.getChannelProviders();
+  const providers: ChannelProvider[] = response.data;
+  return providers.filter((item) => item.channelId === channelId);
+}
+
+interface DeleteDialogState {
+  open: boolean;
+  channelId: string;
+  providerIds: string[];
+  providerCount: number;
+  isLoading: boolean;
 }
 
 interface UseChannelProps {
@@ -36,6 +66,9 @@ interface UseChannelProps {
   refetch: () => void;
   handleEdit: (id: string) => void;
   handleDelete: (id: string) => void;
+  confirmDelete: () => Promise<void>;
+  deleteDialog: DeleteDialogState;
+  setDeleteDialog: Dispatch<SetStateAction<DeleteDialogState>>;
   addNewChannel: () => void;
 }
 
@@ -44,6 +77,7 @@ export function useChannel(): UseChannelProps {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { permissionList } = useAuth();
+  const queryClient = useQueryClient();
 
   const [page, setPageState] = useState(() => {
     return parseInt(searchParams.get("page") || "1", 10);
@@ -57,6 +91,13 @@ export function useChannel(): UseChannelProps {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [canCreate, setCanCreate] = useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
+    open: false,
+    channelId: "",
+    providerIds: [],
+    providerCount: 0,
+    isLoading: false,
+  });
 
   const updateURL = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -150,12 +191,62 @@ export function useChannel(): UseChannelProps {
 
   const handleDelete = useCallback(
     async (id: string) => {
-      if (window.confirm("Are you sure you want to delete this channel?")) {
-        deleteMutation.mutate(id);
+      setDeleteDialog((prev) => ({ ...prev, open: true, channelId: id, isLoading: true }));
+      try {
+        const providers = await getProvidersByChannelId(id);
+        setDeleteDialog({
+          open: true,
+          channelId: id,
+          providerIds: providers.map((provider) => provider.id),
+          providerCount: providers.length,
+          isLoading: false,
+        });
+      } catch {
+        setDeleteDialog({
+          open: true,
+          channelId: id,
+          providerIds: [],
+          providerCount: 0,
+          isLoading: false,
+        });
       }
     },
-    [deleteMutation]
+    []
   );
+
+  const confirmDelete = useCallback(async () => {
+    const { channelId, providerIds } = deleteDialog;
+
+    if (!channelId) {
+      return;
+    }
+
+    setDeleteDialog((prev) => ({ ...prev, isLoading: true }));
+
+    try {
+      await deleteMutation.mutateAsync(channelId);
+
+      if (providerIds.length > 0) {
+        const results = await Promise.allSettled(
+          providerIds.map((id) => CommunicationService.deleteChannelProvider(id))
+        );
+        const failedCount = results.filter((result) => result.status === "rejected").length;
+
+        if (failedCount > 0) {
+          toastNotification(
+            "Some channel-providers could not be deleted. Please check configurations.",
+            "error"
+          );
+        }
+
+        queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
+      }
+
+      setDeleteDialog((prev) => ({ ...prev, open: false, isLoading: false }));
+    } catch {
+      setDeleteDialog((prev) => ({ ...prev, isLoading: false }));
+    }
+  }, [deleteDialog, deleteMutation, queryClient]);
 
   const addNewChannel = useCallback(() => {
     router.push(AppURL.masterdataChannelAdd);
@@ -186,6 +277,9 @@ export function useChannel(): UseChannelProps {
     refetch,
     handleEdit,
     handleDelete,
+    confirmDelete,
+    deleteDialog,
+    setDeleteDialog,
     addNewChannel,
   };
 }

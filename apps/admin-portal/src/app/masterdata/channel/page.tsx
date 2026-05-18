@@ -4,7 +4,17 @@ import noData from '@public/images/no-data.webp';
 import Image from 'next/image';
 import { Plus } from 'react-feather';
 
-import { Box, Button, DataTable } from '@repo/ui';
+import {
+  Box,
+  Button,
+  DataTable,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@repo/ui';
 
 import { createChannelTableColumns } from '@/components/table-config/channel-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
@@ -26,6 +36,9 @@ export default function ChannelsPage() {
     setRowsPerPage,
     handleEdit,
     handleDelete,
+    confirmDelete,
+    deleteDialog,
+    setDeleteDialog,
     addNewChannel,
   } = useChannel();
 
@@ -121,6 +134,39 @@ export default function ChannelsPage() {
           getRowId: (row, index) => row?.id || `channel-row-${index}`,
         }}
       />
+
+      <Dialog
+        open={deleteDialog.open}
+        onClose={() => setDeleteDialog((prev) => ({ ...prev, open: false }))}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Channel</DialogTitle>
+            <DialogDescription>
+              {deleteDialog.isLoading
+                ? 'Checking associated providers...'
+                : deleteDialog.providerCount > 0
+                  ? `Are you sure you want to delete this channel? This will also delete ${deleteDialog.providerCount} associated channel-provider(s). This action cannot be undone.`
+                  : 'Are you sure you want to delete this channel? This action cannot be undone.'}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialog((prev) => ({ ...prev, open: false }))}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleteDialog.isLoading}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
