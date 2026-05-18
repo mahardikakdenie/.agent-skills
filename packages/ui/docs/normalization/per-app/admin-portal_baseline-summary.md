@@ -42,8 +42,8 @@
 - Loading (src/components/ui/loading.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Menubar (src/components/ui/menubar.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - NavigationMenu (src/components/ui/navigation-menu.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- OptimizeImageShell (src/components/OptimizeImageShell.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
-- OptimizeImageShell (src/components/ui/OptimizeImageShell.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
+- OptimizeImageShell (src/components/optimize-image-shell.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
+- OptimizeImageShell (src/components/ui/optimize-image-shell.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Pagination (src/components/ui/pagination.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - Popover (src/components/ui/popover.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
 - RadioGroup (src/components/ui/radio-group.tsx): props/variants/states documented in Batch 1 audit; parity checklist item retained.
@@ -75,7 +75,7 @@
 ## Batch 1.5 Amendment
 - Components split: 4
 - NEW_SHARED_COMPONENT candidates from splits: 2
-- Names: OptimizeImageShell (src/components/OptimizeImageShell.tsx), OptimizeImageShell (src/components/ui/OptimizeImageShell.tsx)
+- Names: OptimizeImageShell (src/components/optimize-image-shell.tsx), OptimizeImageShell (src/components/ui/optimize-image-shell.tsx)
 - KEEP_APP_LOCAL-only Shells: 2
 - Names: ExtendedSidemenuShell, PageHeaderShell
 - Explicitly skipped candidates: 34 (see _migration-log.md Batch 1.5 section)
