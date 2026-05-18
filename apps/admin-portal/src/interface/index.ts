@@ -9,6 +9,7 @@ export interface ClaimItem {
     policy_holder?: {
       name?: string;
     };
+    number?: string;
   };
   package?: {
     plan?: {

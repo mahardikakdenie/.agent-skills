@@ -118,6 +118,12 @@ class AppURL {
   static configuration = "/configuration";
   static configurationSla = `${AppURL.configuration}/sla`;
 
+  // Configurations
+  static configurations = "/configurations";
+  static configurationsThirdParty = "/configurations/third-party";
+  static configurationsChannelMapping = "/configurations/channel-mapping";
+
+
   // Finance
   static finance = "/finance";
   static financeBilling = `${AppURL.finance}/billing`;

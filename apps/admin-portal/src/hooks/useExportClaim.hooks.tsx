@@ -207,7 +207,7 @@ export default function useExportClaim(): UseExportClaimProps {
     ];
 
     if (isGrabExpress) {
-      head.push("Booking ID", "Tanggal Claim");
+      head.push("Booking ID", "Tanggal Claim", "Draft Date", "Submitted Date");
     }
 
     autoTable(doc, {
@@ -229,6 +229,8 @@ export default function useExportClaim(): UseExportClaimProps {
           row.push(
             getClaimConfigValue(item, "order_id"),
             getClaimConfigValue(item, "datetime_loss_damage"),
+            item.created_at ? moment(item.created_at).format("DD MMM YYYY HH:mm") : "-",
+            item.submitted_at ? moment(item.submitted_at).format("DD MMM YYYY HH:mm") : "-"
           );
         }
         return row;
@@ -307,12 +309,17 @@ export default function useExportClaim(): UseExportClaimProps {
         Status: item.status || "-",
       };
 
-      if (isGrabExpress && Array.isArray(item?.claim_config)) {
-        item.claim_config
-          .filter((c: any) => !excludedTypes.includes(c.type))
-          .forEach((c: any) => {
-            baseData[c.label] = c.value || "-";
-          });
+      if (isGrabExpress) {
+        baseData["Draft Date"] = item.created_at ? moment(item.created_at).format("DD MMM YYYY HH:mm") : "-";
+        baseData["Submitted Date"] = item.submitted_at ? moment(item.submitted_at).format("DD MMM YYYY HH:mm") : "-";
+
+        if (Array.isArray(item?.claim_config)) {
+          item.claim_config
+            .filter((c: any) => !excludedTypes.includes(c.type))
+            .forEach((c: any) => {
+              baseData[c.label] = c.value || "-";
+            });
+        }
       }
 
       return baseData;
@@ -332,6 +339,9 @@ export default function useExportClaim(): UseExportClaimProps {
     columnWidths["Status"] = 100;
 
     if (isGrabExpress) {
+      columnWidths["Draft Date"] = 150;
+      columnWidths["Submitted Date"] = 150;
+
       claimConfigLabels.forEach((label) => {
         columnWidths[label] = 200;
       });

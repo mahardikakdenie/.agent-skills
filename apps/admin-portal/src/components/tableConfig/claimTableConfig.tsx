@@ -45,6 +45,12 @@ export const createClaimsTableColumns = ({
     className: "whitespace-nowrap",
   },
   {
+    key: "policy_id",
+    header: "Policy ID",
+    className: "whitespace-nowrap",
+    render: (claim) => claim.policy_data?.number || "-",
+  },
+  {
     key: "policy_data.policy_holder.name",
     header: "Customer Name",
     className: "whitespace-nowrap",
@@ -69,7 +75,7 @@ export const createClaimsTableColumns = ({
     header: "Requested Amount",
     render: (claim) => {
       const claimValue = claim.claim?.find(
-        (d: any) => d.type === "Number" && d.name === "claim"
+        (d: any) => d.type === "Number" && d.name === "claim",
       )?.value;
 
       const numericValue = Number(claimValue);
@@ -82,7 +88,7 @@ export const createClaimsTableColumns = ({
     render: (claim) => (
       <div className="flex gap-2 items-center">
         {formatMoneyClaim(
-          claim.amount_approved != null ? claim.amount_approved : 0
+          claim.amount_approved != null ? claim.amount_approved : 0,
         )}
       </div>
     ),
@@ -113,7 +119,7 @@ export const createClaimsTableColumns = ({
       >
         <SelectTrigger
           className={`w-[240px] h-10 select-status border-0 bg-transparent hover:cursor-pointer py-2 ${getStatusColor(
-            claim.status
+            claim.status,
           )}`}
         >
           <SelectValue>{claim.status || "Select Status"}</SelectValue>
@@ -283,8 +289,8 @@ export const createDocumentTableColumns = ({
             document.type.toLowerCase() === "fields"
               ? isDocumentSelected(
                   document?.fields?.filter(
-                    (a: any) => a.type.toLowerCase() === "file"
-                  )?.[0]?.name || ""
+                    (a: any) => a.type.toLowerCase() === "file",
+                  )?.[0]?.name || "",
                 )
               : isDocumentSelected(document.name)
           }
@@ -293,7 +299,7 @@ export const createDocumentTableColumns = ({
             if (document.type.toLowerCase() === "fields") {
               docName =
                 document?.fields?.filter(
-                  (a: any) => a.type.toLowerCase() === "file"
+                  (a: any) => a.type.toLowerCase() === "file",
                 )?.[0]?.name || "";
             }
             onCheckboxChange(docName);
@@ -310,13 +316,13 @@ export const createDocumentTableColumns = ({
       <>
         {document.type.toLowerCase() === "fields"
           ? document?.fields?.filter(
-              (a: any) => a.type.toLowerCase() === "file"
+              (a: any) => a.type.toLowerCase() === "file",
             )?.[0]?.label?.en ||
             document?.fields?.filter(
-              (a: any) => a.type.toLowerCase() === "file"
+              (a: any) => a.type.toLowerCase() === "file",
             )?.[0]?.label_multilanguage?.en ||
             document?.fields?.filter(
-              (a: any) => a.type.toLowerCase() === "file"
+              (a: any) => a.type.toLowerCase() === "file",
             )?.[0]?.label ||
             "-"
           : document?.label?.en ||
@@ -332,7 +338,7 @@ export const createDocumentTableColumns = ({
     render: (document) =>
       document.type.toLowerCase() === "fields"
         ? document?.fields?.filter(
-            (a: any) => a.type.toLowerCase() === "file"
+            (a: any) => a.type.toLowerCase() === "file",
           )?.[0]?.criteria || "-"
         : document?.criteria || "-",
   },
@@ -342,7 +348,7 @@ export const createDocumentTableColumns = ({
     render: (document) =>
       document.type.toLowerCase() === "fields"
         ? document?.fields?.filter(
-            (a: any) => a.type.toLowerCase() === "file"
+            (a: any) => a.type.toLowerCase() === "file",
           )?.[0]?.definition || "-"
         : document?.definition || "-",
   },
@@ -380,7 +386,7 @@ export const createDocumentTableColumns = ({
               Document type:{" "}
               {document.type.toLowerCase() === "fields"
                 ? document?.fields?.filter(
-                    (a: any) => a.type.toLowerCase() === "file"
+                    (a: any) => a.type.toLowerCase() === "file",
                   )?.[0]?.name || "-"
                 : document?.name || "-"}
             </p>
@@ -388,7 +394,7 @@ export const createDocumentTableColumns = ({
               Criteria:{" "}
               {document.type.toLowerCase() === "fields"
                 ? document?.fields?.filter(
-                    (a: any) => a.type.toLowerCase() === "file"
+                    (a: any) => a.type.toLowerCase() === "file",
                   )?.[0]?.criteria || "-"
                 : document?.criteria || "-"}
             </p>
@@ -396,7 +402,7 @@ export const createDocumentTableColumns = ({
               Definition:{" "}
               {document.type.toLowerCase() === "fields"
                 ? document?.fields?.filter(
-                    (a: any) => a.type.toLowerCase() === "file"
+                    (a: any) => a.type.toLowerCase() === "file",
                   )?.[0]?.definition || "-"
                 : document?.definition || "-"}
             </p>
@@ -405,7 +411,7 @@ export const createDocumentTableColumns = ({
               "
               {document.type.toLowerCase() === "fields"
                 ? document?.fields?.filter(
-                    (a: any) => a.type.toLowerCase() === "file"
+                    (a: any) => a.type.toLowerCase() === "file",
                   )?.[0]?.pending_reason_message?.en || "-"
                 : document?.pending_reason_message?.en || "-"}
               "
