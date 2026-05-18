@@ -1,4 +1,6 @@
-﻿import * as SwitchPrimitive from '@radix-ui/react-switch';
+'use client';
+
+import * as SwitchPrimitive from '@radix-ui/react-switch';
 import * as React from 'react';
 
 import { cn } from '@repo/helper';
