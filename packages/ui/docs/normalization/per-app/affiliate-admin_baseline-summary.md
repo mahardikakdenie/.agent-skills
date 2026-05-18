@@ -53,7 +53,7 @@
 ## Batch 1.5 Amendment
 - Components split: 23
 - NEW_SHARED_COMPONENT candidates from splits: 1
-- `OptimizeImageShell` (`src/components/OptimizeImageShell.tsx`)
+- `OptimizeImageShell` (`src/components/optimize-image-shell.tsx`)
 - KEEP_APP_LOCAL-only Shells: 22
 - `ConfigurationCommissionRateViewShell` (`src/views/configuration/commission-rate/ConfigurationCommissionRateViewShell.tsx`)
 - `AddPlanViewShell` (`src/views/plan/add/AddPlanViewShell.tsx`)
