@@ -4730,3 +4730,105 @@
 - **Batch 1.5 candidate:** NO
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - keep local until multi-app reuse signal appears
+
+### ConfigurationsPage
+
+- **File:** src/app/configurations/page.tsx
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** missing
+- **API delta:** N/A (stays app-local; route wrapper)
+- **Parity risk:** HIGH
+- **Risk notes:** New legacy route wrapper for communication provider configuration.
+- **Reason kept app-local:** App route boundary that delegates to an admin-portal configuration view.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** NO
+- **Refactor potential:** NONE
+- **Refactor strategy:** none - thin route wrapper delegates to app-local view
+
+### ChannelMappingPage
+
+- **File:** src/app/configurations/channel-mapping/page.tsx
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** missing
+- **API delta:** N/A (stays app-local; route wrapper)
+- **Parity risk:** HIGH
+- **Risk notes:** New legacy route wrapper for channel-to-CRM mapping.
+- **Reason kept app-local:** App route boundary that delegates to an admin-portal channel mapping view.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** NO
+- **Refactor potential:** NONE
+- **Refactor strategy:** none - thin route wrapper delegates to app-local view
+
+### ThirdPartyConfigPage
+
+- **File:** src/app/configurations/third-party/page.tsx
+- **Classification:** KEEP_APP_LOCAL
+- **Batch:** N/A
+- **@repo/ui status:** missing
+- **API delta:** N/A (stays app-local; route wrapper)
+- **Parity risk:** HIGH
+- **Risk notes:** New legacy route wrapper for third-party configuration.
+- **Reason kept app-local:** App route boundary that delegates to an admin-portal third-party configuration view.
+- **Is monolith:** NO
+- **SoC potential:** NONE
+- **SoC strategy:** none
+- **Batch 1.5 candidate:** NO
+- **Refactor potential:** NONE
+- **Refactor strategy:** none - thin route wrapper delegates to app-local view
+
+### ConfigurationsView
+
+- **File:** src/views/configurations/configurations.view.tsx
+- **Classification:** MIGRATE_AFTER_SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** missing
+- **API delta:** N/A (app-local view; uses existing shared primitives only)
+- **Parity risk:** HIGH
+- **Risk notes:** New legacy view manages channel provider CRUD state and renders provider management UI in one component.
+- **Reason kept app-local:** Domain-specific communication-provider workflow with app service hooks and route-specific actions.
+- **Is monolith:** YES
+- **SoC potential:** MEDIUM
+- **SoC strategy:** container-shell
+- **Batch 1.5 candidate:** YES
+- **Refactor potential:** MEDIUM
+- **Refactor strategy:** split provider management display shell from useChannelProviders container in a future Batch 1.5 pass
+
+### ChannelMappingView
+
+- **File:** src/views/configurations/channel-mapping.view.tsx
+- **Classification:** MIGRATE_AFTER_SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** missing
+- **API delta:** N/A (app-local view; uses existing shared primitives only)
+- **Parity risk:** HIGH
+- **Risk notes:** New legacy view manages channel-to-CRM mapping CRUD state and renders mapping UI in one component.
+- **Reason kept app-local:** Domain-specific CRM routing workflow with app service hooks and route-specific actions.
+- **Is monolith:** YES
+- **SoC potential:** MEDIUM
+- **SoC strategy:** container-shell
+- **Batch 1.5 candidate:** YES
+- **Refactor potential:** MEDIUM
+- **Refactor strategy:** split channel mapping display shell from useChannelMapping container in a future Batch 1.5 pass
+
+### ThirdPartyConfigView
+
+- **File:** src/views/configurations/third-party-config.view.tsx
+- **Classification:** MIGRATE_AFTER_SPLIT
+- **Batch:** 1.5
+- **@repo/ui status:** missing
+- **API delta:** N/A (app-local view; uses existing shared primitives only)
+- **Parity risk:** HIGH
+- **Risk notes:** New legacy view manages third-party configuration CRUD state and renders secret/configuration UI in one component.
+- **Reason kept app-local:** Domain-specific third-party CRM configuration workflow with app service hooks and route-specific actions.
+- **Is monolith:** YES
+- **SoC potential:** MEDIUM
+- **SoC strategy:** container-shell
+- **Batch 1.5 candidate:** YES
+- **Refactor potential:** MEDIUM
+- **Refactor strategy:** split third-party configuration display shell from useThirdPartyConfig container in a future Batch 1.5 pass

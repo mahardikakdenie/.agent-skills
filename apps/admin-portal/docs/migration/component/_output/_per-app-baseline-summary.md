@@ -111,6 +111,23 @@
   - EXTEND_EXISTING: none
 - Verification after merge-resolution:
   - pnpm --filter admin-portal check-types -> PASS
+  - pnpm --filter admin-portal lint -> PASS (warnings only)
   - pnpm --filter admin-portal build -> PASS
   - pnpm --filter admin-portal lint -> PASS (warnings only)
 
+## Legacy Update - 2026-05-18 15:19 (+07)
+- Source: subtree pull from `admin-portal/stage` into `integrate-app/admin-portal`, then merge to `migrate-app/admin-portal`.
+- Net app-local additions:
+  - `/configurations`
+  - `/configurations/channel-mapping`
+  - `/configurations/third-party`
+- packages/ui intake queue impact:
+  - NEW_SHARED_COMPONENT: none
+  - EXTEND_EXISTING: none
+- Batch 1.5 queue impact:
+  - Added `ConfigurationsView`, `ChannelMappingView`, and `ThirdPartyConfigView` as `MIGRATE_AFTER_SPLIT` candidates because each combines app hooks/service state with display JSX.
+- Existing migrated file impact:
+  - Preserved kebab-case table-config and `.ts` hook architecture while carrying forward legacy `Policy ID`, `Invoice Number`, and GrabExpress export date fields.
+- Verification after merge-resolution:
+  - pnpm --filter admin-portal check-types -> PASS
+  - pnpm --filter admin-portal build -> PASS

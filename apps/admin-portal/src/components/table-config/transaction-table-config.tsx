@@ -67,6 +67,25 @@ export const createTransactionTableColumns = ({
     cell: ({ row }) => formatTableOrdinalNumber((page - 1) * rowsPerPage + row.index + 1),
   },
   {
+    id: 'invoice',
+    accessorFn: (transaction) => transaction?.invoice || '-',
+    header: 'Invoice Number',
+    enableSorting: false,
+    size: 156,
+    minSize: 136,
+    meta: {
+      headerCellClassName: 'whitespace-nowrap',
+      cellClassName: 'align-middle',
+      cellContentClassName: 'whitespace-nowrap',
+      loadingSkeletonClassName: 'h-4 w-[7.5rem] rounded-full',
+    },
+    cell: ({ row }) => (
+      <Box className="min-w-0 text-sm leading-5 text-slate-700">
+        {row.original?.invoice || '-'}
+      </Box>
+    ),
+  },
+  {
     id: 'insuranceName',
     accessorFn: (transaction) => transaction?.insurance?.insurance?.id?.name || '-',
     header: 'Insurance Name',

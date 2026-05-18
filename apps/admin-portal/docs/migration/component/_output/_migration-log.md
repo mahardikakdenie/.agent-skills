@@ -1239,3 +1239,35 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No @repo/ui exports are added or changed. This is a pure file-system rename; all shared Box and react-feather usages inside the shell remain identical.`
 - Verification note: `This logging update is based on the current git delete/add diff for the shell file and the import-path change in extended-sidemenu.tsx. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `No page migration status changes. This entry records naming-convention hygiene work only; all route migration PASS/FAIL states remain as previously recorded in the Batch 9 tracker.`
+
+## Legacy Update Resume Record - 2026-05-18 15:19 (+07)
+
+- Status: [RESUME] Resumed after legacy update.
+- Legacy update integrated: `2026-05-18 15:19 +07`.
+- L1 source: `admin-portal/stage` into `integrate-app/admin-portal`, then merge to `migrate-app/admin-portal`.
+- L2 conflict resolution:
+  - `apps/admin-portal/package-lock.json`: app configuration/package-manager cleanup, kept migrate deletion.
+  - `apps/admin-portal/package.json`: app configuration, kept migration package identity and React 19/Next 16/Tailwind 4 dependency baseline.
+  - `apps/admin-portal/src/app/masterdata/channel/page.tsx`: migrated route, kept shared `@repo/ui` layout and manually applied legacy delete confirmation dialog behavior.
+  - `apps/admin-portal/src/hooks/useChannel.hooks.tsx`: app hook, kept migrated channel service hook and manually applied legacy cascade-delete provider behavior.
+  - `apps/admin-portal/src/hooks/useUserForm.hooks.tsx`: app hook, kept migrated auth service hooks and applied legacy password omission condition.
+  - `apps/admin-portal/src/components/tableConfig/claimTableConfig.tsx`: old-path table config, kept migrated kebab-case file and applied legacy `Policy ID` column to `src/components/table-config/claim-table-config.tsx`.
+  - `apps/admin-portal/src/components/tableConfig/transactionTableConfig.tsx`: old-path table config, kept migrated kebab-case file and applied legacy `Invoice Number` column to `src/components/table-config/transaction-table-config.tsx`.
+  - `apps/admin-portal/src/hooks/useExportClaim.hooks.tsx`: old-path hook, kept migrated `.ts` service-hook file and applied legacy GrabExpress `Draft Date` / `Submitted Date` export fields to `src/hooks/useExportClaim.hooks.ts`.
+- Affected components/routes:
+  - New app-local routes: `/configurations`, `/configurations/channel-mapping`, `/configurations/third-party`.
+  - Existing migrated route: `/masterdata/channel`.
+  - Existing migrated exports/tables: claim export, claim table, transaction table.
+- New packages/ui intake items: none.
+- New Batch 1.5 candidates:
+  - `ConfigurationsView` (`src/views/configurations/configurations.view.tsx`) - `MIGRATE_AFTER_SPLIT`, container-shell.
+  - `ChannelMappingView` (`src/views/configurations/channel-mapping.view.tsx`) - `MIGRATE_AFTER_SPLIT`, container-shell.
+  - `ThirdPartyConfigView` (`src/views/configurations/third-party-config.view.tsx`) - `MIGRATE_AFTER_SPLIT`, container-shell.
+- Cross-track impact:
+  - Service-facing changes added CRM/communication service files and new hooks using legacy API clients. Component flow preserved them as app-local; service migration should review these endpoints before any future service-track cleanup.
+- Verification:
+  - Merge Health Check `pnpm --filter admin-portal check-types`: PASS.
+  - Merge Health Check `pnpm --filter admin-portal build`: PASS.
+  - L6 `pnpm --filter admin-portal lint`: PASS (warnings only).
+  - L6 migrated component integrity check: PASS; old `src/components/tableConfig` directory and `src/hooks/useExportClaim.hooks.tsx` did not reappear.
+- Next step: continue Batch 9 route migration work, with a future Batch 1.5 follow-up for the three new configuration views.
