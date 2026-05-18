@@ -164,7 +164,7 @@ export const productService = {
   getEmailTemplatesJourney: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.emailTemplatesJourney, params)),
   getEmailTemplateJourneyById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.emailTemplatesJourney, { id })),
+    get(PRODUCT_ENDPOINTS.emailTemplateJourneyDetail(id)),
   createEmailTemplateJourney: (payload: unknown) =>
     post(PRODUCT_ENDPOINTS.emailTemplatesJourney, payload),
   updateEmailTemplateJourney: (id: string, payload: unknown) =>

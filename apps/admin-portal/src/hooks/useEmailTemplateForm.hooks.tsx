@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 import { EditorState, ContentState, convertFromHTML, Modifier } from "draft-js";
-import { stateToHTML } from "draft-js-export-html";
+import { renderEmailTemplateHtml } from "@/helpers/email-template-html";
 import {
   useCategories,
   useEmailTags,
@@ -428,7 +428,7 @@ export function useEmailTemplateForm(
   const handleEditorChange = useCallback((state: EditorState) => {
     setEditorState(state);
 
-    let htmlContent = stateToHTML(state.getCurrentContent());
+    let htmlContent = renderEmailTemplateHtml(state.getCurrentContent());
     htmlContent = htmlContent
       .replace(/\s+/g, " ")
       .replace(/&nbsp;/g, " ")

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useEmailTemplateForm } from "@/hooks/useEmailTemplateForm.hooks";
-import EmailTemplateForm from "@/components/forms/EmailTemplateForm";
+import EmailTemplateForm from "@/components/forms/email-template-form";
 
 export default function EditEmailTemplate() {
   const params = useParams();
@@ -23,6 +23,7 @@ export default function EditEmailTemplate() {
     emailTags,
     editorState,
     content,
+    setContent,
     selectedTemplateType,
     selectedCategoryId,
     setSelectedCategoryId,
@@ -93,6 +94,7 @@ export default function EditEmailTemplate() {
       onBack={goBack}
       onEditorChange={handleEditorChange}
       onEditorInsert={handleEditorInsert}
+      onContentChange={setContent}
       onSelectTemplateType={handleSelectTemplateType}
     />
   );

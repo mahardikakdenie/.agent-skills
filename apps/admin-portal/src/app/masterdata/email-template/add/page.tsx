@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEmailTemplateForm } from "@/hooks/useEmailTemplateForm.hooks";
-import EmailTemplateForm from "@/components/forms/EmailTemplateForm";
+import EmailTemplateForm from '@/components/forms/email-template-form';
+import { useEmailTemplateForm } from '@/hooks/useEmailTemplateForm.hooks';
 
 export default function AddEmailTemplate() {
   const {
@@ -17,6 +17,7 @@ export default function AddEmailTemplate() {
     emailTags,
     editorState,
     content,
+    setContent,
     selectedTemplateType,
     selectedCategoryId,
     setSelectedCategoryId,
@@ -39,7 +40,7 @@ export default function AddEmailTemplate() {
     handleEditorInsert,
     handleSelectTemplateType,
     goBack,
-  } = useEmailTemplateForm("create");
+  } = useEmailTemplateForm('create');
 
   return (
     <EmailTemplateForm
@@ -78,6 +79,7 @@ export default function AddEmailTemplate() {
       onBack={goBack}
       onEditorChange={handleEditorChange}
       onEditorInsert={handleEditorInsert}
+      onContentChange={setContent}
       onSelectTemplateType={handleSelectTemplateType}
     />
   );

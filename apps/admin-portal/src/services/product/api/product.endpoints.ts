@@ -5,7 +5,7 @@ export const PRODUCT_ENDPOINTS = {
   categoryDetail: (id: string) => `/v1/categories/${id}`,
   categoriesByChannel: (channelId: string) =>
     `/v1/categories/channel/${channelId}`,
-  insurances: "/v1/insurances",
+  insurances: "/v1/insurances/",
   insuranceDetail: (id: string) => `/v1/insurances/${id}`,
   insurancesLegacy: "/insurances",
   insuranceLegacyDetail: (id: string) => `/insurances/${id}`,
@@ -36,7 +36,7 @@ export const PRODUCT_ENDPOINTS = {
   referencesEmailJourney: "/v1/references/type/email-journey",
   referencesHospital: "/v1/references/type/grab-provider-hospital",
   referencesHospitalUpload: "/v1/references/upload/grab-provider-hospital",
-  emailTags: "/v1/email-tags",
+  emailTags: "/v1/email-tags/",
   emailTagDetail: (id: string) => `/v1/email-tags/${id}`,
   emailTemplatesJourney: "/v1/email-templates/journey",
   emailTemplateJourneyDetail: (id: string) =>

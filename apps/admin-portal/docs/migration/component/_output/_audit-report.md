@@ -2451,9 +2451,8 @@
 - **Refactor potential:** NONE
 - **Refactor strategy:** none - no practical split boundary identified
 
-### EmailTemplateForm
-
-- **File:** src/components/forms/EmailTemplateForm/index.tsx
+### email-template-form
+- **File:** src/components/forms/email-template-form/index.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** N/A
 - **@repo/ui status:** missing
