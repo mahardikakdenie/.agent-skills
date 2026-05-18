@@ -137,7 +137,7 @@
 "DragDropExcel","KEEP_APP_LOCAL","1.5","P2","MEDIUM","src/components/drag-drop-excel.tsx","","S","MEDIUM","YES","MEDIUM","container-shell","SKIPPED","MEDIUM","skipped - existing component already presentation-focused; no safe split found",""
 "ExtendedSidemenu","SPLIT","1.5","P2","MEDIUM","src/components/extended-sidemenu.tsx","","M","MEDIUM","YES","HIGH","render-prop","DONE","HIGH","split into ExtendedSidemenuContainer + ExtendedSidemenuShell",""
 "ExtendedSidemenuContainer","KEEP_APP_LOCAL","1.5","P2","MEDIUM","src/components/extended-sidemenu.tsx","","M","MEDIUM","NO","NONE","none","DONE","NONE","container frozen; delegates view rendering to shell",""
-"ExtendedSidemenuShell","KEEP_APP_LOCAL","N/A","P2","MEDIUM","src/components/ExtendedSidemenuShell.tsx","","XS","MEDIUM","NO","NONE","none","DONE","NONE","none - shell extracted in Batch 1.5",""
+"ExtendedSidemenuShell","KEEP_APP_LOCAL","N/A","P2","MEDIUM","src/components/extended-sidemenu-shell.tsx","","XS","MEDIUM","NO","NONE","none","DONE","NONE","none - shell extracted in Batch 1.5",""
 "BrokerFeeForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/BrokerFeeForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "CampaignForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/campaign-form/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""
 "ChannelForm","KEEP_APP_LOCAL","N/A","P3","HIGH","src/components/forms/ChannelForm/index.tsx","","XS","HIGH","NO","NONE","none","NO","NONE","none - no practical split boundary identified",""

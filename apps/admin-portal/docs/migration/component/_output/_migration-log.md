@@ -1224,3 +1224,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No @repo/ui exports are added or changed. This is a pure file-system rename pass; all shared primitive usages remain identical to the state established in prior Batch 9 entries.`
 - Verification note: `This logging update is based on the current git rename and import-path diff. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `No page migration status changes. This entry records infrastructure hygiene work only; all route migration PASS/FAIL states remain as previously recorded in the Batch 9 tracker.`
+
+
+## Batch 9 - ExtendedSidemenuShell File Naming Convention Follow-up (kebab-case) - 2026-05-18
+
+- Component focus: `ExtendedSidemenuShell`
+- Migration intent: `Rename the remaining PascalCase ExtendedSidemenuShell.tsx file to kebab-case to close the one gap left after the codebase-wide naming normalization pass. No behavioral changes are introduced.`
+- Component-local behavior updates:
+  - `apps/admin-portal/src/components/ExtendedSidemenuShell.tsx` is deleted and replaced by the identically-content `apps/admin-portal/src/components/extended-sidemenu-shell.tsx`, completing the kebab-case rename for this shell component that was missed in the prior normalization pass.
+  - `apps/admin-portal/src/components/extended-sidemenu.tsx` has its import path updated from `./ExtendedSidemenuShell` to `./extended-sidemenu-shell` to reference the renamed file; all other props and logic remain unchanged.
+- Files renamed: [`apps/admin-portal/src/components/ExtendedSidemenuShell.tsx` → `apps/admin-portal/src/components/extended-sidemenu-shell.tsx`]
+- Files changed (import path only): [`apps/admin-portal/src/components/extended-sidemenu.tsx`]
+- Docs updated: `_audit-report.md` and `_component-backlog.csv` source_path fields for ExtendedSidemenuShell updated from `src/components/ExtendedSidemenuShell.tsx` to `src/components/extended-sidemenu-shell.tsx`.
+- Shared-ui impact: `No @repo/ui exports are added or changed. This is a pure file-system rename; all shared Box and react-feather usages inside the shell remain identical.`
+- Verification note: `This logging update is based on the current git delete/add diff for the shell file and the import-path change in extended-sidemenu.tsx. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `No page migration status changes. This entry records naming-convention hygiene work only; all route migration PASS/FAIL states remain as previously recorded in the Batch 9 tracker.`

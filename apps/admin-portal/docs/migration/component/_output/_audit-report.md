@@ -2351,7 +2351,7 @@
 
 ### ExtendedSidemenuShell
 
-- **File:** src/components/ExtendedSidemenuShell.tsx
+- **File:** src/components/extended-sidemenu-shell.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** N/A
 - **@repo/ui status:** missing

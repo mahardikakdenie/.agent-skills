@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import ExtendedSidemenuShell, {
   type ExtendedSidemenuShellSubmenuItem,
-} from "./ExtendedSidemenuShell";
+} from "./extended-sidemenu-shell";
 
 export interface SubmenuItem {
   url: string;
