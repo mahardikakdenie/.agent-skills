@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { createClaimReportTableColumns } from '@/components/tableConfig/claimReportTableConfig';
+import { createClaimReportTableColumns } from '@/components/table-config/claim-report-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useClaimReport } from '@/hooks/useClaimReport.hooks';
 

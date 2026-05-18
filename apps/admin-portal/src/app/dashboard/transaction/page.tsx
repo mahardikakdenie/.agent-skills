@@ -15,9 +15,9 @@ import {
 } from '@repo/ui';
 
 import DetailTable from '@/components/table-policy';
-import BarChartComp from '@/components/ui/charts/barchart-horizontal';
-import LineChart from '@/components/ui/charts/dashedlinechart';
-import PieChart from '@/components/ui/charts/piechart';
+import BarChartComp from '@/components/ui/charts/bar-chart-horizontal';
+import LineChart from '@/components/ui/charts/dashed-line-chart';
+import PieChart from '@/components/ui/charts/pie-chart';
 import { ContentLoadingWrapper } from '@/components/ui/loading';
 import useTransactionDashboard from '@/hooks/useTransactionDashboard.hooks';
 import { formatMoney } from '@/lib/formatter';

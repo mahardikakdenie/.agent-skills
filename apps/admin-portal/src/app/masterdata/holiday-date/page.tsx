@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { createHolidayTableColumns } from '@/components/tableConfig/holidayDateTableConfig';
+import { createHolidayTableColumns } from '@/components/table-config/holiday-date-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useHolidayDate } from '@/hooks/useHolidayDate.hooks';
 

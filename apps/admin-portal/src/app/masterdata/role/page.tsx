@@ -6,7 +6,7 @@ import { Plus } from 'react-feather';
 
 import { Box, Button, DataTable } from '@repo/ui';
 
-import { createRoleTableColumns } from '@/components/tableConfig/roleTableConfig';
+import { createRoleTableColumns } from '@/components/table-config/role-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useRole } from '@/hooks/useRole.hooks';
 

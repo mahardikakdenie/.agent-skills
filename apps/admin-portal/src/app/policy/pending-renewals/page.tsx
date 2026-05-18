@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { createPendingRenewalsTableColumns } from '@/components/tableConfig/policyTableConfig';
+import { createPendingRenewalsTableColumns } from '@/components/table-config/policy-table-config';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';

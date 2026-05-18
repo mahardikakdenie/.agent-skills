@@ -20,7 +20,7 @@ import {
 import { useBilling } from "./hook";
 import { formatMoney, formatDate } from "@/lib/formatter";
 import AppURL from "@/constants/app-url.const";
-import { createBillingTableColumns } from "@/components/tableConfig/billingTableConfig";
+import { createBillingTableColumns } from "@/components/table-config/billing-table-config";
 import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;

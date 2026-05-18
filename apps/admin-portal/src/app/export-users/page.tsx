@@ -27,7 +27,7 @@ import {
   Combobox,
 } from '@repo/ui';
 
-import { createExportUsersTableColumns } from '@/components/tableConfig/exportUserTableConfig';
+import { createExportUsersTableColumns } from '@/components/table-config/export-user-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useExportUsers } from '@/hooks/useExportUsers.hooks';
 import { useHasMounted } from '@/hooks/useHasMounted';

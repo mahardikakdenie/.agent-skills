@@ -2,7 +2,7 @@
 
 import iconCopy from '@public/images/icon-copy.svg';
 
-import { UserFormWrapper } from '@/components/forms/UserForm';
+import { UserFormWrapper } from '@/components/forms/user-form';
 import { useUserForm } from '@/hooks/useUserForm.hooks';
 
 export default function AddUser() {

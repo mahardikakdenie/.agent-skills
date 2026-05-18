@@ -6,7 +6,7 @@ import { Plus } from 'react-feather';
 
 import { Box, Button, DataTable } from '@repo/ui';
 
-import { createBrokerFeeTableColumns } from '@/components/tableConfig/brokerFeeTableConfig';
+import { createBrokerFeeTableColumns } from '@/components/table-config/broker-fee-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { useBrokerFee, type BrokerFeeItem } from '@/hooks/useBrokerFee.hooks';

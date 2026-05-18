@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 // ✅ Import useInsurance
-import { UserFormWrapper } from '@/components/forms/UserForm';
+import { UserFormWrapper } from '@/components/forms/user-form';
 import { useAccountChannel } from '@/hooks/useAccountChannel.hooks';
 import { useAccountInsurer } from '@/hooks/useAccountInsurer.hooks';
 import { useInsurance } from '@/hooks/useIsurance.hooks';

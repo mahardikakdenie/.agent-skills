@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import { Box, Button, DataTable } from '@repo/ui';
 
-import { createProductCategoryTableColumns } from '@/components/tableConfig/productCategoryTableConfig';
+import { createProductCategoryTableColumns } from '@/components/table-config/product-category-table-config';
 import { useProductCategory } from '@/hooks/useProductCategory.hooks';
 
 export default function ProductCategoryPage() {

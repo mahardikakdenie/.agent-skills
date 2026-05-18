@@ -32,8 +32,8 @@ import {
 import {
   createClaimsTableColumns,
   createDocumentTableColumns,
-} from '@/components/tableConfig/claimTableConfig';
-import { DataTable as LegacyDataTable } from '@/components/ui/DataTable';
+} from '@/components/table-config/claim-table-config';
+import { DataTable as LegacyDataTable } from '@/components/ui/data-table';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import AppURL from '@/constants/app-url.const';

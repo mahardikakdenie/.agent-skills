@@ -18,7 +18,7 @@ import {
   DrawerTitle,
 } from '@repo/ui';
 
-import { createCampaignTableColumns } from '@/components/tableConfig/campaignTableConfig';
+import { createCampaignTableColumns } from '@/components/table-config/campaign-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { useCampaign } from '@/hooks/useCampaign.hooks';

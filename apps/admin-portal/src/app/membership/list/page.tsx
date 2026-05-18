@@ -20,7 +20,7 @@ import {
   TabsTrigger,
 } from '@repo/ui';
 
-import { createMembershipTableColumns } from '@/components/tableConfig/membershipTableConfig';
+import { createMembershipTableColumns } from '@/components/table-config/membership-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { useMembership } from '@/hooks/useMembership.hooks';

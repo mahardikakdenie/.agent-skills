@@ -6,7 +6,7 @@ import { Plus } from 'react-feather';
 
 import { Box, Button, DataTable } from '@repo/ui';
 
-import { createGroupTableColumns } from '@/components/tableConfig/groupTableConfig';
+import { createGroupTableColumns } from '@/components/table-config/group-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useGroupList } from '@/hooks/useGroupList.hooks';
 

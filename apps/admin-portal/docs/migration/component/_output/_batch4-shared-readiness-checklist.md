@@ -26,7 +26,7 @@ These components should not be treated as standalone shared-ui Batch 4 targets.
 
 | Audit component | Local file | Current disposition | Canonical shared target | Why |
 | --- | --- | --- | --- | --- |
-| `OptimizeImageShell` | `src/components/OptimizeImageShell.tsx`, `src/components/ui/OptimizeImageShell.tsx` | `KEEP_APP_LOCAL` | `Image` remains the shared primitive; optimization shell stays local | Render-prop shell exists only to preserve local `next/image` concerns |
+| `OptimizeImageShell` | `src/components/optimize-image-shell.tsx`, `src/components/ui/optimize-image-shell.tsx` | `KEEP_APP_LOCAL` | `Image` remains the shared primitive; optimization shell stays local | Render-prop shell exists only to preserve local `next/image` concerns |
 | `SelectAutocomplete` | `src/components/ui/Fields/SelectAutocomplete/index.tsx` | `KEEP_APP_LOCAL` | `Combobox` | Wrapper is an app-local compatibility layer around the shared searchable select pattern |
 | `Loading` | `src/components/ui/loading.tsx`, `src/components/ui/Loading/index.tsx` | `KEEP_APP_LOCAL` | `Spinner` / `Skeleton` only | Wrapper layout and blocking policy stay app-local; only loading primitives are shared |
 | `SelectPhoneCode` | `src/components/ui/select-phone-code.tsx` | `KEEP_APP_LOCAL` | `Select` | User-form-specific phone-code wrapper with app-owned country metadata and `next/image` cell rendering |

@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Select, Combobox, Button, Alert, Box, DataTable } from '@repo/ui';
 
 import { PageHeader } from '@/components/page-header';
-import { createBillingTransactionTableColumns } from '@/components/tableConfig/billingTransactionTableConfig';
+import { createBillingTransactionTableColumns } from '@/components/table-config/billing-transaction-table-config';
 import AppURL from '@/constants/app-url.const';
 import { generateYears, generateMonths } from '@/lib/utils';
 import { financeService } from '@/services/finance/api/finance.service';

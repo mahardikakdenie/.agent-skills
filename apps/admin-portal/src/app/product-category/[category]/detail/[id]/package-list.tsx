@@ -9,7 +9,7 @@ import { Plus, Upload } from 'react-feather';
 import { Box, Button, DataTable } from '@repo/ui';
 
 import { useProducts } from '@/app/product-category/hooks';
-import { createPackageTableColumns } from '@/components/tableConfig/packageTableConfig';
+import { createPackageTableColumns } from '@/components/table-config/package-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 

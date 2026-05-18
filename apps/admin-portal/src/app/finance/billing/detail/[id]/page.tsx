@@ -12,12 +12,12 @@ import {
 } from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
 import { PageHeader } from "@/components/page-header";
-import { BillingDetailInfo } from "./components/BillingDetailInfo";
-import { BillingDetailActions } from "./components/BillingDetailActions";
+import { BillingDetailInfo } from "./components/billing-detail-info";
+import { BillingDetailActions } from "./components/billing-detail-actions";
 import {
   BillingDetailItem,
   createBillingDetailTableColumns,
-} from "@/components/tableConfig/billingDetailTableConfig";
+} from "@/components/table-config/billing-detail-table-config";
 import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
 import { formatDate, formatMoney } from "@/lib/formatter";
 

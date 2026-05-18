@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { createClaimHistoryTableColumns } from '@/components/tableConfig/claimHistoryTableConfig';
+import { createClaimHistoryTableColumns } from '@/components/table-config/claim-history-table-config';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { useClaimHistory } from '@/hooks/useClaimHistory.hooks';
 import { formatMoney } from '@/lib/formatter';

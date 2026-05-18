@@ -10,7 +10,7 @@ import { Box, Button, DataTable } from '@repo/ui';
 import {
   createEmailTagTableColumns,
   type EmailTag,
-} from '@/components/tableConfig/emailTagTableConfig';
+} from '@/components/table-config/email-tag-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useEmailTag } from '@/hooks/useEmailTag.hooks';
 

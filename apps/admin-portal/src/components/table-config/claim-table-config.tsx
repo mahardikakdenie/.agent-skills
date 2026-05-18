@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@repo/ui';
 
-import { type Column } from '@/components/ui/DataTable';
+import { type Column } from '@/components/ui/data-table';
 import {
   ClaimItem,
   ClaimsTableConfigProps,

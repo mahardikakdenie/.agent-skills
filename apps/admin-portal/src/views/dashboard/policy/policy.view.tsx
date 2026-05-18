@@ -6,7 +6,7 @@ import { useScreen } from "@/context/screen.context";
 import { useAuth } from "@/context/auth.context";
 import { ListPolicyStatisticDataRequest, PolicyData } from "@/types/policy";
 
-import PieChart from "@/components/ui/charts/piechart";
+import PieChart from "@/components/ui/charts/pie-chart";
 import LineChart from "@/components/linechart-policy";
 import DetailTable from "@/components/table-policy";
 import Select from "@/components/select";

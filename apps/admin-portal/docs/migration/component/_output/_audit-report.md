@@ -3030,7 +3030,7 @@
 
 ### OptimizeImageShell
 
-- **File:** src/components/OptimizeImageShell.tsx
+- **File:** src/components/optimize-image-shell.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** 1.5
 - **@repo/ui status:** missing
@@ -3734,7 +3734,7 @@
 
 ### OptimizeImageShell
 
-- **File:** src/components/ui/OptimizeImageShell.tsx
+- **File:** src/components/ui/optimize-image-shell.tsx
 - **Classification:** KEEP_APP_LOCAL
 - **Batch:** 1.5
 - **@repo/ui status:** missing

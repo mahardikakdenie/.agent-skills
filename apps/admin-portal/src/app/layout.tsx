@@ -7,7 +7,7 @@ import { AuthProvider } from "@/context/auth.context";
 import { LayoutView } from "@/views/layout/layout.view";
 import { ScreenProvider } from "@/context/screen.context";
 import { Toaster } from "react-hot-toast";
-import QueryProvider from "@/provider/QueryProvider";
+import QueryProvider from "@/provider/query-provider";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 

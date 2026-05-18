@@ -9,7 +9,7 @@ import { Button, Combobox, DataTable, Input, Box } from '@repo/ui';
 import {
   createProductCatalogTableColumns,
   ProductCatalogTableData,
-} from '@/components/tableConfig/productCatalogTableConfig';
+} from '@/components/table-config/product-catalog-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 import { useCategories } from '@/services/product/hooks/queries';

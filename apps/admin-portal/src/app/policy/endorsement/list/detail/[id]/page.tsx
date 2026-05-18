@@ -26,8 +26,8 @@ import {
 } from '@repo/ui';
 
 import { PageHeader } from '@/components/page-header';
-import { createEndorsementDetailsTableColumns } from '@/components/tableConfig/endorsementTableConfig';
-import { DataTable } from '@/components/ui/DataTable';
+import { createEndorsementDetailsTableColumns } from '@/components/table-config/endorsement-table-config';
+import { DataTable } from '@/components/ui/data-table';
 import { ContentLoadingWrapper } from '@/components/ui/loading';
 import AppURL from '@/constants/app-url.const';
 import { useEndorsementDetail } from '@/hooks/useDetailEndorsement.hooks';

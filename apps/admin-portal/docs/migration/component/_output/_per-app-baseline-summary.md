@@ -77,7 +77,7 @@
 - NEW_SHARED_COMPONENT candidates from splits: 0
 - Names: none
 - KEEP_APP_LOCAL-only Shells: 4
-- Names: ExtendedSidemenuShell, OptimizeImageShell (src/components/OptimizeImageShell.tsx), OptimizeImageShell (src/components/ui/OptimizeImageShell.tsx), PageHeaderShell
+- Names: ExtendedSidemenuShell, OptimizeImageShell (src/components/optimize-image-shell.tsx), OptimizeImageShell (src/components/ui/optimize-image-shell.tsx), PageHeaderShell
 - Explicitly skipped candidates: 34 (see _migration-log.md Batch 1.5 section)
 
 ## Backlog CSV Row Count

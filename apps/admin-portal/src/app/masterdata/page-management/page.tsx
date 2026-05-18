@@ -6,7 +6,7 @@ import { Plus } from 'react-feather';
 
 import { Box, Button, DataTable } from '@repo/ui';
 
-import { createPageTableColumns } from '@/components/tableConfig/pageManagementTableConfig';
+import { createPageTableColumns } from '@/components/table-config/page-management-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { usePageManagement } from '@/hooks/usePageManagement.hooks';
 

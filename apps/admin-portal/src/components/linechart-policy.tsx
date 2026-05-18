@@ -5,7 +5,7 @@ import { Box } from '@repo/ui';
 import SharedLineChart, {
   type ChartAxisConfig,
   type CustomTooltipRendererProps,
-} from '@/components/ui/charts/linechart';
+} from '@/components/ui/charts/line-chart';
 
 interface LineChartCompProps {
   data: { date: string; count: number }[];

@@ -23,7 +23,7 @@ import {
   TabsTrigger,
 } from '@repo/ui';
 
-import { createPolicyTableColumns } from '@/components/tableConfig/policyTableConfig';
+import { createPolicyTableColumns } from '@/components/table-config/policy-table-config';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { toastNotification } from '@/helpers/app.helper';

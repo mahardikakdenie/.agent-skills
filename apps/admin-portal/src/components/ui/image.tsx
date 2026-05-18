@@ -1,6 +1,6 @@
 ﻿import React, { CSSProperties } from "react";
 import Image from "next/image";
-import OptimizeImageShell from "./OptimizeImageShell";
+import OptimizeImageShell from "./optimize-image-shell";
 
 interface ImageProps {
   onClick?: () => void;

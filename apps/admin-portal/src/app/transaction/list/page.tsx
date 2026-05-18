@@ -21,7 +21,7 @@ import {
   TabsTrigger,
 } from '@repo/ui';
 
-import { createTransactionTableColumns } from '@/components/tableConfig/transactionTableConfig';
+import { createTransactionTableColumns } from '@/components/table-config/transaction-table-config';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';

@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { createPartnerCommTableColumns } from '@/components/tableConfig/partnerCommTableConfig';
+import { createPartnerCommTableColumns } from '@/components/table-config/partner-comm-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import { usePartnerComm, type PartnerCommItem } from '@/hooks/usePartnerComm.hooks';

@@ -7,7 +7,7 @@ import { Plus } from 'react-feather';
 
 import { Box, Button, Tabs, TabsList, TabsTrigger, DataTable } from '@repo/ui';
 
-import { createEmailTemplateTableColumns } from '@/components/tableConfig/emailTemplateTableConfig';
+import { createEmailTemplateTableColumns } from '@/components/table-config/email-template-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useEmailTemplate } from '@/hooks/useEmailTemplate.hooks';
 

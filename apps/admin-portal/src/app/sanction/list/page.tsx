@@ -19,7 +19,7 @@ import {
   DrawerTitle,
 } from '@repo/ui';
 
-import { createSanctionTableColumns } from '@/components/tableConfig/sanctionTableConfig';
+import { createSanctionTableColumns } from '@/components/table-config/sanction-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useSanction } from '@/hooks/useSanction.hooks';
 

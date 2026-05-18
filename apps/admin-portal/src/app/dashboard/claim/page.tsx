@@ -14,9 +14,9 @@ import {
 } from '@repo/ui';
 
 import DetailTable from '@/components/table-policy';
-import VerticalBarChart from '@/components/ui/charts/barchart-vertical';
-import LineChart from '@/components/ui/charts/linechart';
-import PieChart from '@/components/ui/charts/piechart';
+import VerticalBarChart from '@/components/ui/charts/bar-chart-vertical';
+import LineChart from '@/components/ui/charts/line-chart';
+import PieChart from '@/components/ui/charts/pie-chart';
 import { ContentLoadingWrapper } from '@/components/ui/loading';
 import useClaimDashboard from '@/hooks/useClaimDashboard.hooks';
 import { numberSimpleFormatter } from '@/lib/formatter';

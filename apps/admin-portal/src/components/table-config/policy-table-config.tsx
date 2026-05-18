@@ -2,7 +2,7 @@ import { Box, Button, type ColumnDef } from '@repo/ui';
 
 import { cn } from '@/lib/utils';
 
-import type { Column as LegacyColumn } from '../ui/DataTable';
+import type { Column as LegacyColumn } from '../ui/data-table';
 
 interface SharedPolicyTableColumnProps {
   page: number;

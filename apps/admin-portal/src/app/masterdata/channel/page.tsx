@@ -6,7 +6,7 @@ import { Plus } from 'react-feather';
 
 import { Box, Button, DataTable } from '@repo/ui';
 
-import { createChannelTableColumns } from '@/components/tableConfig/channelTableConfig';
+import { createChannelTableColumns } from '@/components/table-config/channel-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useChannel } from '@/hooks/useChannel.hooks';
 

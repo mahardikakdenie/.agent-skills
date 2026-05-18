@@ -8,7 +8,7 @@ import { Download, Upload } from 'react-feather';
 
 import { Box, Button, DataTable, Tabs, TabsList, TabsTrigger } from '@repo/ui';
 
-import { createEndorsementTableColumns } from '@/components/tableConfig/endorsementTableConfig';
+import { createEndorsementTableColumns } from '@/components/table-config/endorsement-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
 import AppURL from '@/constants/app-url.const';

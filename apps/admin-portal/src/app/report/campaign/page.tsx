@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { createCampaignReportTableColumns } from '@/components/tableConfig/campaignReportTableConfig';
+import { createCampaignReportTableColumns } from '@/components/table-config/campaign-report-table-config';
 import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
 import { useCampaignReport } from '@/hooks/useCampaignReport.hooks';
 import { formatMoney } from '@/lib/formatter';

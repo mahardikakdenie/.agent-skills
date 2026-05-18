@@ -28,7 +28,7 @@ import iconWarning from "@public/images/icon-warning.png";
 
 import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
 import { useUsers } from "@/hooks/useUsers.hooks";
-import { createUsersTableColumns } from "@/components/tableConfig/usersTableConfig";
+import { createUsersTableColumns } from "@/components/table-config/users-table-config";
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;
 function measureTextWidth(label: string, font: string, fallbackCharWidth: number) {
