@@ -35,12 +35,12 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | In-scope pages | 114 |
 | Smoke routes | 10 |
 | DataTable-dependent pages | 37 |
-| PASS | 113 |
+| PASS | 114 |
 | IN_PROGRESS | 0 |
 | FAIL | 0 |
 | BLOCKED | 0 |
 | DEFERRED_DATA_TABLE | 0 |
-| NOT_STARTED | 1 |
+| NOT_STARTED | 0 |
 | OUT_OF_SCOPE | 1 |
 
 ## Page Status
@@ -57,7 +57,7 @@ Each route also carries a `ROUTE_LABEL`: a path-safe kebab-case slug used for pa
 | `/membership/list` | `membership-list` | `apps/admin-portal/src/app/membership/list/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the membership list route-local DataTable migration across the page, membership table config, and membership hook, while prior manual smoke verification for `/membership/list` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/finance/billing` | `finance-billing` | `apps/admin-portal/src/app/finance/billing/page.tsx` | YES | YES | `PASS` | 2026-04-05 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes land the billing list route-local DataTable migration across the page and billing table config, standardizing the filter and period selection on shared primitives, while prior manual smoke verification for `/finance/billing` (noting the expected 403 state) is already recorded in `_migration-log.md` and `_parity-checklist.md`. |
 | `/masterdata/user` | `masterdata-user` | `apps/admin-portal/src/app/masterdata/user/page.tsx` | YES | YES | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: present | Current `apps/admin-portal/src` changes migrate the route onto the shared DataTable instance API, standardize the filter and tab chrome on shared primitives, and implement dynamic column sizing while preserving existing add and detail navigation. Earlier smoke revalidation recorded the successful route load. |
-| `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `NOT_STARTED` | 2026-03-30 | migration-log: none; comparison-log: none; screenshots: none | Home dashboard route with no explicit Batch 9 route-stabilization evidence yet. |
+| `/` | `root` | `apps/admin-portal/src/app/page.tsx` | NO | NO | `PASS` | 2026-05-18 | migration-log: present; comparison-log: none; screenshots: none | Current apps/admin-portal/src changes refactor the home dashboard route onto shared `@repo/ui` `Box` primitives across `home.view.tsx` and `home-2.view.tsx`, standardize the page header and card layout with `Box as="p"` and `Box as="iframe"`, and update `proxy.ts` route config, while preserving all chart, stat-card, and data-fetching behavior. |
 | `/claim/history` | `claim-history` | `apps/admin-portal/src/app/claim/history/page.tsx` | NO | YES | `PASS` | 2026-04-23 | migration-log: present; comparison-log: none; screenshots: present | Latest 2026-04-23 updates migrate the route onto the shared DataTable instance API, standardize the filters and summary boxes on shared primitives, and implement dynamic column sizing while preserving existing data fetching and search behavior. |
 | `/claim/list/detail/[id]` | `claim-list-detail-id` | `apps/admin-portal/src/app/claim/list/detail/[id]/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor `/claim/list/detail/[id]` onto shared `Tabs`, `Table`, `Dialog`, `Button`, and `Box` composition, replace the legacy journey image helper with inline status-timeline SVG markup, and preserve the existing claim detail and document workflows. This route is treated as PASS for the current Batch 9 tracking pass. |
 | `/claim/list/detail/[id]/upload-data` | `claim-list-detail-id-upload-data` | `apps/admin-portal/src/app/claim/list/detail/[id]/upload-data/page.tsx` | NO | NO | `PASS` | 2026-04-06 | migration-log: present; comparison-log: none; screenshots: none | Current `apps/admin-portal/src` changes refactor this missing-document upload subroute onto shared `FileUpload`, `Button`, and `Box` primitives, add an explicit empty state, and rely on the updated detail-claim hook to preserve form values under the new upload flow. This route is treated as PASS for the current Batch 9 tracking pass. |

@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import AppMenu from "@/constants/app-menu.const";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+import AppMenu from '@/constants/app-menu.const';
 
 export async function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const { pathname } = url;
 
   for (let i = 0; i < AppMenu.menu.length; i++) {
-    if (pathname === "/") {
+    if (pathname === '/') {
       const firstSubmenu = AppMenu.menu[0]?.submenu?.[0];
       if (firstSubmenu?.url) {
         url.pathname = firstSubmenu.url;
@@ -27,19 +28,19 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/",
-    "/dashboard/:path*",
-    "/transaction/:path*",
-    "/policy/:path*",
-    "/claim/:path*",
-    "/membership/:path*",
-    "/sanction/:path*",
-    "/source/:path*",
-    "/promotion/:path*",
-    "/finance/:path*",
-    "/product-category/:path*",
-    "/masterdata/:path*",
-    "/report/:path*",
-    "/export-users/:path*"
-  ]
+    '/',
+    '/dashboard/:path*',
+    '/transaction/:path*',
+    '/policy/:path*',
+    '/claim/:path*',
+    '/membership/:path*',
+    '/sanction/:path*',
+    '/source/:path*',
+    '/promotion/:path*',
+    '/finance/:path*',
+    '/product-category/:path*',
+    '/masterdata/:path*',
+    '/report/:path*',
+    '/export-users/:path*',
+  ],
 };

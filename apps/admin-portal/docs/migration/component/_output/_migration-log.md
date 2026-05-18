@@ -1189,4 +1189,18 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `No new @repo/ui export is introduced. Both routes adopt existing shared Box, Button, Combobox, Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, Input, RadioGroup, RadioGroupItem, and Textarea primitives. The draft-js Editor remains dynamically loaded as a local dependency via next/dynamic with SSR disabled.`
 - Verification note: `This logging update is based on the current email-template add and detail route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 9 page tracker should now treat /masterdata/email-template/add as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
+
+## Batch 9 - / (root) Route Refactor - 2026-05-18
+
+- Route focus: `/`
+- Migration intent: `Refactor the home dashboard route onto the current shared primitive stack, standardizing all container and typography markup in home.view.tsx and home-2.view.tsx with shared Box primitives and updating proxy.ts route config while preserving all stat-card data fetching, chart rendering, and Looker Studio iframe behavior.`
+- Route-local behavior updates:
+  - `apps/admin-portal/src/app/page.tsx` is a thin `'use client'` wrapper that renders `<HomeView />`, delegating all UI logic to the view layer.
+  - `apps/admin-portal/src/views/home/home.view.tsx` now renders the entire home dashboard shell using shared `@repo/ui` `Box` primitives throughout: all `div` and `p` containers are replaced with `Box` and `Box as="p"` respectively. Stat cards, chart panels (Policies and Claims doughnut, Countries pie, Total Policies stacked-bar, Total Claims stacked-bar, Total Revenue curve-line, Claim and Revenue doughnut), and legend label lists are all composed from `Box` and existing `Chart` components, with no legacy HTML container markup remaining.
+  - `apps/admin-portal/src/views/home/home-2.view.tsx` now renders the Looker Studio reporting view using `Box as="iframe"` for the embed container and `Box as="p"` for the page title, replacing legacy HTML elements while preserving the existing `allowFullScreen`, `sandbox`, and `isMobileView`-responsive `minHeight` props.
+  - `apps/admin-portal/src/proxy.ts` receives route config updates, standardizing the middleware matcher list to include all active top-level route prefixes while preserving the existing redirect-to-first-submenu logic for menu-level paths.
+- Files changed (route-focused): [`apps/admin-portal/src/app/page.tsx`, `apps/admin-portal/src/views/home/home.view.tsx`, `apps/admin-portal/src/views/home/home-2.view.tsx`, `apps/admin-portal/src/proxy.ts`]
+- Shared-ui impact: `No new @repo/ui export is introduced. The home dashboard route adopts existing shared Box primitive throughout home.view.tsx and home-2.view.tsx. Chart, useScreen, useAuth, and all data-fetching service calls remain app-local.`
+- Verification note: `This logging update is based on the current home route source changes. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `Batch 9 page tracker should now treat / (root) as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
 - Tracker impact: `Batch 9 page tracker should now treat /masterdata/email-template/detail/[id] as PASS because the route-local migration work is now considered complete for the current Batch 9 tracking pass.`
