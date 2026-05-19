@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig } from "axios";
 
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { CLAIM_ENDPOINTS } from "./claims.endpoints";
@@ -10,7 +10,7 @@ import type {
   UpdateClaimGrabRequest,
 } from "./claims.types";
 
-const claimApi = createApiClient(process.env.NEXT_PUBLIC_API_CLAIM_BASE_URL);
+const claimApi = createApiClient(API_BASE_URLS.claims);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;

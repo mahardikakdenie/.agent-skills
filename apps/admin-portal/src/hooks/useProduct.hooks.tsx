@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
-import { Insurance } from '@/services/masterdata/insurance.service';
+import type { Insurance } from '@/services/product/api/product.types';
 import { useCategories, useInsurances } from '@/services/product/hooks/queries';
 
 interface UseProductProps {

@@ -1,10 +1,22 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { AUTH_ENDPOINTS } from "./auth.endpoints";
-import type { LoginCredentials, LoginResponse } from "./auth.types";
+import type {
+  LoginCredentials,
+  LoginProvidersRequest,
+  LoginProvidersResponse,
+  LoginResponse,
+} from "./auth.types";
 
-const authApi = createApiClient(process.env.NEXT_PUBLIC_AUTH_SERVICE_URL);
+const authApi = createApiClient(API_BASE_URLS.auth);
+const authStaticApi = createApiClient({
+  baseURL: API_BASE_URLS.auth,
+  withAuth: false,
+  headers: {
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_AUTH_TOKEN}`,
+  },
+});
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;
@@ -14,13 +26,31 @@ const withQuery = (url: string, params?: Record<string, unknown>) => {
 const get = async <T>(url: string) => (await authApi.get<T>(url)).data;
 const post = async <T>(url: string, data?: unknown) =>
   (await authApi.post<T>(url, data)).data;
+const getStatic = async <T>(url: string) =>
+  (await authStaticApi.get<T>(url)).data;
+const postStatic = async <T>(url: string, data?: unknown) =>
+  (await authStaticApi.post<T>(url, data)).data;
 const put = async <T>(url: string, data?: unknown) =>
   (await authApi.put<T>(url, data)).data;
 const del = async <T>(url: string) => (await authApi.delete<T>(url)).data;
 
 export const authService = {
   login: (credentials: LoginCredentials) =>
-    post<LoginResponse>(AUTH_ENDPOINTS.login, credentials),
+    postStatic<LoginResponse>(AUTH_ENDPOINTS.login, credentials),
+  logout: (refreshToken: string) =>
+    postStatic(AUTH_ENDPOINTS.logout, { refresh_token: refreshToken }),
+  loginEntra: (code: string, codeVerifier: string) =>
+    postStatic<LoginResponse>(AUTH_ENDPOINTS.loginEntra, {
+      code,
+      redirectUri:
+        process.env.NEXT_PUBLIC_AZURE_AD_REDIRECT_URI ||
+        "https://localhost:3000/oauth/msal",
+      codeVerifier,
+    }),
+  getProviders: (payload: LoginProvidersRequest) =>
+    getStatic<{ data: LoginProvidersResponse[] }>(
+      withQuery(AUTH_ENDPOINTS.providers, { originUrl: payload.originUrl })
+    ),
 
   getAccounts: (params?: Record<string, unknown>) =>
     get(withQuery(AUTH_ENDPOINTS.accounts, params)),

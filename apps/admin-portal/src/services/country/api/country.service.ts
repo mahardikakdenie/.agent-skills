@@ -1,8 +1,8 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 
 import { COUNTRY_ENDPOINTS } from "./country.endpoints";
 
-const countryApi = createApiClient(process.env.NEXT_PUBLIC_COUNTRY_SERVICE_URL);
+const countryApi = createApiClient(API_BASE_URLS.country);
 
 const get = async <T>(url: string) => (await countryApi.get<T>(url)).data;
 

@@ -1,6 +1,4 @@
-import {
-  ProductResponse,
-} from "@/services/masterdata/product.service";
+import type { ProductResponse } from "@/services/product/api/product.types";
 import { productService } from "@/services/product/api/product.service";
 import { root } from "postcss";
 import { useState } from "react";

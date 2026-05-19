@@ -2,9 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import {
-  Insurance,
-} from "@/services/masterdata/insurance.service";
+import type { Insurance } from "@/services/product/api/product.types";
 import AppURL from "@/constants/app-url.const";
 import { useInsurances } from "@/services/product/hooks/queries";
 import { useDeleteInsurance } from "@/services/product/hooks/mutations";

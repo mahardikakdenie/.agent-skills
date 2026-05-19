@@ -1,5 +1,8 @@
 export const AUTH_ENDPOINTS = {
   login: "/login",
+  loginEntra: "/login/entra",
+  logout: "/login/logout",
+  providers: "/v1/providers",
   accounts: "/account",
   accountDetail: (id: string) => `/account/${id}`,
   accountAllDataPagination: "/account/all-data/pagination",

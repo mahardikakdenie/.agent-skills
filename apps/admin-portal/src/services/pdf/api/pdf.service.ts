@@ -1,9 +1,9 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 
 import { PDF_ENDPOINTS } from "./pdf.endpoints";
 import type { PdfGenerateRequest } from "./pdf.types";
 
-const pdfApi = createApiClient(process.env.NEXT_PUBLIC_PDF_SERVICE_URL);
+const pdfApi = createApiClient(API_BASE_URLS.pdf);
 
 const post = async <T>(url: string, data?: unknown) =>
   (await pdfApi.post<T>(url, data)).data;

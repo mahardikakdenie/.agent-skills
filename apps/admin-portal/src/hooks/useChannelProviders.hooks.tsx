@@ -1,10 +1,17 @@
 import { useState, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth.context";
-import { CommunicationService } from "@/services/communication.service";
-import { channelService } from "@/services/api.service";
-import ApiURL from "@/constants/api-url.const";
 import { toastNotification } from "@/lib/toast";
+import { useChannelsV1 } from "@/services/channel/hooks/queries";
+import {
+  useAvailableProviders,
+  useChannelProvidersQuery,
+} from "@/services/communication/hooks/queries";
+import {
+  useCreateChannelProvider,
+  useDeleteChannelProvider,
+  useUpdateChannelProvider,
+} from "@/services/communication/hooks/mutations";
 
 interface ChannelProvider {
   id: string;
@@ -69,48 +76,29 @@ export function useChannelProviders() {
     data: providersResponse,
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ["channel-providers", filterType],
-    queryFn: async () => {
-      const res: any = await CommunicationService.getChannelProviders(
-        filterType || undefined
-      );
-      return res.data;
-    },
+  } = useChannelProvidersQuery(filterType ? { type: filterType } : undefined, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
   // Fetch channels for dropdown
-  const { data: channelsResponse } = useQuery({
-    queryKey: ["channels-list"],
-    queryFn: async () => {
-      const res: any = await channelService.get(ApiURL.v1Channels, {
-        params: { page: 1, limit: 1000 },
-      });
-      return res.data;
-    },
+  const { data: channelsResponse } = useChannelsV1({
+    page: 1,
+    limit: 1000,
+  }, {
     staleTime: 60000,
     refetchOnWindowFocus: false,
   });
 
   // Fetch available providers based on selected type
-  const { data: availableProvidersResponse } = useQuery({
-    queryKey: ["available-providers", formData.type],
-    queryFn: async () => {
-      const res: any = await CommunicationService.getAvailableProviders(
-        formData.type
-      );
-      return res.data;
-    },
-    enabled: !!formData.type,
+  const { data: availableProvidersResponse } = useAvailableProviders({
+    type: formData.type,
+  }, {
     staleTime: 60000,
     refetchOnWindowFocus: false,
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: ChannelProviderFormData) =>
-      CommunicationService.createChannelProvider(data),
+  const createMutation = useCreateChannelProvider({
     onSuccess: () => {
       toastNotification("Channel provider created successfully");
       queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
@@ -124,14 +112,7 @@ export function useChannelProviders() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: ChannelProviderFormData;
-    }) => CommunicationService.updateChannelProvider(id, data),
+  const updateMutation = useUpdateChannelProvider({
     onSuccess: () => {
       toastNotification("Channel provider updated successfully");
       queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
@@ -145,11 +126,7 @@ export function useChannelProviders() {
     },
   });
 
-  const disableMutation = useMutation({
-    mutationFn: (id: string) =>
-      CommunicationService.updateChannelProvider(id, {
-        enabled: false,
-      }),
+  const disableMutation = useUpdateChannelProvider({
     onSuccess: () => {
       toastNotification("Channel provider disabled successfully");
       queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
@@ -162,8 +139,7 @@ export function useChannelProviders() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => CommunicationService.deleteChannelProvider(id),
+  const deleteMutation = useDeleteChannelProvider({
     onSuccess: () => {
       toastNotification("Channel provider deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["channel-providers"] });
@@ -227,7 +203,12 @@ export function useChannelProviders() {
 
   const handleDisable = useCallback(() => {
     if (!disablingProvider) return;
-    disableMutation.mutate(disablingProvider.id);
+    disableMutation.mutate({
+      id: disablingProvider.id,
+      data: {
+        enabled: false,
+      },
+    });
   }, [disablingProvider, disableMutation]);
 
   const handleDelete = useCallback(() => {
@@ -242,19 +223,22 @@ export function useChannelProviders() {
     }
   }, [formData.type, isCreateOpen]);
 
-  const providers: ChannelProvider[] = Array.isArray(providersResponse)
-    ? providersResponse
-    : providersResponse?.data || [];
+  const providerData: any = providersResponse?.data;
+  const providers: ChannelProvider[] = Array.isArray(providerData)
+    ? providerData
+    : providerData?.data || [];
 
-  const channels: Channel[] = Array.isArray(channelsResponse)
-    ? channelsResponse
-    : channelsResponse?.data || [];
+  const channelData: any = channelsResponse;
+  const channels: Channel[] = Array.isArray(channelData)
+    ? channelData
+    : channelData?.data || [];
 
+  const availableProviderData: any = availableProvidersResponse?.data;
   const availableProviders: string[] = Array.isArray(
-    availableProvidersResponse
+    availableProviderData
   )
-    ? availableProvidersResponse
-    : availableProvidersResponse?.data || [];
+    ? availableProviderData
+    : availableProviderData?.data || [];
 
   return {
     providers,

@@ -1,9 +1,9 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { SANCTION_ENDPOINTS } from "./sanction.endpoints";
 
-const sanctionApi = createApiClient(process.env.NEXT_PUBLIC_SANCTION_SERVICE_URL);
+const sanctionApi = createApiClient(API_BASE_URLS.sanction);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;

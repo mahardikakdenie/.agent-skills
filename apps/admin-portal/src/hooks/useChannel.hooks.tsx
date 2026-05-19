@@ -11,7 +11,7 @@ import { useAuth } from "@/context/auth.context";
 import AppURL from "@/constants/app-url.const";
 import { useChannelsV1 } from "@/services/channel/hooks/queries";
 import { useDeleteChannel } from "@/services/channel/hooks/mutations";
-import { CommunicationService } from "@/services/communication.service";
+import { communicationApiService } from "@/services/communication/api/communication.service";
 import { toastNotification } from "@/lib/toast";
 
 interface Channel {
@@ -30,7 +30,7 @@ interface ChannelProvider {
 }
 
 async function getProvidersByChannelId(channelId: string): Promise<ChannelProvider[]> {
-  const response = await CommunicationService.getChannelProviders();
+  const response = await communicationApiService.getChannelProviders();
   const providers: ChannelProvider[] = response.data;
   return providers.filter((item) => item.channelId === channelId);
 }
@@ -228,7 +228,7 @@ export function useChannel(): UseChannelProps {
 
       if (providerIds.length > 0) {
         const results = await Promise.allSettled(
-          providerIds.map((id) => CommunicationService.deleteChannelProvider(id))
+          providerIds.map((id) => communicationApiService.deleteChannelProvider(id))
         );
         const failedCount = results.filter((result) => result.status === "rejected").length;
 

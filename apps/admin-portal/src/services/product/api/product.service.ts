@@ -1,10 +1,10 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import type { AxiosRequestConfig } from "axios";
 import qs from "qs";
 
 import { PRODUCT_ENDPOINTS } from "./product.endpoints";
 
-const productApi = createApiClient(process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL);
+const productApi = createApiClient(API_BASE_URLS.product);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;
@@ -25,7 +25,7 @@ export const productService = {
   getProducts: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.products, params)),
   getProductById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.products, { id })),
+    get(PRODUCT_ENDPOINTS.productDetail(id)),
   createProduct: (payload: unknown) => post(PRODUCT_ENDPOINTS.products, payload),
   updateProduct: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.productDetail(id), payload),
@@ -34,7 +34,7 @@ export const productService = {
   getCategories: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.categories, params)),
   getCategoryById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.categories, { id })),
+    get(PRODUCT_ENDPOINTS.categoryDetail(id)),
   getCategoriesByChannelId: (channelId: string) =>
     get(PRODUCT_ENDPOINTS.categoriesByChannel(channelId)),
   createCategory: (payload: unknown) => post(PRODUCT_ENDPOINTS.categories, payload),
@@ -155,7 +155,7 @@ export const productService = {
   getEmailTags: (params?: Record<string, unknown>) =>
     get(withQuery(PRODUCT_ENDPOINTS.emailTags, params)),
   getEmailTagById: (id: string) =>
-    get(withQuery(PRODUCT_ENDPOINTS.emailTags, { id })),
+    get(PRODUCT_ENDPOINTS.emailTagDetail(id)),
   createEmailTag: (payload: unknown) => post(PRODUCT_ENDPOINTS.emailTags, payload),
   updateEmailTag: (id: string, payload: unknown) =>
     put(PRODUCT_ENDPOINTS.emailTagDetail(id), payload),

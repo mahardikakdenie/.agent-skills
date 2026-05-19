@@ -1,9 +1,9 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { HELPER_ENDPOINTS } from "./helper.endpoints";
 
-const helperApi = createApiClient(process.env.NEXT_PUBLIC_HELPER_SERVICE_URL);
+const helperApi = createApiClient(API_BASE_URLS.helper);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;
@@ -11,6 +11,8 @@ const withQuery = (url: string, params?: Record<string, unknown>) => {
 };
 
 const get = async <T>(url: string) => (await helperApi.get<T>(url)).data;
+const getRaw = <T>(url: string, config?: Parameters<typeof helperApi.get<T>>[1]) =>
+  helperApi.get<T>(url, config);
 const post = async <T>(url: string, data?: unknown) =>
   (await helperApi.post<T>(url, data)).data;
 const put = async <T>(url: string, data?: unknown) =>
@@ -18,6 +20,11 @@ const put = async <T>(url: string, data?: unknown) =>
 const del = async <T>(url: string) => (await helperApi.delete<T>(url)).data;
 
 export const helperService = {
+  exportData: (params?: Record<string, unknown>) =>
+    getRaw<Blob>(HELPER_ENDPOINTS.exportData, {
+      params,
+      responseType: "blob",
+    }),
   htmlToPdf: (content: string, filename: string) =>
     post(HELPER_ENDPOINTS.htmlToPdf, { content, filename }),
   generatePdfService: (content: string, filename: string) =>

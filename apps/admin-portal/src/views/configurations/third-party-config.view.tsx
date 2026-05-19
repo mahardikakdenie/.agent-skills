@@ -27,7 +27,7 @@ import { CompactTablePagination } from '@/components/core/compact-table-paginati
 import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { getHeaderPage } from '@/lib/app-utils';
 import { useThirdPartyConfig } from '@/hooks/useThirdPartyConfig.hooks';
-import { ThirdPartyConfig } from '@/services/crm-config.service';
+import type { ThirdPartyConfig } from '@/services/third-party/api/third-party.types';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
 

@@ -1,4 +1,4 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import type {
@@ -9,7 +9,7 @@ import type {
 import { REPORT_ENDPOINTS } from "./report.endpoints";
 
 const reportApi = createApiClient({
-  baseURL: process.env.NEXT_PUBLIC_REPORT_SERVICE_URL,
+  baseURL: API_BASE_URLS.report,
   withAuth: false,
   headers: {
     Authorization: `Bearer ${process.env.NEXT_PUBLIC_REPORT_SERVICE_TOKEN}`,

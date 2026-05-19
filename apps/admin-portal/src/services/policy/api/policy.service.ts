@@ -1,11 +1,11 @@
 import type { AxiosRequestConfig } from "axios";
 
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { POLICY_ENDPOINTS } from "./policy.endpoints";
 
-const policyApi = createApiClient(process.env.NEXT_PUBLIC_API_POLICY_BASE_URL);
+const policyApi = createApiClient(API_BASE_URLS.policy);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;

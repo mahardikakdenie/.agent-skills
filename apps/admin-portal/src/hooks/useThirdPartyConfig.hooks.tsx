@@ -1,12 +1,17 @@
 import { useState, useCallback, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth.context";
 import _ from "lodash";
-import {
-  CrmConfigService,
+import type {
   ThirdPartyConfig,
   ThirdPartyConfigPayload,
-} from "@/services/crm-config.service";
+} from "@/services/third-party/api/third-party.types";
+import { useThirdPartyConfigurations } from "@/services/third-party/hooks/queries";
+import {
+  useCreateThirdPartyConfiguration,
+  useDeleteThirdPartyConfiguration,
+  useUpdateThirdPartyConfiguration,
+} from "@/services/third-party/hooks/mutations";
 import { toastNotification } from "@/lib/toast";
 
 const EMPTY_FORM: ThirdPartyConfigPayload = {
@@ -44,21 +49,12 @@ export function useThirdPartyConfig() {
     data: configurationsResponse,
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ["third-party-configs", search],
-    queryFn: async () => {
-      const res: any = await CrmConfigService.getConfigurations(
-        search ? { search } : undefined
-      );
-      return res.data;
-    },
+  } = useThirdPartyConfigurations(search ? { search } : undefined, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: ThirdPartyConfigPayload) =>
-      CrmConfigService.createConfiguration(data),
+  const createMutation = useCreateThirdPartyConfiguration({
     onSuccess: () => {
       toastNotification("Third party configuration created successfully");
       queryClient.invalidateQueries({ queryKey: ["third-party-configs"] });
@@ -72,14 +68,7 @@ export function useThirdPartyConfig() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Partial<ThirdPartyConfigPayload>;
-    }) => CrmConfigService.updateConfiguration(id, data),
+  const updateMutation = useUpdateThirdPartyConfiguration({
     onSuccess: () => {
       toastNotification("Third party configuration updated successfully");
       queryClient.invalidateQueries({ queryKey: ["third-party-configs"] });
@@ -93,8 +82,7 @@ export function useThirdPartyConfig() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => CrmConfigService.deleteConfiguration(id),
+  const deleteMutation = useDeleteThirdPartyConfiguration({
     onSuccess: () => {
       toastNotification("Third party configuration deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["third-party-configs"] });
@@ -143,10 +131,10 @@ export function useThirdPartyConfig() {
   }, [deletingConfig, deleteMutation]);
 
   const configurations: ThirdPartyConfig[] = Array.isArray(
-    configurationsResponse
+    (configurationsResponse as any)?.data
   )
-    ? configurationsResponse
-    : configurationsResponse?.data || [];
+    ? (configurationsResponse as any).data
+    : (configurationsResponse as any)?.data?.data || [];
 
   const handleSearch = useMemo(
     () =>

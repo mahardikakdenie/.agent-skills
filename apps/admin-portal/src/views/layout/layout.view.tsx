@@ -14,7 +14,6 @@ import OptimizeImage from '@/components/core/image';
 import Input from '@/components/core/input';
 import { MicrosoftLoginButton } from '@/components/core/microsoft-login-button';
 import Modal from '@/components/core/modal';
-import ApiURL from '@/constants/api-url.const';
 import {
   backgroundImageApp,
   logo,
@@ -29,7 +28,7 @@ import { useScreen } from '@/context/screen.context';
 import { toastNotification } from '@/lib/app-utils';
 import ChecklistIcon from '@/components/core/checklist.icon';
 import XIcon from '@/components/core/x.icon';
-import { authService } from '@/services/api.service';
+import { authService } from '@/services/auth/api/auth.service';
 
 export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -109,7 +108,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
 
   const changePassword = async () => {
     try {
-      await authService.put(ApiURL.v1ChangePassword(user.sub), {
+      await authService.changeAccountPassword(user.sub, {
         newPassword,
         oldPassword,
       });

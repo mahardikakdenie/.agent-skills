@@ -31,7 +31,7 @@ import { CompactTablePagination } from '@/components/core/compact-table-paginati
 import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { getHeaderPage } from '@/lib/app-utils';
 import { useChannelMapping } from '@/hooks/useChannelMapping.hooks';
-import { ChannelMapping } from '@/services/crm-config.service';
+import type { ChannelMapping } from '@/services/third-party/api/third-party.types';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
 

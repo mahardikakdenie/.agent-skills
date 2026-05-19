@@ -1,16 +1,23 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState, useCallback } from 'react';
 
-import ApiURL from '@/constants/api-url.const';
 import { useAuth } from '@/context/auth.context';
 import { toastNotification } from '@/lib/toast';
-import { channelService } from '@/services/api.service';
-import {
-  CrmConfigService,
+import { useChannelsV1 } from '@/services/channel/hooks/queries';
+import type {
   ChannelMapping,
   ChannelMappingPayload,
   ThirdPartyConfig,
-} from '@/services/crm-config.service';
+} from '@/services/third-party/api/third-party.types';
+import {
+  useChannelMappings,
+  useThirdPartyConfigurations,
+} from '@/services/third-party/hooks/queries';
+import {
+  useCreateChannelMapping,
+  useDeleteChannelMapping,
+  useUpdateChannelMapping,
+} from '@/services/third-party/hooks/mutations';
 
 const CRM_RELATION_ID = '8bad5007-a399-40cb-a6cd-dfec7efeee58';
 
@@ -67,27 +74,16 @@ export function useChannelMapping() {
   }, []);
 
   // Fetch channels for the dropdown and display labels.
-  const { data: channelsResponse } = useQuery({
-    queryKey: ['channels-list'],
-    queryFn: async () => {
-      const res = await channelService.get<ApiListResponse<ChannelOption>>(ApiURL.v1Channels, {
-        params: { page: 1, limit: 1000 },
-      });
-      return res.data;
-    },
+  const { data: channelsResponse } = useChannelsV1({
+    page: 1,
+    limit: 1000,
+  }, {
     staleTime: 60000,
     refetchOnWindowFocus: false,
   });
 
   // Fetch third party configs for the dropdown
-  const { data: thirdPartiesResponse } = useQuery({
-    queryKey: ['third-party-configs-dropdown'],
-    queryFn: async () => {
-      const res = (await CrmConfigService.getConfigurations()) as {
-        data: ApiListResponse<ThirdPartyConfig>;
-      };
-      return res.data;
-    },
+  const { data: thirdPartiesResponse } = useThirdPartyConfigurations(undefined, {
     staleTime: 60000,
     refetchOnWindowFocus: false,
   });
@@ -97,20 +93,12 @@ export function useChannelMapping() {
     data: mappingsResponse,
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ['channel-mappings', search],
-    queryFn: async () => {
-      const res = (await CrmConfigService.getChannelMappings(search ? { search } : undefined)) as {
-        data: ApiListResponse<ChannelMapping>;
-      };
-      return res.data;
-    },
+  } = useChannelMappings(search ? { search } : undefined, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: ChannelMappingPayload) => CrmConfigService.createChannelMapping(data),
+  const createMutation = useCreateChannelMapping({
     onSuccess: () => {
       toastNotification('Channel mapping created successfully');
       queryClient.invalidateQueries({ queryKey: ['channel-mappings'] });
@@ -123,9 +111,7 @@ export function useChannelMapping() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<ChannelMappingPayload> }) =>
-      CrmConfigService.updateChannelMapping(id, data),
+  const updateMutation = useUpdateChannelMapping({
     onSuccess: () => {
       toastNotification('Channel mapping updated successfully');
       queryClient.invalidateQueries({ queryKey: ['channel-mappings'] });
@@ -138,8 +124,7 @@ export function useChannelMapping() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => CrmConfigService.deleteChannelMapping(id),
+  const deleteMutation = useDeleteChannelMapping({
     onSuccess: () => {
       toastNotification('Channel mapping deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['channel-mappings'] });
@@ -188,11 +173,13 @@ export function useChannelMapping() {
     deleteMutation.mutate(deletingMapping.id);
   }, [deletingMapping, deleteMutation]);
 
-  const mappings: ChannelMapping[] = extractList(mappingsResponse);
+  const mappings: ChannelMapping[] = extractList((mappingsResponse as any)?.data);
 
-  const thirdParties: ThirdPartyConfig[] = extractList(thirdPartiesResponse);
+  const thirdParties: ThirdPartyConfig[] = extractList((thirdPartiesResponse as any)?.data);
 
-  const channels: ChannelOption[] = extractList(channelsResponse);
+  const channels: ChannelOption[] = extractList(
+    channelsResponse as ApiListResponse<ChannelOption>
+  );
 
   const handleSearch = useCallback((keyword: string) => {
     setSearch(keyword);

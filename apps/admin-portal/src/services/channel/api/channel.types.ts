@@ -1,5 +1,18 @@
-export type { ChannelsResponse } from "@/services/masterdata/channels.service";
-export type { Channel } from "@/services/masterdata/user.service";
+export interface ChannelsResponse {
+  data: any;
+  id: string;
+  name: string;
+  type: string;
+  total: number;
+  pageTotal: number;
+}
+
+export interface Channel {
+  data: any;
+  id: string;
+  name: string;
+  type: string;
+}
 
 export interface ChannelListResponse {
   data: unknown;

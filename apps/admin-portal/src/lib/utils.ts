@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { CookieService } from "@/services/masterdata/cookie.service";
+import { internalService } from "@/services/internal/api/internal.service";
 import { ClaimFieldInputType, ClaimForm } from "@/types/claim-form";
 import dayjs from "dayjs";
 
@@ -28,14 +28,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const cookieService = new CookieService();
-
 export async function getCookie(name: string): Promise<string | null> {
   try {
-    const value = cookieService.getCookieByKey(name);
-    if (!!value) return await value;
-    return null;
-  } catch (error) {
+    const response = await internalService.getCookieByKey(name);
+    return response?.data?.value ?? null;
+  } catch {
     return null;
   }
 }

@@ -10,12 +10,11 @@ import {
 } from "@/lib/app-utils";
 import { AUTH_TOKEN, REFRESH_TOKEN } from "@/constants/app-common.const";
 import { jwtDecode } from "jwt-decode";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { authService } from "@/services/api.service";
-import { AuthService, LoginProvidersResponse } from "@/services/auth.service";
+import { usePathname, useRouter } from "next/navigation";
 import ApiURL from "@/constants/api-url.const";
+import { authService } from "@/services/auth/api/auth.service";
+import type { LoginProvidersResponse } from "@/services/auth/api/auth.types";
 import { LoginResponse } from "@/types/common";
-import { AxiosResponse } from "axios";
 import AppMenu from "@/constants/app-menu.const";
 import { authToken } from "@/types/auth-token";
 import { setGlobalToken } from "@/lib/token-storage";
@@ -59,7 +58,6 @@ interface JwtPayload {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const authServiceEntra = new AuthService();
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -255,17 +253,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!isProcessing.current) {
       isProcessing.current = true;
       try {
-        const response: AxiosResponse<LoginResponse> = await authService.post(
-          ApiURL.login,
-          { username: data.email, password: data.password }
-        );
-        if (response && response.data && response.data.access_token) {
-          const token = response.data.access_token;
+        const response = (await authService.login({
+          username: data.email,
+          password: data.password,
+        })) as LoginResponse;
+        if (response?.access_token) {
+          const token = response.access_token;
           await setCookie(AUTH_TOKEN, token);
           authToken.token = token;
           setGlobalToken(token);
-          if (response.data.refresh_token) {
-            await setCookie(REFRESH_TOKEN, response.data.refresh_token);
+          if (response.refresh_token) {
+            await setCookie(REFRESH_TOKEN, response.refresh_token);
           }
           if (token) await getUserInformation(token, true);
         }
@@ -285,7 +283,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!isProcessing.current) {
       isProcessing.current = true;
       try {
-        const data = await authServiceEntra.loginEntra(code, codeVerifier);
+        const data = await authService.loginEntra(code, codeVerifier);
         // Handle potential nested structure from Entra login response
         // Based on logs, it might be { token: { access_token: "..." }, user: ... }
         const token = (data as any).access_token || (data as any).token?.access_token;
@@ -320,7 +318,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!isProcessing.current) {
       isProcessing.current = true;
       try {
-        const response = await authServiceEntra.getProviders({ originUrl });
+        const response = await authService.getProviders({ originUrl });
 
         if(response && response?.data?.length > 0){
           setLoginProviders(response.data);
@@ -341,7 +339,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const refreshToken = await getCookie(REFRESH_TOKEN);
       if (refreshToken) {
-        authService.post(ApiURL.loginLogout, { refresh_token: refreshToken }).catch(() => {});
+        authService.logout(refreshToken).catch(() => {});
       }
     } catch {
       // Fire-and-forget — don't block logout

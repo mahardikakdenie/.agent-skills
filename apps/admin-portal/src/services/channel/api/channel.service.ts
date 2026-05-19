@@ -1,9 +1,9 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { CHANNEL_ENDPOINTS } from "./channel.endpoints";
 
-const channelApi = createApiClient(process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL);
+const channelApi = createApiClient(API_BASE_URLS.channel);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;

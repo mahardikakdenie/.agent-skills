@@ -2,9 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
-import {
-  ProductCategories,
-} from "@/services/masterdata/product-category.service";
+import type { ProductCategories } from "@/services/product/api/product.types";
 import AppURL from "@/constants/app-url.const";
 import { useCategories } from "@/services/product/hooks/queries";
 import { useDeleteCategory } from "@/services/product/hooks/mutations";

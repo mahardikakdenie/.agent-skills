@@ -1,9 +1,9 @@
-import { createApiClient } from "@/lib/api-client";
+import { API_BASE_URLS, createApiClient } from "@/lib/api-client";
 import qs from "qs";
 
 import { FINANCE_ENDPOINTS } from "./finance.endpoints";
 
-const financeApi = createApiClient(process.env.NEXT_PUBLIC_FINANCE_SERVICE_URL);
+const financeApi = createApiClient(API_BASE_URLS.finance);
 
 const withQuery = (url: string, params?: Record<string, unknown>) => {
   if (!params || Object.keys(params).length === 0) return url;

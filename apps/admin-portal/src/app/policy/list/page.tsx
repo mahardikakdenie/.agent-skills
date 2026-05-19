@@ -28,7 +28,7 @@ import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { toastNotification } from '@/lib/app-utils';
 import usePolicies from '@/hooks/usePolicies.hooks';
-import { helperService } from '@/services/api.service';
+import { helperService } from '@/services/helper/api/helper.service';
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;
 const formatCompactCount = (value: number) => new Intl.NumberFormat('id-ID').format(value);
@@ -120,15 +120,12 @@ export default function PolicyPage() {
     try {
       setExporting(true);
 
-      const response = await helperService.get('/v1/export-data', {
-        params: {
+      const response = await helperService.exportData({
           startDate: date?.from ? format(date.from, 'yyyy-MM-dd') : undefined,
           endDate: date?.to ? format(date.to, 'yyyy-MM-dd') : undefined,
           type: 'Export.PolicyList.XSLX',
           channel: searchChannel,
           category: searchCategory !== 'All' ? searchCategory : undefined,
-        },
-        responseType: 'blob',
       });
 
       const contentDisposition = response.headers['content-disposition'] as string | undefined;
