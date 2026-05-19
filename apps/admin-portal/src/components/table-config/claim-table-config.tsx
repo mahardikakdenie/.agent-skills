@@ -10,13 +10,13 @@ import {
   DialogTrigger,
 } from '@repo/ui';
 
-import { type Column } from '@/components/ui/data-table';
+import { type Column } from '@/components/core/data-table';
 import {
   ClaimItem,
   ClaimsTableConfigProps,
   DocumentItem,
   DocumentTableConfigProps,
-} from '@/interface';
+} from '@/types/claim-form';
 import { formatDate, formatMoneyClaim } from '@/lib/formatter';
 
 const formatTableOrdinalNumber = (value: number) => new Intl.NumberFormat('id-ID').format(value);

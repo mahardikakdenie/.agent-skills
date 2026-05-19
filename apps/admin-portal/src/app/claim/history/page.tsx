@@ -17,7 +17,7 @@ import {
 } from '@repo/ui';
 
 import { createClaimHistoryTableColumns } from '@/components/table-config/claim-history-table-config';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { useClaimHistory } from '@/hooks/useClaimHistory.hooks';
 import { formatMoney } from '@/lib/formatter';
 

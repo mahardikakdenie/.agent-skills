@@ -10,7 +10,7 @@ import {
   createProductCatalogTableColumns,
   ProductCatalogTableData,
 } from '@/components/table-config/product-catalog-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 import { useCategories } from '@/services/product/hooks/queries';
 

@@ -3,10 +3,10 @@ import React, { forwardRef, useEffect, useRef, useState } from 'react';
 
 import { Box } from '@repo/ui';
 
-import Button from '@/components/button';
-import Select from '@/components/select';
+import Button from './button';
+import Select from './select';
 import { monthList, primary, primaryDisabled } from '@/constants/app-common.const';
-import CalenderIcon from '@/images/calender.icon';
+import CalenderIcon from '@/components/core/calender.icon';
 
 interface FormErrors {
   date?: string;

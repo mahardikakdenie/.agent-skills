@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 
 export default function ChannelAddModal(props: {
   id: string;

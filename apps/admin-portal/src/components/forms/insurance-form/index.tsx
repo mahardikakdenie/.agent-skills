@@ -14,8 +14,8 @@ import {
   Box,
 } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { PageHeader } from '@/components/core/page-header';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
 
 interface InsuranceFormProps {

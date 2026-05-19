@@ -22,7 +22,7 @@ import {
 } from '@repo/ui';
 
 import { useProduct } from '@/app/masterdata/product/hooks';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useScreen } from '@/context/screen.context';
 import { cn } from '@/lib/utils';
 import { productService } from '@/services/product/api/product.service';

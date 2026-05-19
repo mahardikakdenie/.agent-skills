@@ -22,8 +22,8 @@ import {
 } from '@repo/ui';
 
 import { createTransactionTableColumns } from '@/components/table-config/transaction-table-config';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
 import useTransactions from '@/hooks/useTransactions.hooks';

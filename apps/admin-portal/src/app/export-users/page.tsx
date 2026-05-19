@@ -28,7 +28,7 @@ import {
 } from '@repo/ui';
 
 import { createExportUsersTableColumns } from '@/components/table-config/export-user-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useExportUsers } from '@/hooks/useExportUsers.hooks';
 import { useHasMounted } from '@/hooks/useHasMounted';
 import { cn } from '@/lib/utils';

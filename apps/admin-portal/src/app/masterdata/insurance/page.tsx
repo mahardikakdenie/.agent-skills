@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Box, Button, DataTable } from '@repo/ui';
 
 import { createInsuranceTableColumns } from '@/components/table-config/insurance-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useInsurance } from '@/hooks/useIsurance.hooks';
 
 export default function InsurancePage() {

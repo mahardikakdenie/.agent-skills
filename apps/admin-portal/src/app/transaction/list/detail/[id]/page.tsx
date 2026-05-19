@@ -6,7 +6,7 @@ import { Check } from 'react-feather';
 
 import { Box, Button, Spinner } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import { formatMoney } from '@/lib/formatter';
 import { toastNotification } from '@/lib/toast';

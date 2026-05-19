@@ -3,14 +3,14 @@ import { X } from 'react-feather';
 
 import { Box } from '@repo/ui';
 
-import Button from '@/components/button';
-import Modal from '@/components/modal';
+import Button from './button';
+import Modal from './modal';
 import { delimiter, primary, primaryDisabled, primaryRed } from '@/constants/app-common.const';
-import { capitalizeStringWithChar } from '@/helpers/app.helper';
-import AddIcon from '@/images/add.icon';
-import ChecklistIcon from '@/images/checklist.icon';
-import SeeIcon from '@/images/see.icon';
-import TrashIcon from '@/images/trash.icon';
+import { capitalizeStringWithChar } from '@/lib/app-utils';
+import AddIcon from '@/components/core/add.icon';
+import ChecklistIcon from '@/components/core/checklist.icon';
+import SeeIcon from '@/components/core/see.icon';
+import TrashIcon from '@/components/core/trash.icon';
 
 interface MultipleSelectProps {
   list: any[];

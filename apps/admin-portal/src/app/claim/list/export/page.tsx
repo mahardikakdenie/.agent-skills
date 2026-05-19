@@ -8,7 +8,7 @@ import { Download } from 'react-feather';
 
 import { Box, Button, DataTable, type ColumnDef } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import useExportClaim from '@/hooks/useExportClaim.hooks';
 import { cn } from '@/lib/utils';

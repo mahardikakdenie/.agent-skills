@@ -11,7 +11,7 @@ import {
   createEmailTagTableColumns,
   type EmailTag,
 } from '@/components/table-config/email-tag-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useEmailTag } from '@/hooks/useEmailTag.hooks';
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;

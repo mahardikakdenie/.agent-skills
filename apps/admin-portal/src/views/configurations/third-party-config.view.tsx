@@ -23,9 +23,9 @@ import {
   type ColumnDef,
 } from '@repo/ui';
 
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
-import { getHeaderPage } from '@/helpers/app.helper';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
+import { getHeaderPage } from '@/lib/app-utils';
 import { useThirdPartyConfig } from '@/hooks/useThirdPartyConfig.hooks';
 import { ThirdPartyConfig } from '@/services/crm-config.service';
 

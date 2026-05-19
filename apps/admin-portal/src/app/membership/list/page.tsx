@@ -21,8 +21,8 @@ import {
 } from '@repo/ui';
 
 import { createMembershipTableColumns } from '@/components/table-config/membership-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { useMembership } from '@/hooks/useMembership.hooks';
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;

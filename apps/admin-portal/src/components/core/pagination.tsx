@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'react-fe
 
 import { Box } from '@repo/ui';
 
-import Select from '@/components/select';
+import Select from './select';
 import { defaultOptionPagination } from '@/constants/app-common.const';
 
 interface PaginationProps {

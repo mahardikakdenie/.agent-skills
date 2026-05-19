@@ -5,7 +5,7 @@ import { useScreen } from "@/context/screen.context";
 import _ from "lodash";
 import AppURL from "@/constants/app-url.const";
 import { useClaimListLimit } from "@/services/claims/hooks/queries/useClaimListLimit";
-import { capitalizeString, getHeaderPage } from "@/helpers/app.helper";
+import { capitalizeString, getHeaderPage } from "@/lib/app-utils";
 
 interface ClaimHistoryDetail {
   claimId: string;

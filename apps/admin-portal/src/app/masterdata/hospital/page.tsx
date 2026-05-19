@@ -8,8 +8,8 @@ import { Upload } from 'react-feather';
 import { Box, Button, DataTable } from '@repo/ui';
 
 import { createHospitalTableColumns } from '@/components/table-config/hospital-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { useHospital } from '@/hooks/useHospital.hooks';
 
 export default function HospitalListPage() {

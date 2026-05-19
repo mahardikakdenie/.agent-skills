@@ -25,7 +25,7 @@ import {
 
 import { cn } from '@/lib/utils';
 
-import { ContentLoadingWrapper } from '../loading';
+import { ContentLoadingWrapper } from './loading';
 
 export interface Column<T> {
   key: string;

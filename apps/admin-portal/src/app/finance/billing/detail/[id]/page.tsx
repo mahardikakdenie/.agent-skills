@@ -11,14 +11,14 @@ import {
   DataTable,
 } from "@repo/ui";
 import AppURL from "@/constants/app-url.const";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader } from "@/components/core/page-header";
 import { BillingDetailInfo } from "./components/billing-detail-info";
 import { BillingDetailActions } from "./components/billing-detail-actions";
 import {
   BillingDetailItem,
   createBillingDetailTableColumns,
 } from "@/components/table-config/billing-detail-table-config";
-import { CompactTablePagination } from "@/components/ui/compact-table-pagination";
+import { CompactTablePagination } from "@/components/core/compact-table-pagination";
 import { formatDate, formatMoney } from "@/lib/formatter";
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;

@@ -33,13 +33,13 @@ import {
   createClaimsTableColumns,
   createDocumentTableColumns,
 } from '@/components/table-config/claim-table-config';
-import { DataTable as LegacyDataTable } from '@/components/ui/data-table';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { DataTable as LegacyDataTable } from '@/components/core/data-table';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
 import useClaims from '@/hooks/useClaims.hooks';
-import { ClaimItem } from '@/interface';
+import { ClaimItem } from '@/types/claim-form';
 import { formatDate, formatMoneyClaim } from '@/lib/formatter';
 import { cn } from '@/lib/utils';
 import { claimsService } from '@/services/claims/api/claims.service';

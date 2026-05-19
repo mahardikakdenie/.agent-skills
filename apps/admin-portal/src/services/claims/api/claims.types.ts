@@ -99,4 +99,4 @@ export interface ClaimHistorySummary {
   totalPaid: number;
   remainingClaimLimit: number;
 }
-export type { ClaimFormsRequest, UpdateClaimGrabRequest } from "@/interface";
+export type { ClaimFormsRequest, UpdateClaimGrabRequest } from "@/types/claim-form";

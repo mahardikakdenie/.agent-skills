@@ -17,7 +17,7 @@ import {
   type ColumnDef,
 } from '@repo/ui';
 
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 
 interface Channel {
   id: string;

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Box } from '@repo/ui';
 
 import { primaryDisabled } from '@/constants/app-common.const';
-import XCircleIcon from '@/images/x-circle.icon';
+import XCircleIcon from '@/components/core/x-circle.icon';
 
 interface TextAreaProps {
   value: string;

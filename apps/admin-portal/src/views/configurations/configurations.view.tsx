@@ -27,7 +27,7 @@ import {
 } from '@repo/ui';
 
 import { useScreen } from '@/context/screen.context';
-import { getHeaderPage } from '@/helpers/app.helper';
+import { getHeaderPage } from '@/lib/app-utils';
 import { useChannelProviders } from '@/hooks/useChannelProviders.hooks';
 
 interface ChannelProvider {

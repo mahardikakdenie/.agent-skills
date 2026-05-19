@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 
 import { Box } from '@repo/ui';
 
-import UploadIcon from '@/images/upload.icon';
+import UploadIcon from '@/components/core/upload.icon';
 
 type ExcelDropUploadProps = {
   onDataParsed?: (data: Record<string, any>[]) => void;

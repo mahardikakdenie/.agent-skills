@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Box, Spinner } from '@repo/ui';
 
 import { useBilling } from '@/app/finance/billing/hook';
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import { useScreen } from '@/context/screen.context';
 import { useGeneratePdfService } from '@/services/helper/hooks/mutations';

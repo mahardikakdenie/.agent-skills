@@ -15,8 +15,8 @@ import {
 } from '@repo/ui';
 
 import { createPartnerCommTableColumns } from '@/components/table-config/partner-comm-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { usePartnerComm, type PartnerCommItem } from '@/hooks/usePartnerComm.hooks';
 
 export default function PartnerCommPage() {

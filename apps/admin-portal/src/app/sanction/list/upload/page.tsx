@@ -5,7 +5,7 @@ import { ChevronLeft, Upload } from 'react-feather';
 
 import { Box, Button, FileUpload, Badge } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import { useScreen } from '@/context/screen.context';
 import { useUploadSanction } from '@/hooks/useUploadSanction.hooks';

@@ -19,8 +19,8 @@ import {
 } from '@repo/ui';
 
 import { createCampaignTableColumns } from '@/components/table-config/campaign-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { useCampaign } from '@/hooks/useCampaign.hooks';
 import { cn } from '@/lib/utils';
 

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { getCookie, setCookie } from "@/helpers/app.helper";
+import { getCookie, setCookie } from "@/lib/app-utils";
 import { AUTH_TOKEN, REFRESH_TOKEN } from "@/constants/app-common.const";
 import ApiURL from "@/constants/api-url.const";
 import { authToken } from "@/types/auth-token";

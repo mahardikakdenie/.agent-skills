@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { Box } from '@repo/ui';
 
 import { useAuth } from '@/context/auth.context';
-import { toastNotification } from '@/helpers/app.helper';
+import { toastNotification } from '@/lib/app-utils';
 
 export const MsalCallbackView = () => {
   const router = useRouter();

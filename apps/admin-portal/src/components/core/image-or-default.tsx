@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Box } from '@repo/ui';
 
-import OptimizeImage from '@/components/image';
+import OptimizeImage from './image';
 
 interface ImageOrDefaultProps {
   onClick?: () => void;

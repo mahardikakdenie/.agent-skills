@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Box } from '@repo/ui';
 
-import Chart from '@/components/chart';
+import Chart from '@/components/core/chart';
 import { defaultChart, homeCard, primary } from '@/constants/app-common.const';
 import { useAuth } from '@/context/auth.context';
 import { useScreen } from '@/context/screen.context';
@@ -13,7 +13,7 @@ import {
   getHeaderPage,
   moneyFormatter,
   numberSimpleFormatter,
-} from '@/helpers/app.helper';
+} from '@/lib/app-utils';
 import { claimsService } from '@/services/claims/api/claims.service';
 import { policyService } from '@/services/policy/api/policy.service';
 import { transactionService } from '@/services/transaction/api/transaction.service';

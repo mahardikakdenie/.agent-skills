@@ -14,11 +14,11 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import DetailTable from '@/components/table-policy';
-import BarChartComp from '@/components/ui/charts/bar-chart-horizontal';
-import LineChart from '@/components/ui/charts/dashed-line-chart';
-import PieChart from '@/components/ui/charts/pie-chart';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import DetailTable from '@/components/core/table-policy';
+import BarChartComp from '@/components/core/bar-chart-horizontal';
+import LineChart from '@/components/core/dashed-line-chart';
+import PieChart from '@/components/core/pie-chart';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import useTransactionDashboard from '@/hooks/useTransactionDashboard.hooks';
 import { formatMoney } from '@/lib/formatter';
 

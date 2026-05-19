@@ -7,7 +7,7 @@ import { Plus } from 'react-feather';
 import { Box, Button, DataTable } from '@repo/ui';
 
 import { createCurrencyTableColumns } from '@/components/table-config/currency-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useCurrency } from '@/hooks/useCurrency.hooks';
 
 export default function Currency() {

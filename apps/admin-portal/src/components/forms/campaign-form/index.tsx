@@ -35,8 +35,8 @@ import type {
 import AppURL from '@/constants/app-url.const';
 import { useCampaignForm } from '@/hooks/useCampaignForm.hooks';
 
-import { PageHeader } from '../../page-header';
-import { ContentLoadingWrapper } from '../../ui/loading';
+import { PageHeader } from '../../core/page-header';
+import { ContentLoadingWrapper } from '../../core/loading';
 
 interface CampaignFormProps {
   mode: 'create' | 'edit';

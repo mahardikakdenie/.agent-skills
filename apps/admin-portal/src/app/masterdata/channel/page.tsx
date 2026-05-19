@@ -17,7 +17,7 @@ import {
 } from '@repo/ui';
 
 import { createChannelTableColumns } from '@/components/table-config/channel-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useChannel } from '@/hooks/useChannel.hooks';
 
 export default function ChannelsPage() {

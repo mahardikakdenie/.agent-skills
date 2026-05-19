@@ -11,10 +11,10 @@ import { z } from 'zod';
 import { Box, Button, Card, CardContent, CardHeader, Input } from '@repo/ui';
 
 import { useProducts } from '@/app/product-category/hooks';
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 
-import { ContentLoadingWrapper } from '../../ui/loading';
+import { ContentLoadingWrapper } from '../../core/loading';
 
 type SchemaType = {
   benefit: string;

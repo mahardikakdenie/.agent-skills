@@ -20,7 +20,7 @@ import {
 } from '@repo/ui';
 
 import { createSanctionTableColumns } from '@/components/table-config/sanction-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useSanction } from '@/hooks/useSanction.hooks';
 
 let tableMeasureContext: CanvasRenderingContext2D | null = null;

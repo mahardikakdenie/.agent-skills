@@ -11,7 +11,7 @@ import {
 } from '@repo/ui';
 
 import { useBilling } from '@/app/finance/billing/hook';
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import { useScreen } from '@/context/screen.context';
 import { toastPromise } from '@/lib/toast';

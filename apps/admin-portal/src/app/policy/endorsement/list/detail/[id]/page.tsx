@@ -25,10 +25,10 @@ import {
   Textarea,
 } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import { createEndorsementDetailsTableColumns } from '@/components/table-config/endorsement-table-config';
-import { DataTable } from '@/components/ui/data-table';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { DataTable } from '@/components/core/data-table';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
 import { useEndorsementDetail } from '@/hooks/useDetailEndorsement.hooks';
 import { cn } from '@/lib/utils';

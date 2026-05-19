@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { Box } from '@repo/ui';
 
 import { primary, primaryDisabled } from '@/constants/app-common.const';
-import { moneyFormatter, parseMoneyString } from '@/helpers/app.helper';
-import SeeIcon from '@/images/see.icon';
-import UnseeIcon from '@/images/unsee.icon';
-import XCircleIcon from '@/images/x-circle.icon';
+import { moneyFormatter, parseMoneyString } from '@/lib/app-utils';
+import SeeIcon from '@/components/core/see.icon';
+import UnseeIcon from '@/components/core/unsee.icon';
+import XCircleIcon from '@/components/core/x-circle.icon';
 
 interface InputProps {
   value: string | number;

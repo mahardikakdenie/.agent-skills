@@ -16,7 +16,7 @@ import {
 } from '@repo/ui';
 import { Button } from '@repo/ui';
 
-import SelectPhoneCode from '@/components/ui/select-phone-code';
+import SelectPhoneCode from '@/components/core/select-phone-code';
 import { passwordValidationRules } from '@/lib/password';
 
 interface UserFormProps {

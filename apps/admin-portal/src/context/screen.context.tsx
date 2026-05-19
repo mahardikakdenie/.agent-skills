@@ -11,12 +11,12 @@ import React, {
 
 import { Box } from '@repo/ui';
 
-import Button from '@/components/button';
-import Loader from '@/components/loader';
-import Modal from '@/components/modal';
+import Button from '@/components/core/button';
+import Loader from '@/components/core/loader';
+import Modal from '@/components/core/modal';
 import { minWidthContainer } from '@/constants/app-common.const';
 import { useAuth } from '@/context/auth.context';
-import WifiOffIcon from '@/images/wifi-off.icon';
+import WifiOffIcon from '@/components/core/wifi-off.icon';
 
 interface ScreenContextType {
   isMobileView: boolean;

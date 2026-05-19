@@ -18,7 +18,7 @@ import {
   Input,
 } from '@repo/ui';
 
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
 import { useAuth } from '@/context/auth.context';
 

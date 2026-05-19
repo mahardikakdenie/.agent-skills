@@ -10,7 +10,7 @@ import {
   ClaimForm,
   ClaimFormsRequest,
   UpdateClaimGrabRequest,
-} from "@/interface";
+} from "@/types/claim-form";
 import { useAuth } from "@/context/auth.context";
 import {
   applyFieldUpdates,

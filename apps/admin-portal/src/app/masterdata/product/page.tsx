@@ -7,7 +7,7 @@ import { Plus } from 'react-feather';
 import { Box, Button, DataTable, Tabs, TabsList, TabsTrigger } from '@repo/ui';
 
 import { createProductTableColumns } from '@/components/table-config/product-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { useProduct } from '@/hooks/useProduct.hooks';
 
 export default function Product() {

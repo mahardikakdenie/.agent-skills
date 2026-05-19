@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import React, { Suspense } from "react";
-import Loader from "@/components/loader";
+import Loader from "@/components/core/loader";
 import { AuthProvider } from "@/context/auth.context";
+import QueryProvider from "@/lib/react-query/query-provider";
 import { LayoutView } from "@/views/layout/layout.view";
 import { ScreenProvider } from "@/context/screen.context";
 import { Toaster } from "react-hot-toast";
-import QueryProvider from "@/provider/query-provider";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 

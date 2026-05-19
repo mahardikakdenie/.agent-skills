@@ -11,8 +11,8 @@ import { z, ZodSchema, ZodTypeAny } from 'zod';
 import { Box, Button, Input, Select } from '@repo/ui';
 
 import { useProducts } from '@/app/product-category/hooks';
-import { PageHeader } from '@/components/page-header';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { PageHeader } from '@/components/core/page-header';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
 
 import { FieldArrayInput } from './field-array-input';

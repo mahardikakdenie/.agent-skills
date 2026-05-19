@@ -9,7 +9,7 @@ import { Plus } from 'react-feather';
 import { Box, Button, DataTable } from '@repo/ui';
 
 import { createEmailTagTableColumns } from '@/components/table-config/email-tag-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 
 import { usePages } from '../hooks';

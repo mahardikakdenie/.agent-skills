@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { CookieService } from "@/services/masterdata/cookie.service";
-import { ClaimFieldInputType, ClaimForm } from "@/interface";
+import { ClaimFieldInputType, ClaimForm } from "@/types/claim-form";
 import dayjs from "dayjs";
 
 export const generateYears = (startYear: number = 2014): string[] => {

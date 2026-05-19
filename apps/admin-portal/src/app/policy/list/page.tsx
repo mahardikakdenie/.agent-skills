@@ -24,9 +24,9 @@ import {
 } from '@repo/ui';
 
 import { createPolicyTableColumns } from '@/components/table-config/policy-table-config';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { toastNotification } from '@/helpers/app.helper';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { toastNotification } from '@/lib/app-utils';
 import usePolicies from '@/hooks/usePolicies.hooks';
 import { helperService } from '@/services/api.service';
 

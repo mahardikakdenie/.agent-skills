@@ -6,7 +6,7 @@ import React from 'react';
 
 import { Box } from '@repo/ui';
 
-import OptimizeImage from '@/components/image';
+import OptimizeImage from './image';
 import { logo, logoHeight, logoWidth } from '@/constants/app-common.const';
 
 const Loader: React.FC = () => {

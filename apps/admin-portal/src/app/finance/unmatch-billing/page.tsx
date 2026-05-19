@@ -7,7 +7,7 @@ import { useMemo, type ChangeEvent } from 'react';
 import { Box, DataTable } from '@repo/ui';
 
 import { createUnmatchBillingTableColumns } from '@/components/table-config/unmatch-billing-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { formatDate, formatDateTime } from '@/lib/formatter';
 
 import { useBilling } from '../billing/hook';

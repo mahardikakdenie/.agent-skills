@@ -18,7 +18,7 @@ import {
 } from '@repo/ui';
 
 import { useProducts } from '@/app/product-category/hooks';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
 
 const DETAIL_TYPE_OPTIONS = [

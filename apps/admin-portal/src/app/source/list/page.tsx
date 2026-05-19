@@ -22,8 +22,8 @@ import {
   createSourceTableColumns,
   type SourceItem,
 } from '@/components/table-config/source-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
-import { DebouncedSearchInput } from '@/components/ui/debounced-search-input';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
+import { DebouncedSearchInput } from '@/components/core/debounced-search-input';
 import { useSource } from '@/hooks/useSource.hooks';
 import { cn } from '@/lib/utils';
 

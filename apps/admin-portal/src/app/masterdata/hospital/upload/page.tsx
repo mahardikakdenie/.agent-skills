@@ -6,7 +6,7 @@ import { ChevronLeft, Upload } from 'react-feather';
 import { Box, Button } from '@repo/ui';
 
 import HospitalUploadForm from '@/components/forms/hospital-upload-form';
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import { useScreen } from '@/context/screen.context';
 import { useHospitalUpload } from '@/hooks/useHospitalUpload.hooks';

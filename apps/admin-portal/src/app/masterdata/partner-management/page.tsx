@@ -7,7 +7,7 @@ import { Plus, Search } from 'react-feather';
 import { Box, Button, DataTable, Input } from '@repo/ui';
 
 import { createPartnerTableColumns } from '@/components/table-config/partner-managment-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { usePartnerManagement } from '@/hooks/usePartnerManagement.hooks';
 
 export default function PartnerIntegration() {

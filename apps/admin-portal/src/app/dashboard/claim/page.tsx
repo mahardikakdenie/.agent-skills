@@ -13,11 +13,11 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import DetailTable from '@/components/table-policy';
-import VerticalBarChart from '@/components/ui/charts/bar-chart-vertical';
-import LineChart from '@/components/ui/charts/line-chart';
-import PieChart from '@/components/ui/charts/pie-chart';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import DetailTable from '@/components/core/table-policy';
+import VerticalBarChart from '@/components/core/bar-chart-vertical';
+import LineChart from '@/components/core/line-chart';
+import PieChart from '@/components/core/pie-chart';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import useClaimDashboard from '@/hooks/useClaimDashboard.hooks';
 import { numberSimpleFormatter } from '@/lib/formatter';
 import { formatMoney } from '@/lib/formatter';

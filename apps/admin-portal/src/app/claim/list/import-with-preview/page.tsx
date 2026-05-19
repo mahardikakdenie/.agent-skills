@@ -34,9 +34,9 @@ import {
   DialogDescription,
 } from '@repo/ui';
 
-import AlertCircleIcon from '@/components/icons/alert-circle-icon';
-import EditIcon from '@/components/icons/edit-icon';
-import { PageHeader } from '@/components/page-header';
+import AlertCircleIcon from '@/components/core/alert-circle-icon';
+import EditIcon from '@/components/core/edit-icon';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 import { useScreen } from '@/context/screen.context';
 import { capitalizeStringWithChar } from '@/lib/formatter';

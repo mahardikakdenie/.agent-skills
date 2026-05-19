@@ -10,7 +10,7 @@ import { Box, Button, DataTable } from '@repo/ui';
 
 import { useProducts } from '@/app/product-category/hooks';
 import { createPackageTableColumns } from '@/components/table-config/package-table-config';
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import AppURL from '@/constants/app-url.const';
 
 export default function PackageList(props: Readonly<{ id: string; category: string }>) {

@@ -38,7 +38,7 @@ import {
 import { cn } from '@repo/helper';
 import { Box, Button, Combobox } from '@repo/ui';
 
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import { useCampaignAnalytics } from '@/hooks/useCampaignAnalytics.hooks';
 
 const CampaignAnalyticsPage = () => {

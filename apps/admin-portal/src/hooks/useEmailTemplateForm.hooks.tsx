@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import AppURL from "@/constants/app-url.const";
 import toast from "react-hot-toast";
 import { EditorState, ContentState, convertFromHTML, Modifier } from "draft-js";
-import { renderEmailTemplateHtml } from "@/helpers/email-template-html";
+import { renderEmailTemplateHtml } from "@/lib/email-template-html";
 import {
   useCategories,
   useEmailTags,

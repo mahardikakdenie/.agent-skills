@@ -1297,3 +1297,106 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Verification note: `This logging update is based on the current git diff for the two modified files. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `Batch 1.5 page tracker should now treat /configurations/third-party as PASS because the route-local migration work is now considered complete for the current Batch 1.5 tracking pass.`
 - Tracker impact: `Batch 1.5 page tracker can now treat /configurations and /configurations/channel-mapping as PASS. /configurations/third-party remains a future Batch 1.5 candidate.`
+
+
+## Batch 10 - Component Directory Consolidation into `core/` - 2026-05-19
+
+- Component focus: `src/components/` root components, `src/components/ui/` sub-components, `src/components/icons/` icons, and `src/images/` icon files
+- Migration intent: `Consolidate all scattered app-local shared components — previously split across src/components/ root, src/components/ui/, src/components/icons/, and src/images/ — into a single src/components/core/ directory, establish a README that documents the new component tree structure, and update every import path across the codebase to reflect the new locations. No behavioral changes are introduced; this pass closes the structural fragmentation left after prior batch refactors and naming-convention normalizations.`
+- Component-local behavior updates:
+  - The following components are relocated from `src/components/` root to `src/components/core/`: `button.tsx`, `chart.tsx`, `date-range-picker.tsx`, `datepicker.tsx`, `drag-drop-excel.tsx`, `extended-sidemenu-shell.tsx`, `extended-sidemenu.tsx`, `image-or-default.tsx`, `image.tsx`, `input.tsx`, `linechart-policy.tsx`, `loader.tsx`, `microsoft-login-button.tsx`, `modal.tsx`, `multiple-select.tsx`, `not-found.tsx`, `optimize-image-shell.tsx`, `pagination.tsx`, `select.tsx`, `table-policy.tsx`, `textarea.tsx`, `tooltip.tsx`.
+  - The following components are relocated from `src/components/ui/` to `src/components/core/`: `charts/bar-chart-horizontal.tsx`, `charts/bar-chart-vertical.tsx`, `charts/dashed-line-chart.tsx`, `charts/line-chart.tsx`, `charts/pie-chart.tsx`, `compact-table-pagination.tsx`, `data-table/index.tsx` (flattened to `data-table.tsx`), `debounced-search-input.tsx`, `loading.tsx`, `select-phone-code.tsx`.
+  - The following icon components are relocated from `src/components/icons/` to `src/components/core/`: `alert-circle-icon.tsx`, `edit-icon.tsx`.
+  - The following icon files are relocated from `src/images/` to `src/components/core/`: `add.icon.tsx`, `calender.icon.tsx`, `checklist.icon.tsx`, `commission.icon.tsx`, `download.icon.tsx`, `globe-location-2.icon.tsx`, `globe-location.icon.tsx`, `hamburger.icon.tsx`, `revenue-2.icon.tsx`, `search.icon.tsx`, `secure-doc-2.icon.tsx`, `see.icon.tsx`, `trash.icon.tsx`, `unsee.icon.tsx`, `upload.icon.tsx`, `wifi-off.icon.tsx`, `x-circle.icon.tsx`, `x.icon.tsx`.
+  - The following page-header components are relocated from `src/components/page-header/` to `src/components/core/`: `index.tsx` (as `page-header.tsx`), `page-header-shell.tsx`.
+  - `apps/admin-portal/src/components/README.md` is introduced to document the new component tree: `core/` for shared cross-route components, `forms/` for feature form components, and `table-config/` for table column factories.
+  - All consuming files — spanning route pages, views, hooks, contexts, forms, table configs, and the constants file — have their import paths updated from `@/components/button`, `@/components/ui/loading`, `@/components/page-header`, `@/images/wifi-off.icon`, etc. to the consolidated `@/components/core/<name>` paths. Affected callers include all pages under `claim`, `dashboard`, `export-users`, `finance`, `masterdata`, `membership`, `policy`, `product-category`, `promotion`, `report`, `sanction`, `source`, and `transaction`, as well as all views, hooks, contexts, and form components that referenced the relocated files.
+- Files relocated (source → destination):
+  - `src/components/button.tsx` → `src/components/core/button.tsx`
+  - `src/components/chart.tsx` → `src/components/core/chart.tsx`
+  - `src/components/date-range-picker.tsx` → `src/components/core/date-range-picker.tsx`
+  - `src/components/datepicker.tsx` → `src/components/core/datepicker.tsx`
+  - `src/components/drag-drop-excel.tsx` → `src/components/core/drag-drop-excel.tsx`
+  - `src/components/extended-sidemenu-shell.tsx` → `src/components/core/extended-sidemenu-shell.tsx`
+  - `src/components/extended-sidemenu.tsx` → `src/components/core/extended-sidemenu.tsx`
+  - `src/components/icons/alert-circle-icon.tsx` → `src/components/core/alert-circle-icon.tsx`
+  - `src/components/icons/edit-icon.tsx` → `src/components/core/edit-icon.tsx`
+  - `src/components/image-or-default.tsx` → `src/components/core/image-or-default.tsx`
+  - `src/components/image.tsx` → `src/components/core/image.tsx`
+  - `src/components/input.tsx` → `src/components/core/input.tsx`
+  - `src/components/linechart-policy.tsx` → `src/components/core/linechart-policy.tsx`
+  - `src/components/loader.tsx` → `src/components/core/loader.tsx`
+  - `src/components/microsoft-login-button.tsx` → `src/components/core/microsoft-login-button.tsx`
+  - `src/components/modal.tsx` → `src/components/core/modal.tsx`
+  - `src/components/multiple-select.tsx` → `src/components/core/multiple-select.tsx`
+  - `src/components/not-found.tsx` → `src/components/core/not-found.tsx`
+  - `src/components/optimize-image-shell.tsx` → `src/components/core/optimize-image-shell.tsx`
+  - `src/components/page-header/index.tsx` → `src/components/core/page-header.tsx`
+  - `src/components/page-header/page-header-shell.tsx` → `src/components/core/page-header-shell.tsx`
+  - `src/components/pagination.tsx` → `src/components/core/pagination.tsx`
+  - `src/components/select.tsx` → `src/components/core/select.tsx`
+  - `src/components/table-policy.tsx` → `src/components/core/table-policy.tsx`
+  - `src/components/textarea.tsx` → `src/components/core/textarea.tsx`
+  - `src/components/tooltip.tsx` → `src/components/core/tooltip.tsx`
+  - `src/components/ui/charts/bar-chart-horizontal.tsx` → `src/components/core/bar-chart-horizontal.tsx`
+  - `src/components/ui/charts/bar-chart-vertical.tsx` → `src/components/core/bar-chart-vertical.tsx`
+  - `src/components/ui/charts/dashed-line-chart.tsx` → `src/components/core/dashed-line-chart.tsx`
+  - `src/components/ui/charts/line-chart.tsx` → `src/components/core/line-chart.tsx`
+  - `src/components/ui/charts/pie-chart.tsx` → `src/components/core/pie-chart.tsx`
+  - `src/components/ui/compact-table-pagination.tsx` → `src/components/core/compact-table-pagination.tsx`
+  - `src/components/ui/data-table/index.tsx` → `src/components/core/data-table.tsx`
+  - `src/components/ui/debounced-search-input.tsx` → `src/components/core/debounced-search-input.tsx`
+  - `src/components/ui/loading.tsx` → `src/components/core/loading.tsx`
+  - `src/components/ui/select-phone-code.tsx` → `src/components/core/select-phone-code.tsx`
+  - `src/images/add.icon.tsx` → `src/components/core/add.icon.tsx`
+  - `src/images/calender.icon.tsx` → `src/components/core/calender.icon.tsx`
+  - `src/images/checklist.icon.tsx` → `src/components/core/checklist.icon.tsx`
+  - `src/images/commission.icon.tsx` → `src/components/core/commission.icon.tsx`
+  - `src/images/download.icon.tsx` → `src/components/core/download.icon.tsx`
+  - `src/images/globe-location-2.icon.tsx` → `src/components/core/globe-location-2.icon.tsx`
+  - `src/images/globe-location.icon.tsx` → `src/components/core/globe-location.icon.tsx`
+  - `src/images/hamburger.icon.tsx` → `src/components/core/hamburger.icon.tsx`
+  - `src/images/revenue-2.icon.tsx` → `src/components/core/revenue-2.icon.tsx`
+  - `src/images/search.icon.tsx` → `src/components/core/search.icon.tsx`
+  - `src/images/secure-doc-2.icon.tsx` → `src/components/core/secure-doc-2.icon.tsx`
+  - `src/images/see.icon.tsx` → `src/components/core/see.icon.tsx`
+  - `src/images/trash.icon.tsx` → `src/components/core/trash.icon.tsx`
+  - `src/images/unsee.icon.tsx` → `src/components/core/unsee.icon.tsx`
+  - `src/images/upload.icon.tsx` → `src/components/core/upload.icon.tsx`
+  - `src/images/wifi-off.icon.tsx` → `src/components/core/wifi-off.icon.tsx`
+  - `src/images/x-circle.icon.tsx` → `src/components/core/x-circle.icon.tsx`
+  - `src/images/x.icon.tsx` → `src/components/core/x.icon.tsx`
+- New files added: [`apps/admin-portal/src/components/README.md`]
+- Shared-ui impact: `No @repo/ui exports are added or changed. This is a pure file-system relocation pass; all shared primitive usages remain identical to the state established in prior Batch 9 and Batch 1.5 entries.`
+- Verification note: `This logging update is based on the current git diff for all relocated files and their import-path update callers. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `No page migration status changes. This entry records structural consolidation work only; all route migration PASS/FAIL states remain as previously recorded.`
+
+
+## Batch 10 - Lib Directory Restructuring, Provider Relocation, and Type Extraction - 2026-05-19
+
+- Component focus: `src/helpers/`, `src/lib/` root HTTP-client files, `src/provider/`, `src/interface/`
+- Migration intent: `Restructure the non-component shared infrastructure layer: consolidate the helpers directory into lib/, namespace the HTTP client files into a lib/http-client/ sub-directory, relocate the TanStack Query provider from a standalone provider/ directory into lib/react-query/, extract claim-domain type definitions from the legacy src/interface/ barrel into a dedicated src/types/claim-form.ts module, and update every import path across the codebase. No behavioral changes are introduced; this pass closes the directory fragmentation left after prior batch service refactors.`
+- Structural updates:
+  - `apps/admin-portal/src/helpers/app.helper.tsx` is deleted and its contents (`setCookie`, `getCookie`, `removeCookie`, `setLocalStorage`, `getLocalStorage`, `removeAllLocalStorage`, `formatMoney`, `moneyFormatter`, `parseMoneyString`, `numberSimpleFormatter`, `getPaddingClass`, `getHeaderPage`, `getBreadcrumbs`, `getColorForBarChart`, `capitalizeString`, `capitalizeStringWithChar`, `toCamelCase`, `filename2Str`, `forLabelString`, `toastNotification`, `startDateAndEndDateView`, `formatDateTimeWithTZ`) are now exported from `apps/admin-portal/src/lib/app-utils.tsx`.
+  - `apps/admin-portal/src/helpers/email-template-html.ts` is deleted and relocated to `apps/admin-portal/src/lib/email-template-html.ts`, preserving the `renderEmailTemplateHtml` draft-js HTML export helper.
+  - `apps/admin-portal/src/lib/axios-http-client.ts` and `apps/admin-portal/src/lib/http-client-interface.ts` are deleted and relocated to `apps/admin-portal/src/lib/http-client/axios-http-client.ts` and `apps/admin-portal/src/lib/http-client/http-client-interface.ts` respectively, namespacing the legacy HTTP client abstractions under a dedicated sub-directory.
+  - `apps/admin-portal/src/lib/http-client.ts` is deleted; its `HttpClient` class content is now served by `src/lib/http-client/http-client.ts`.
+  - `apps/admin-portal/src/provider/query-provider.tsx` is deleted and relocated to `apps/admin-portal/src/lib/react-query/query-provider.tsx`; an accompanying `apps/admin-portal/src/lib/react-query/query-client.ts` provides the `createQueryClient` factory. The root `apps/admin-portal/src/app/layout.tsx` import is updated from `@/provider/query-provider` to `@/lib/react-query/query-provider`.
+  - `apps/admin-portal/src/interface/index.ts` is deleted; the claim-domain types it exported (`ClaimItem`, `ClaimForm`, `ClaimFieldInputType`, `ClaimFormsRequest`, `UpdateClaimGrabRequest`, `DocumentItem`, `ClaimsTableConfigProps`, `DocumentTableConfigProps`) are now defined in `apps/admin-portal/src/types/claim-form.ts`.
+  - `apps/admin-portal/src/lib/README.md` is introduced to document the lib directory structure: `api-client` (current service-layer HTTP infrastructure), `react-query` (TanStack Query client/provider setup), `http-client` (legacy HTTP client abstractions), and the remaining utility modules.
+  - All callers that previously imported from `@/helpers/app.helper`, `@/helpers/email-template-html`, `@/lib/axios-http-client`, `@/lib/http-client-interface`, `@/provider/query-provider`, or `@/interface` now import from their new locations. Affected files include `src/services/api.service.ts`, `src/services/auth.service.ts`, all `src/services/masterdata/*.service.ts` files, `src/context/auth.context.tsx`, `src/context/screen.context.tsx`, `src/views/layout/layout.view.tsx`, `src/views/configurations/configurations.view.tsx`, `src/views/oauth/msal-callback.view.tsx`, `src/hooks/useClaimHistory.hooks.tsx`, `src/hooks/useDetailClaim.hooks.tsx`, `src/hooks/useEmailTemplateForm.hooks.tsx`, `src/app/layout.tsx`, `src/lib/utils.ts`, `src/services/claims/api/claims.types.ts`, and the claim list and table-config files that previously imported `ClaimItem` from `@/interface`.
+- New files added: [`apps/admin-portal/src/lib/app-utils.tsx`, `apps/admin-portal/src/lib/email-template-html.ts`, `apps/admin-portal/src/lib/http-client/axios-http-client.ts`, `apps/admin-portal/src/lib/http-client/http-client-interface.ts`, `apps/admin-portal/src/lib/http-client/http-client.ts`, `apps/admin-portal/src/lib/react-query/query-client.ts`, `apps/admin-portal/src/lib/react-query/query-provider.tsx`, `apps/admin-portal/src/lib/README.md`, `apps/admin-portal/src/types/claim-form.ts`]
+- Local files deleted: [`apps/admin-portal/src/helpers/app.helper.tsx`, `apps/admin-portal/src/helpers/email-template-html.ts`, `apps/admin-portal/src/lib/axios-http-client.ts`, `apps/admin-portal/src/lib/http-client-interface.ts`, `apps/admin-portal/src/lib/http-client.ts`, `apps/admin-portal/src/provider/query-provider.tsx`, `apps/admin-portal/src/interface/index.ts`]
+- Shared-ui impact: `No @repo/ui exports are added or changed. This is a pure file-system restructuring pass; all shared primitive and service usages remain identical to the state established in prior entries.`
+- Verification note: `This logging update is based on the current git diff for all relocated infrastructure files and their import-path update callers. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `No page migration status changes. This entry records infrastructure restructuring work only; all route migration PASS/FAIL states remain as previously recorded.`
+
+
+## Batch 10 - Smoke Route Screenshot Artifacts Cleanup - 2026-05-19
+
+- Component focus: `docs/migration/component/_artifacts/smoke-routes/`
+- Migration intent: `Remove the ten legacy smoke-route screenshot artifacts from the migration docs directory. These screenshots were captured during earlier Batch 9 verification passes and are now superseded by the route PASS records in the parity checklist and migration log.`
+- Artifacts deleted: [`_claim_list.png`, `_dashboard_claim.png`, `_dashboard_policy.png`, `_dashboard_transaction.png`, `_finance_billing.png`, `_masterdata_user.png`, `_membership_list.png`, `_policy_endorsement_list.png`, `_policy_list.png`, `_transaction_list.png`]
+- Shared-ui impact: `No code or @repo/ui changes. Documentation artifact cleanup only.`
+- Verification note: `Deletion is safe; all corresponding routes are recorded as PASS in the Batch 9 tracker and migration log. No active verification workflow depends on these screenshot files.`
+- Tracker impact: `No page migration status changes. This entry records documentation hygiene work only.`

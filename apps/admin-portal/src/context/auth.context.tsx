@@ -7,7 +7,7 @@ import {
   removeCookie,
   setCookie,
   toastNotification,
-} from "@/helpers/app.helper";
+} from "@/lib/app-utils";
 import { AUTH_TOKEN, REFRESH_TOKEN } from "@/constants/app-common.const";
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

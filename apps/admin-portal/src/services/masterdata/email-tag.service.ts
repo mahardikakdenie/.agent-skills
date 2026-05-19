@@ -1,5 +1,5 @@
-import { AxiosHttpClient } from "@/lib/axios-http-client";
-import { IHttpClient } from "@/lib/http-client-interface";
+import { AxiosHttpClient } from "@/lib/http-client/axios-http-client";
+import { IHttpClient } from "@/lib/http-client/http-client-interface";
 import qs from "qs";
 
 export interface EmailTagResponse {

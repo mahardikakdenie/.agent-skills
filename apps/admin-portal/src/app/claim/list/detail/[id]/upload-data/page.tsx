@@ -8,11 +8,11 @@ import { Form, Field } from 'react-final-form';
 
 import { Button, Box, FileUpload } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { PageHeader } from '@/components/core/page-header';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
 import { useDetailClaim } from '@/hooks/useDetailClaim.hooks';
-import { ClaimFieldInputType } from '@/interface';
+import { ClaimFieldInputType } from '@/types/claim-form';
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

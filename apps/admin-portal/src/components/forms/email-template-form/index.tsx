@@ -24,10 +24,10 @@ import {
   Textarea,
 } from '@repo/ui';
 
-import { PageHeader } from '@/components/page-header';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import { PageHeader } from '@/components/core/page-header';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import AppURL from '@/constants/app-url.const';
-import { renderEmailTemplateHtml } from '@/helpers/email-template-html';
+import { renderEmailTemplateHtml } from '@/lib/email-template-html';
 
 const Editor = dynamic(() => import('react-draft-wysiwyg').then((mod) => mod.Editor), {
   ssr: false,

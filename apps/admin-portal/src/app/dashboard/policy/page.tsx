@@ -13,10 +13,10 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-import LineChart from '@/components/linechart-policy';
-import DetailTable from '@/components/table-policy';
-import PieChart from '@/components/ui/charts/pie-chart';
-import { ContentLoadingWrapper } from '@/components/ui/loading';
+import LineChart from '@/components/core/linechart-policy';
+import DetailTable from '@/components/core/table-policy';
+import PieChart from '@/components/core/pie-chart';
+import { ContentLoadingWrapper } from '@/components/core/loading';
 import usePolicyDashboard from '@/hooks/usePolicyDashboard.hooks';
 import { numberSimpleFormatter } from '@/lib/formatter';
 

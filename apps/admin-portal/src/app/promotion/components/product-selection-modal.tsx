@@ -18,7 +18,7 @@ import {
   type ColumnDef,
 } from '@repo/ui';
 
-import { CompactTablePagination } from '@/components/ui/compact-table-pagination';
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 import { productService } from '@/services/product/api/product.service';
 
 interface Product {

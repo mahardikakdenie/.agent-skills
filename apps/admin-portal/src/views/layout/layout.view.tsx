@@ -9,11 +9,11 @@ import { ChevronDown, Menu } from 'react-feather';
 import { Box } from '@repo/ui';
 
 // TODO: change for customization in env
-import Button from '@/components/button';
-import OptimizeImage from '@/components/image';
-import Input from '@/components/input';
-import { MicrosoftLoginButton } from '@/components/microsoft-login-button';
-import Modal from '@/components/modal';
+import Button from '@/components/core/button';
+import OptimizeImage from '@/components/core/image';
+import Input from '@/components/core/input';
+import { MicrosoftLoginButton } from '@/components/core/microsoft-login-button';
+import Modal from '@/components/core/modal';
 import ApiURL from '@/constants/api-url.const';
 import {
   backgroundImageApp,
@@ -26,9 +26,9 @@ import {
 import AppMenu from '@/constants/app-menu.const';
 import { useAuth } from '@/context/auth.context';
 import { useScreen } from '@/context/screen.context';
-import { toastNotification } from '@/helpers/app.helper';
-import ChecklistIcon from '@/images/checklist.icon';
-import XIcon from '@/images/x.icon';
+import { toastNotification } from '@/lib/app-utils';
+import ChecklistIcon from '@/components/core/checklist.icon';
+import XIcon from '@/components/core/x.icon';
 import { authService } from '@/services/api.service';
 
 export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>) => {

@@ -1,7 +1,7 @@
 // AxiosHttpClient.ts
 import axios, { AxiosInstance, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
 import { IHttpClient } from "./http-client-interface";
-import { getGlobalToken } from "./token-storage";
+import { getGlobalToken } from "../token-storage";
 export class AxiosHttpClient implements IHttpClient {
   private apiClient: AxiosInstance;
   private requestConfig: AxiosRequestConfig | undefined;
