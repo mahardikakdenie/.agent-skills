@@ -168,3 +168,107 @@ Only referenced `public/**` assets are classified here. Unreferenced public asse
 - For `SAFE_DELETE_UNUSED` rows, delete by ownership group: route-local hooks/DTOs, legacy views, isolated local components, isolated icons, then unused lib/react-query group.
 - Run `pnpm --filter admin-portal check-types` after each deletion group. Run the full verification gate before completing Batch 10.
 - Dependency cleanup is deferred to Batch 10C/10.5; this report intentionally makes no package changes.
+
+## Batch 10B Safe Unused-File Deletion - 2026-05-19
+
+Scope: deleted only files classified as `SAFE_DELETE_UNUSED` in the Batch 10A ledger above. No `REVIEW_MANUAL`, `KEEP_PUBLIC_ASSET`, framework convention, dynamic-reference, or package dependency entries were deleted.
+
+### Removal Summary
+
+| Group | Files removed | Verification |
+| ----- | ------------: | ------------ |
+| Route-local hooks and DTOs | 16 | `pnpm --filter admin-portal check-types` PASS |
+| Legacy views from `SAFE_DELETE_UNUSED` ledger | 34 | `pnpm --filter admin-portal check-types` PASS |
+| Isolated components, helpers, and hooks | 13 | `pnpm --filter admin-portal check-types` PASS |
+| Isolated image components | 9 | `pnpm --filter admin-portal check-types` PASS |
+| Unused `src/lib/react-query` group | 4 | `pnpm --filter admin-portal check-types` PASS |
+| Total | 76 | Final verification gate PASS |
+
+### Removed Files
+
+```txt
+apps/admin-portal/src/app/finance/broker-fee/hook.tsx
+apps/admin-portal/src/app/masterdata/channel/hooks.tsx
+apps/admin-portal/src/app/masterdata/currency/hooks.tsx
+apps/admin-portal/src/app/masterdata/email-tag/hooks.tsx
+apps/admin-portal/src/app/masterdata/group/hooks.tsx
+apps/admin-portal/src/app/masterdata/holiday-date/hook.tsx
+apps/admin-portal/src/app/masterdata/insurance/hooks.tsx
+apps/admin-portal/src/app/masterdata/page-management/hooks.tsx
+apps/admin-portal/src/app/masterdata/page-management/permission.hooks.tsx
+apps/admin-portal/src/app/masterdata/product-category/hooks.tsx
+apps/admin-portal/src/app/masterdata/role/hooks.tsx
+apps/admin-portal/src/app/masterdata/user/hooks.tsx
+apps/admin-portal/src/app/product-category/[category]/detail/[id]/product-detail-tab.tsx
+apps/admin-portal/src/app/promotion/dto/promotion.dto.ts
+apps/admin-portal/src/app/sanction/dto/sanction.dto.ts
+apps/admin-portal/src/app/source/dto/source.dto.ts
+apps/admin-portal/src/components/button-calendar.tsx
+apps/admin-portal/src/components/calendar.tsx
+apps/admin-portal/src/components/no-recent-data.tsx
+apps/admin-portal/src/components/popover.tsx
+apps/admin-portal/src/components/recharts/data-claim.ts
+apps/admin-portal/src/components/recharts/data-policy.ts
+apps/admin-portal/src/components/sticky-list-tabs-shell.tsx
+apps/admin-portal/src/components/ui/fields/select-autocomplete/index.tsx
+apps/admin-portal/src/components/ui/image-or-default.tsx
+apps/admin-portal/src/components/ui/image.tsx
+apps/admin-portal/src/components/ui/optimize-image-shell.tsx
+apps/admin-portal/src/helpers/route.helper.ts
+apps/admin-portal/src/hooks/useNotificationLogs.hooks.tsx
+apps/admin-portal/src/images/checklist-round.icon.tsx
+apps/admin-portal/src/images/circle-menu.icon.tsx
+apps/admin-portal/src/images/home-2.icon.tsx
+apps/admin-portal/src/images/home.icon.tsx
+apps/admin-portal/src/images/protection.icon.tsx
+apps/admin-portal/src/images/revenue.icon.tsx
+apps/admin-portal/src/images/secure-doc.icon.tsx
+apps/admin-portal/src/images/slash.icon.tsx
+apps/admin-portal/src/images/task-list.icon.tsx
+apps/admin-portal/src/lib/react-query/devtools.tsx
+apps/admin-portal/src/lib/react-query/index.ts
+apps/admin-portal/src/lib/react-query/query-client.ts
+apps/admin-portal/src/lib/react-query/query-provider.tsx
+apps/admin-portal/src/views/claim/detail/detail.view.tsx
+apps/admin-portal/src/views/claim/export/export.view.tsx
+apps/admin-portal/src/views/claim/list/list.view.tsx
+apps/admin-portal/src/views/configuration/sla/sla.view.tsx
+apps/admin-portal/src/views/customer/add/add.view.css
+apps/admin-portal/src/views/customer/add/add.view.tsx
+apps/admin-portal/src/views/customer/list/list.view.tsx
+apps/admin-portal/src/views/dashboard/claim/claim.view.tsx
+apps/admin-portal/src/views/dashboard/policy/policy.view.tsx
+apps/admin-portal/src/views/dashboard/transaction/transaction.view.tsx
+apps/admin-portal/src/views/employment-benefit/membership/detail/detail.view.tsx
+apps/admin-portal/src/views/employment-benefit/membership/list/list.view.tsx
+apps/admin-portal/src/views/finance/billing/detail/detail.view.tsx
+apps/admin-portal/src/views/finance/billing/export/export.view.tsx
+apps/admin-portal/src/views/finance/billing/list/list.view.tsx
+apps/admin-portal/src/views/home/home-2.view.tsx
+apps/admin-portal/src/views/masterdata/product/product.view.tsx
+apps/admin-portal/src/views/plan/add/add.view.tsx
+apps/admin-portal/src/views/plan/detail/detail.view.tsx
+apps/admin-portal/src/views/plan/list/list.view.tsx
+apps/admin-portal/src/views/plan/upload/upload.view.tsx
+apps/admin-portal/src/views/policy/detail/detail.view.tsx
+apps/admin-portal/src/views/policy/endorsement/detail/detail.view.tsx
+apps/admin-portal/src/views/policy/endorsement/list/list.view.tsx
+apps/admin-portal/src/views/policy/endorsement/upload/upload.view.tsx
+apps/admin-portal/src/views/policy/export/export.view.tsx
+apps/admin-portal/src/views/policy/import/import.view.tsx
+apps/admin-portal/src/views/policy/list/list.view.tsx
+apps/admin-portal/src/views/transaction/add/add.view.tsx
+apps/admin-portal/src/views/transaction/countries/countries.view.tsx
+apps/admin-portal/src/views/transaction/export/export.view.tsx
+apps/admin-portal/src/views/transaction/list/list-admin.view.tsx
+apps/admin-portal/src/views/transaction/list/list-transaction.view.tsx
+apps/admin-portal/src/views/transaction/revenue/revenue.view.tsx
+```
+
+### Verification Gate
+
+| Command | Result | Notes |
+| ------- | ------ | ----- |
+| `pnpm --filter admin-portal check-types` | PASS | `tsc --noEmit` completed successfully after all deletion groups and as final gate step. |
+| `pnpm --filter admin-portal lint` | PASS | ESLint completed with 0 errors and existing warnings. |
+| `pnpm --filter admin-portal build` | PASS | Next.js 16.1.0 production build completed successfully. Build still reports the pre-existing workspace-root lockfile warning caused by `C:\Users\user\package-lock.json` outside this repo. |
