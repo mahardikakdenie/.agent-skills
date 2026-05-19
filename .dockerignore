@@ -1,19 +1,26 @@
-# Build context is repo root for `docker build -f apps/admin-portal/Dockerfile .`
+# Dependency folders
+node_modules
 **/node_modules
-**/.next
-**/dist
-**/coverage
+.pnpm-store
+
+# Build outputs
+.next
+**/out
+dist
+build
+**/build
+
+# Debug/Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.playwright-mcp
+*.log
+
+# Git
 .git
 .gitignore
-.vscode
-.idea
-*.log
-.env
-.env.*
+
+# OS files
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
-*.swn
-*.bak
-*.tmp
