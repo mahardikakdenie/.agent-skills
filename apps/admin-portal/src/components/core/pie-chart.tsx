@@ -20,6 +20,8 @@ const RADIAN = Math.PI / 180;
 
 interface PieChartCompProps {
   data: { name: string; value: number }[];
+  minLabelPercent?: number;
+  showInnerPie?: boolean;
 }
 
 type CustomLabelProps = {
@@ -42,33 +44,39 @@ type CustomTooltipProps = {
   totalValue: number;
 };
 
-const renderCustomizedLabel = ({
-  cx = 0,
-  cy = 0,
-  midAngle = 0,
-  innerRadius = 0,
-  outerRadius = 0,
-  percent = 0,
-}: CustomLabelProps) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+const createPercentageLabel =
+  (minLabelPercent: number) =>
+  ({
+    cx = 0,
+    cy = 0,
+    midAngle = 0,
+    innerRadius = 0,
+    outerRadius = 0,
+    percent = 0,
+  }: CustomLabelProps) => {
+    if (percent < minLabelPercent) {
+      return null;
+    }
 
-  return (
-    <Box
-      as="text"
-      x={x}
-      y={y}
-      fill="white"
-      fontSize="12px"
-      fontWeight="bold"
-      textAnchor="middle"
-      dominantBaseline="central"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </Box>
-  );
-};
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <Box
+        as="text"
+        x={x}
+        y={y}
+        fill="white"
+        fontSize="12px"
+        fontWeight="bold"
+        textAnchor="middle"
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </Box>
+    );
+  };
 
 const CustomTooltip = ({
   active,
@@ -95,7 +103,11 @@ const CustomTooltip = ({
   return null;
 };
 
-export default function PieChartComp({ data }: PieChartCompProps) {
+export default function PieChartComp({
+  data,
+  minLabelPercent = 0,
+  showInnerPie = true,
+}: PieChartCompProps) {
   const filteredData = data.filter((item) => item.value > 0);
   const totalValue = filteredData.reduce((acc, item) => acc + item.value, 0);
 
@@ -103,23 +115,25 @@ export default function PieChartComp({ data }: PieChartCompProps) {
     <Box className="flex h-full w-full items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie
-            data={filteredData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={50}
-            fill="#8884d8"
-            startAngle={90}
-            endAngle={-270}
-          />
+          {showInnerPie ? (
+            <Pie
+              data={filteredData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={50}
+              fill="#8884d8"
+              startAngle={90}
+              endAngle={-270}
+            />
+          ) : null}
           <Pie
             data={filteredData}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={renderCustomizedLabel}
+            label={createPercentageLabel(minLabelPercent)}
             outerRadius={130}
             innerRadius={80}
             dataKey="value"

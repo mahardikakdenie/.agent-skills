@@ -34,12 +34,22 @@ export const capitalizeStringWithChar = (value: string, splitter: string = "-") 
 };
 
 export const numberSimpleFormatter = (value: number) => {
-  if (value >= 1_000_000_000) {
-    return (value / 1_000_000_000).toFixed(1) + "B";
-  } else if (value >= 1_000_000) {
-    return (value / 1_000_000).toFixed(1) + "M";
-  } else if (value >= 1_000) {
-    return (value / 1_000).toFixed(1) + "K";
+  const absValue = Math.abs(value);
+  const suffixes = [
+    { threshold: 1_000_000_000_000_000_000_000_000_000, suffix: "Oc" },
+    { threshold: 1_000_000_000_000_000_000_000_000, suffix: "Sp" },
+    { threshold: 1_000_000_000_000_000_000_000, suffix: "Sx" },
+    { threshold: 1_000_000_000_000_000_000, suffix: "Qi" },
+    { threshold: 1_000_000_000_000_000, suffix: "Qa" },
+    { threshold: 1_000_000_000_000, suffix: "T" },
+    { threshold: 1_000_000_000, suffix: "B" },
+    { threshold: 1_000_000, suffix: "M" },
+    { threshold: 1_000, suffix: "K" },
+  ];
+  const matchedSuffix = suffixes.find(({ threshold }) => absValue >= threshold);
+
+  if (matchedSuffix) {
+    return (value / matchedSuffix.threshold).toFixed(1) + matchedSuffix.suffix;
   }
   return value;
 };

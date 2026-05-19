@@ -46,7 +46,7 @@ interface CustomTooltipProps {
   valueFormatter?: (value: number | string) => string;
 }
 
-const chartMargin = { top: 20, right: 20, left: 0, bottom: 20 };
+const chartMargin = { top: 36, right: 20, left: 0, bottom: 20 };
 
 const defaultTickFormatter = (value: number) => numberSimpleFormatter(value);
 
@@ -104,6 +104,11 @@ export default function HorizontalBarChart({
   tickFormatter = defaultTickFormatter,
   labelFormatter = defaultLabelFormatter,
 }: HorizontalBarChartProps) {
+  const maxValue = Math.max(
+    0,
+    ...data.map((entry) => Number(entry[valueDataKey]) || 0),
+  );
+
   return (
     <Box className="flex h-full w-full items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
@@ -128,10 +133,25 @@ export default function HorizontalBarChart({
           <Bar dataKey={valueDataKey} fill={barColor} barSize={barSize} name={seriesLabel}>
             <LabelList
               dataKey={valueDataKey}
-              position="center"
-              fill="white"
-              fontSize={8}
-              formatter={labelFormatter}
+              content={({ x, y, width, value }) => {
+                const numericValue = Number(value) || 0;
+
+                if (numericValue <= 0 || numericValue !== maxValue) {
+                  return null;
+                }
+
+                return (
+                  <text
+                    x={Number(x) + Number(width) / 2}
+                    y={Number(y) - 6}
+                    fill="#374151"
+                    fontSize={9}
+                    textAnchor="middle"
+                  >
+                    {labelFormatter(numericValue)}
+                  </text>
+                );
+              }}
             />
           </Bar>
           <Line

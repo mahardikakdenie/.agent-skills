@@ -84,7 +84,7 @@ export default function DashboardClaim() {
   });
 
   return (
-    <Box className="w-full bg-[#ebf6ff] p-5 min-h-screen">
+    <Box className="w-full shrink-0 bg-[#ebf6ff] p-5 min-h-full">
       <Box className="text-center bg-primary px-5 py-4 rounded-md shadow-sm mb-5">
         <Box as="h5" className="text-2xl font-bold text-white">
           Insurance Claim Performance Dashboard
@@ -134,7 +134,7 @@ export default function DashboardClaim() {
                     setSelectedProduct(value);
                   }}
                 >
-                  <SelectTrigger className="w-full disabled:opacity-100 disabled:bg-gray-200 disabled:shadow-none h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
+                  <SelectTrigger className="w-full disabled:!opacity-100 disabled:!bg-[#e3f1f8] disabled:!text-slate-400 disabled:!shadow-sm disabled:!ring-1 disabled:!ring-[#cfe5f0] disabled:!cursor-not-allowed [&:disabled_[data-slot=select-icon]]:!text-slate-400 [&:disabled_[data-slot=select-value-wrapper]]:!text-slate-400 h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
                     <SelectValue placeholder="INSURANCE PRODUCT" />
                   </SelectTrigger>
                   <SelectContent>
@@ -163,7 +163,7 @@ export default function DashboardClaim() {
                     setSelectedPlan(value);
                   }}
                 >
-                  <SelectTrigger className="w-full disabled:opacity-100 disabled:bg-gray-200 disabled:shadow-none h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
+                  <SelectTrigger className="w-full disabled:!opacity-100 disabled:!bg-[#e3f1f8] disabled:!text-slate-400 disabled:!shadow-sm disabled:!ring-1 disabled:!ring-[#cfe5f0] disabled:!cursor-not-allowed [&:disabled_[data-slot=select-icon]]:!text-slate-400 [&:disabled_[data-slot=select-value-wrapper]]:!text-slate-400 h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
                     <SelectValue placeholder="PLAN NAME" />
                   </SelectTrigger>
                   <SelectContent>
@@ -228,7 +228,7 @@ export default function DashboardClaim() {
             </Box>
           </Box>
         </Box>
-        <Box className="grid grid-cols-12 gap-4 mb-4">
+        <Box className="grid grid-cols-12 gap-4">
           <Box className="col-span-4">
             <Box className="flex flex-col gap-4">
               <Box className="bg-white p-5 rounded-md shadow-sm">

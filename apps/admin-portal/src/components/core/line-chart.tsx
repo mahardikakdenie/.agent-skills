@@ -139,7 +139,7 @@ export default function LineChartComp({
             <YAxis
               key={axis.yAxisId}
               yAxisId={axis.yAxisId}
-              orientation={axis.orientation}
+              orientation={axis.orientation ?? 'left'}
               domain={axis.domain}
               tick={{ fontSize: axis.tickFontSize ?? 12 }}
             />

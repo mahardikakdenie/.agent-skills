@@ -59,7 +59,7 @@ export default function DashboardTransaction() {
   });
 
   return (
-    <Box className="w-full bg-[#ebf6ff] p-5 bg-blue min-h-screen">
+    <Box className="w-full shrink-0 bg-[#ebf6ff] p-5 min-h-full">
       <Box className="text-center bg-primary px-5 py-4 rounded-md shadow-sm mb-5">
         <Box as="h5" className="text-2xl font-bold text-white">
           Insurance Sales Performance Dashboard
@@ -108,7 +108,7 @@ export default function DashboardTransaction() {
                     setSelectedProduct(value);
                   }}
                 >
-                  <SelectTrigger className="w-full disabled:opacity-100 disabled:bg-gray-200 disabled:shadow-none h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
+                  <SelectTrigger className="w-full disabled:!opacity-100 disabled:!bg-[#e3f1f8] disabled:!text-slate-400 disabled:!shadow-sm disabled:!ring-1 disabled:!ring-[#cfe5f0] disabled:!cursor-not-allowed [&:disabled_[data-slot=select-icon]]:!text-slate-400 [&:disabled_[data-slot=select-value-wrapper]]:!text-slate-400 h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
                     <SelectValue placeholder="INSURANCE PRODUCT" />
                   </SelectTrigger>
                   <SelectContent>
@@ -137,7 +137,7 @@ export default function DashboardTransaction() {
                     setSelectedPlan(value);
                   }}
                 >
-                  <SelectTrigger className="w-full disabled:opacity-100 disabled:bg-gray-200 disabled:shadow-none h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
+                  <SelectTrigger className="w-full disabled:!opacity-100 disabled:!bg-[#e3f1f8] disabled:!text-slate-400 disabled:!shadow-sm disabled:!ring-1 disabled:!ring-[#cfe5f0] disabled:!cursor-not-allowed [&:disabled_[data-slot=select-icon]]:!text-slate-400 [&:disabled_[data-slot=select-value-wrapper]]:!text-slate-400 h-12 text-left shadow border-0 select-status bg-white hover:cursor-pointer py-2">
                     <SelectValue placeholder="PLAN NAME" />
                   </SelectTrigger>
                   <SelectContent>
@@ -200,7 +200,7 @@ export default function DashboardTransaction() {
                 Total Sales by Plan Name
               </Box>
               <Box className="w-full h-[403px]">
-                <PieChart data={pieChartData} />
+                <PieChart data={pieChartData} minLabelPercent={0.05} showInnerPie={false} />
               </Box>
             </Box>
           </Box>
