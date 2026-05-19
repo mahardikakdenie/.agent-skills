@@ -272,3 +272,112 @@ apps/admin-portal/src/views/transaction/revenue/revenue.view.tsx
 | `pnpm --filter admin-portal check-types` | PASS | `tsc --noEmit` completed successfully after all deletion groups and as final gate step. |
 | `pnpm --filter admin-portal lint` | PASS | ESLint completed with 0 errors and existing warnings. |
 | `pnpm --filter admin-portal build` | PASS | Next.js 16.1.0 production build completed successfully. Build still reports the pre-existing workspace-root lockfile warning caused by `C:\Users\user\package-lock.json` outside this repo. |
+
+## Batch 10C Dependency Cleanup + Final Report - 2026-05-19
+
+Scope: dependency ownership cleanup only. No additional source files or public assets were deleted in Batch 10C.
+
+### Dependency Cleanup Summary
+
+- Baseline after Batch 10B: `pnpm --filter admin-portal check-types` PASS.
+- Direct-import audit method: scanned `apps/admin-portal/src/**/*.{ts,tsx,js,jsx,mjs,cjs}` and app root config files (`next.config.mjs`, `tailwind.config.ts`, `postcss.config.mjs`, `eslint.config.js`, `tsconfig.json`, `components.json`) for direct `import`, dynamic `import()`, and `require()` usage of every dependency/devDependency.
+- Removed confirmed orphan dependencies: `@radix-ui/react-popover`, `@radix-ui/react-select`, `@radix-ui/react-slot`, `class-variance-authority`, `@testing-library/jest-dom`, `@types/jest`.
+- Removal command: `pnpm --filter admin-portal remove @radix-ui/react-popover @radix-ui/react-select @radix-ui/react-slot class-variance-authority @testing-library/jest-dom @types/jest`.
+- Post-removal typecheck: `pnpm --filter admin-portal check-types` PASS.
+- Removed dependency confirmation: `pnpm --filter admin-portal list @radix-ui/react-popover @radix-ui/react-select @radix-ui/react-slot class-variance-authority @testing-library/jest-dom @types/jest` returned no direct package entries.
+
+### Dependency Audit
+
+| Package | Classification | Evidence | Notes |
+| ------- | -------------- | -------- | ----- |
+| `@radix-ui/react-popover` | `REMOVED_ORPHAN` | 0 source/config imports after Batch 10B; depcheck unused; prior local `src/components/popover.tsx` consumer was removed as `SAFE_DELETE_UNUSED`. | Removed in Batch 10C. |
+| `@radix-ui/react-select` | `REMOVED_ORPHAN` | 0 source/config imports after Batch 10B; depcheck unused; prior local select-autocomplete consumer was removed as `SAFE_DELETE_UNUSED`. | Removed in Batch 10C. |
+| `@radix-ui/react-slot` | `REMOVED_ORPHAN` | 0 source/config imports after Batch 10B; depcheck unused; no peer/toolchain/workspace reason. | Removed in Batch 10C. |
+| `class-variance-authority` | `REMOVED_ORPHAN` | 0 source/config imports after Batch 10B; depcheck unused; local CVA-based wrappers no longer import it. | Removed in Batch 10C. |
+| `@testing-library/jest-dom` | `REMOVED_ORPHAN` | 0 source/config imports; no test setup file or test script found under `apps/admin-portal`. | Removed in Batch 10C. |
+| `@types/jest` | `REMOVED_ORPHAN` | 0 source/config imports; no Jest config/test files found under `apps/admin-portal`; no underlying `jest` package is listed. | Removed in Batch 10C. |
+| `@hookform/resolvers` | `RETAINED_DIRECT_IMPORT` | Direct imports in `src/components/forms/product-catalog/benefit.form.tsx` and `src/components/forms/product-catalog/package.form.tsx`. | App-owned form validation dependency. |
+| `@repo/config` | `RETAINED_WORKSPACE_EXPLICIT` | Referenced in `next.config.mjs` Turbopack alias. | Workspace packages stay explicit. |
+| `@repo/helper` | `RETAINED_WORKSPACE_EXPLICIT` | Direct import in `src/app/report/campaign-analytics/page.tsx`; alias in `next.config.mjs`. | Workspace packages stay explicit. |
+| `@repo/ui` | `RETAINED_WORKSPACE_EXPLICIT` | 209 direct source imports plus alias in `next.config.mjs`. | Shared UI dependency must stay explicit. |
+| `@tanstack/react-query` | `RETAINED_DIRECT_IMPORT` | 244 direct source imports across app hooks/services. | App-owned data-fetching dependency. |
+| `axios` | `RETAINED_DIRECT_IMPORT` | 14 direct source imports, including `src/context/auth.context.tsx` and `src/lib/api-client/client.ts`. | App API layer owns this directly. |
+| `chart.js` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/components/chart.tsx`. | Chart runtime. |
+| `clsx` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/lib/utils.ts`. | App utility dependency. |
+| `date-fns` | `RETAINED_DIRECT_IMPORT` | 23 direct source imports across route hooks/pages. | Date formatting/query dependency. |
+| `dayjs` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/lib/utils.ts`. | Date utility dependency. |
+| `draft-js` | `RETAINED_DEFERRED_10_5` | Direct imports in email-template form/helper/hook. | Deferred Batch 10.5 item; keep until editor flow is migrated or retired. |
+| `draft-js-export-html` | `RETAINED_DEFERRED_10_5` | Direct import in `src/helpers/email-template-html.ts`. | Part of deferred Draft.js editor/export stack. |
+| `file-saver` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/hooks/useDetailEndorsement.hooks.tsx`. | Export/download flow. |
+| `final-form` | `RETAINED_PEER_REQUIRED` | 0 direct imports, but `react-final-form` is directly imported in `src/app/claim/list/detail/[id]/upload-data/page.tsx`. | Required peer/runtime package for retained `react-final-form`. |
+| `html2canvas` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/app/report/campaign-analytics/page.tsx`. | PDF/image export flow. |
+| `jspdf` | `RETAINED_DIRECT_IMPORT` | 7 direct source imports across export/report pages and hooks. | PDF export flow. |
+| `jspdf-autotable` | `RETAINED_DIRECT_IMPORT` | 4 direct source imports across PDF export hooks/pages. | PDF table export flow. |
+| `jwt-decode` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/context/auth.context.tsx`. | Auth token parsing. |
+| `lodash` | `RETAINED_DIRECT_IMPORT` | 13 direct source imports across hooks/pages. | App-owned utility dependency. |
+| `lucide-react` | `RETAINED_DIRECT_IMPORT` | 18 direct source imports across pages/components. | App-level icons, not only `@repo/ui`. |
+| `moment` | `RETAINED_DEFERRED_10_5` | 7 direct source imports in claim/billing/export/table code. | Deferred Batch 10.5 item. |
+| `next` | `RETAINED_NEVER_REMOVE` | Framework dependency; 171 direct source imports and config usage. | Never remove from app package. |
+| `papaparse` | `RETAINED_DIRECT_IMPORT` | 5 direct source imports across upload/import flows. | CSV parsing dependency. |
+| `qs` | `RETAINED_DIRECT_IMPORT` | 22 direct source imports across service API files. | Query serialization dependency. |
+| `react` | `RETAINED_NEVER_REMOVE` | Runtime host; 226 direct source imports and config usage. | Never remove from app package. |
+| `react-chartjs-2` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/components/chart.tsx`. | Chart runtime. |
+| `react-date-range` | `RETAINED_DIRECT_IMPORT` | Direct import in retained `src/components/date-range-picker.tsx`. | Retained until manual-review date range picker is resolved. |
+| `react-day-picker` | `RETAINED_DIRECT_IMPORT` | 7 direct source imports across report/dashboard hooks. | Shared date picker workflow. |
+| `react-dom` | `RETAINED_NEVER_REMOVE` | Runtime host peer for React/Next. | Never remove from app package. |
+| `react-draft-wysiwyg` | `RETAINED_DEFERRED_10_5` | Direct import in `src/components/forms/email-template-form/index.tsx`. | Part of deferred Draft.js editor stack. |
+| `react-dropzone` | `RETAINED_DIRECT_IMPORT` | Direct import in retained `src/components/drag-drop-excel.tsx`. | Retained until manual-review upload wrapper is resolved. |
+| `react-feather` | `RETAINED_DIRECT_IMPORT` | 118 direct source imports across pages/components. | App-level icons. |
+| `react-final-form` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/app/claim/list/detail/[id]/upload-data/page.tsx`. | Claim upload form flow. |
+| `react-hook-form` | `RETAINED_DIRECT_IMPORT` | 47 direct source imports across migrated app-local forms/pages. | App-owned form dependency. |
+| `react-hot-toast` | `RETAINED_DIRECT_IMPORT` | 24 direct source imports across layout/helper/hooks. | Notification dependency. |
+| `react-icons` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/app/report/campaign-analytics/page.tsx`. | Report UI icon dependency. |
+| `react-router-dom` | `RETAINED_DEFERRED_10_5` | Direct imports in `src/components/forms/user-form/components/user-groups.tsx` and `user-roles.tsx`. | Deferred Batch 10.5 item. |
+| `recharts` | `RETAINED_DIRECT_IMPORT` | 6 direct source imports across report and chart components. | Charting dependency. |
+| `tailwind-merge` | `RETAINED_DIRECT_IMPORT` | Direct import in `src/lib/utils.ts`. | Class merge utility. |
+| `tailwindcss-animate` | `RETAINED_CONFIG_TOOLCHAIN` | Imported by `tailwind.config.ts`. | Tailwind plugin; also never-remove list calls out app-level ownership. |
+| `validator` | `RETAINED_DIRECT_IMPORT` | Direct imports in product-catalog form files. | Form validation dependency. |
+| `xlsx` | `RETAINED_DIRECT_IMPORT` | 17 direct source imports across import/export flows. | Excel import/export dependency. |
+| `zod` | `RETAINED_DIRECT_IMPORT` | Direct imports in product-catalog form files. | Schema validation dependency. |
+| `@repo/eslint-config` | `RETAINED_WORKSPACE_EXPLICIT` | Imported by `eslint.config.js`; alias in `next.config.mjs`. | Workspace lint config stays explicit. |
+| `@repo/typescript-config` | `RETAINED_WORKSPACE_EXPLICIT` | Referenced by `tsconfig.json`; alias in `next.config.mjs`. | Workspace TS config stays explicit. |
+| `@tailwindcss/postcss` | `RETAINED_CONFIG_TOOLCHAIN` | Used in `postcss.config.mjs`. | Tailwind v4 PostCSS plugin. |
+| `@types/draft-js` | `RETAINED_DEFERRED_10_5` | Underlying `draft-js` is retained for deferred editor flow. | Keep matching type package while underlying package remains. |
+| `@types/file-saver` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `file-saver` has direct source import. | Typecheck support for retained dependency. |
+| `@types/lodash` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `lodash` has direct source imports. | Typecheck support for retained dependency. |
+| `@types/node` | `RETAINED_NEVER_REMOVE` | Required by Next/config TypeScript toolchain. | Never remove from app package. |
+| `@types/papaparse` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `papaparse` has direct source imports. | Typecheck support for retained dependency. |
+| `@types/qs` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `qs` has direct source imports. | Typecheck support for retained dependency. |
+| `@types/react` | `RETAINED_NEVER_REMOVE` | Required for TSX compilation. | Never remove from app package. |
+| `@types/react-date-range` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `react-date-range` has direct source import in retained component. | Typecheck support for retained dependency. |
+| `@types/react-day-picker` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `react-day-picker` has direct source imports. | Typecheck support for retained dependency. |
+| `@types/react-dom` | `RETAINED_NEVER_REMOVE` | Required for TSX/React DOM compilation. | Never remove from app package. |
+| `@types/react-draft-wysiwyg` | `RETAINED_DEFERRED_10_5` | Underlying `react-draft-wysiwyg` is retained for deferred editor flow. | Keep matching type package while underlying package remains. |
+| `@types/recharts` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `recharts` has direct source imports. | Typecheck support for retained dependency. |
+| `@types/validator` | `RETAINED_CONFIG_TOOLCHAIN` | Underlying `validator` has direct source imports. | Typecheck support for retained dependency. |
+| `eslint` | `RETAINED_CONFIG_TOOLCHAIN` | Used by `eslint.config.js` and `lint` script. | Lint toolchain. |
+| `eslint-config-next` | `RETAINED_NEVER_REMOVE` | Next lint toolchain package; version aligned to Next 16. | Never-remove list includes eslint / eslint-config-next. |
+| `postcss` | `RETAINED_CONFIG_TOOLCHAIN` | Used by PostCSS/Tailwind build pipeline and `postcss.config.mjs`. | CSS build toolchain. |
+| `tailwindcss` | `RETAINED_NEVER_REMOVE` | Used by `tailwind.config.ts` and `postcss.config.mjs`. | Never remove from app package. |
+| `typescript` | `RETAINED_NEVER_REMOVE` | Used by `check-types` script and `tsconfig.json`. | Never remove from app package. |
+
+### Dependency Version Alignment
+
+- React resolved version: `19.2.4` (`node -e "console.log(require('./apps/admin-portal/node_modules/react/package.json').version)"`).
+- Next / eslint-config-next package ranges: `next: ^16`, `eslint-config-next: ^16`.
+- TypeScript package version: `5.9.2`.
+- Tailwind package version: `^4.1.18`; `@tailwindcss/postcss` package version: `^4.1.18`.
+
+### Final Verification Gate
+
+| Command | Result | Notes |
+| ------- | ------ | ----- |
+| `pnpm --filter admin-portal check-types` | PASS | Ran before dependency removal and after `pnpm remove`; `tsc --noEmit` completed successfully. |
+| `pnpm --filter admin-portal lint` | PASS | ESLint completed with 0 errors and existing warnings. |
+| `pnpm --filter admin-portal build` | PASS | Next.js 16.1.0 production build completed successfully. Build still reports the pre-existing workspace-root lockfile warning caused by `C:\Users\user\package-lock.json` outside this repo. |
+
+### Follow-ups
+
+- Batch 10.5 deferred dependency items: `moment`, `draft-js` editor stack (`draft-js`, `draft-js-export-html`, `react-draft-wysiwyg`, matching `@types/*`), and `react-router-dom`.
+- Manual-review retained source candidates from Batch 10A remain out of scope for Batch 10C.
+- Cross-app cleanup/deprecation synthesis remains pending on `feat/ui` after all apps complete Batch 10 and Batch 10.5.
