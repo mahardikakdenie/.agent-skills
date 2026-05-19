@@ -1814,9 +1814,9 @@ complete Batch 10 and Batch 10.5, on `feat/ui`.
 
 For current `admin-portal` cleanup, the expected Batch 9 handoff is:
 
-- Total discovered `page.tsx` routes: 115
-- In-scope pages: 114
-- PASS: 114
+- Total discovered `page.tsx` routes: 118
+- In-scope pages: 117
+- PASS: 117
 - OUT_OF_SCOPE: 1 (`/oauth/msal`)
 - BLOCKED / FAIL / IN_PROGRESS / DEFERRED_DATA_TABLE / NOT_STARTED: 0
 
@@ -1837,8 +1837,23 @@ Do not use Batch 10 to finish route refactors. If any route is not `PASS`, retur
 
 ### 1. Build a Cleanup Ledger
 
-Create a working ledger before edits. For each local component file under `<APP_PATH>/src/components`,
-assign exactly one decision:
+Create a working ledger before edits. This ledger has two parts:
+
+1. Component replacement cleanup (`DELETE_REPLACED`, dead adapters, local keep decisions)
+2. Deep unused-file cleanup (`SAFE_DELETE_UNUSED`, reachability keeps, manual review queue)
+
+For large apps, Batch 10 may be split into three execution prompts while keeping this same spec:
+
+- **Batch 10A - Audit only:** build the full ledger and do not delete anything
+- **Batch 10B - Safe deletion:** delete only `DELETE_REPLACED`, `DELETE_DEAD_ADAPTER`, and `SAFE_DELETE_UNUSED`
+- **Batch 10C - Dependency cleanup + final report:** remove confirmed orphan deps and complete `_cleanup-report.md`
+
+If run in one prompt, complete the audit ledger first, then delete only entries proven safe by the
+ledger. Do not delete speculative or unclear files in the same pass.
+
+#### 1A. Component replacement ledger
+
+For each local component file under `<APP_PATH>/src/components`, assign exactly one decision:
 
 | Decision | Meaning |
 | -------- | ------- |
@@ -1852,20 +1867,76 @@ Use the existing docs as evidence, but verify against source imports before dele
 `table-config/*`, `page-header/*`, auth/shell helpers, app-specific image wrappers, dashboard chart
 data, and route-specific upload/export helpers.
 
-### 2. Remove Safe-to-Delete Local Copies
+#### 1B. Deep unused-file audit ledger
+
+Run a reachability audit across app-local source files, not only `src/components`. Include at least:
+
+- `<APP_PATH>/src/components/**`
+- `<APP_PATH>/src/views/**`
+- `<APP_PATH>/src/hooks/**`
+- `<APP_PATH>/src/helpers/**`
+- `<APP_PATH>/src/lib/**`
+- `<APP_PATH>/src/images/**`
+- route-local helper files under `<APP_PATH>/src/app/**`
+- relevant app-local assets under `<APP_PATH>/public/**` when referenced by source
+
+Tooling can help, but tool output is only a signal, never deletion proof. Recommended signals:
+
+```bash
+# Use one or more if available. Prefer pnpm dlx so no permanent dependency is added.
+pnpm dlx knip --production --no-exit-code
+pnpm dlx ts-prune
+pnpm dlx depcheck <APP_PATH>
+```
+
+Before deleting any file flagged by tooling, prove it is not reachable through app conventions or
+dynamic references. For each candidate, check all relevant reference forms:
+
+```bash
+rg "<file-base-name>|<exported-symbol>|<relative-import-path>|<alias-import-path>" <APP_PATH>/src -g "*.ts" -g "*.tsx"
+rg "<asset-file-name>|<route-segment>|<dynamic-import-string>" <APP_PATH> -g "*.ts" -g "*.tsx" -g "*.json" -g "*.mjs"
+```
+
+Assign exactly one unused-file decision:
+
+| Decision | Meaning |
+| -------- | ------- |
+| `SAFE_DELETE_UNUSED` | File has no imports/references, is not a framework convention file, is not dynamically referenced, and typecheck/build pass after deletion |
+| `KEEP_REACHABLE` | Imported or referenced by app source, config, tests, or another retained file |
+| `KEEP_FRAMEWORK_CONVENTION` | Used by Next.js or tooling convention even without explicit imports (`page.tsx`, `layout.tsx`, `route.ts`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `template.tsx`, `default.tsx`, `middleware/proxy`, config files) |
+| `KEEP_DYNAMIC_REFERENCE` | Referenced by string, dynamic import, route config, menu config, asset path, registry/config metadata, or runtime lookup |
+| `KEEP_PUBLIC_ASSET` | Public/static asset referenced from source, CSS, config, docs, or runtime URL |
+| `REVIEW_MANUAL` | Tool says unused but ownership/reachability is unclear; do not delete in Batch 10B |
+
+Hard rules for the deep audit:
+
+- Do not delete a file just because it has zero static imports.
+- Do not delete Next.js convention files or route-local files under `src/app/**` without proving the route no longer exists.
+- Do not delete public assets without checking string references, CSS references, and runtime URL usage.
+- Do not delete files that are only referenced by retained legacy views unless those views are also proven unreachable and safe to delete.
+- Every `SAFE_DELETE_UNUSED` item must include the exact search/tool evidence in `_cleanup-report.md`.
+
+### 2. Remove Safe-to-Delete Files
 
 For each `DELETE_REPLACED` candidate:
 
 - Confirm `_migration-log.md` or `_audit-report.md` documents replacement by `@repo/ui`.
 - Confirm no source file imports the local path anymore:
   ```bash
-  rg "components/(ui/)?<component-name>|from ['\"].*/<component-name>['\"]" <APP_PATH>/src --type ts --type tsx
+  rg "components/(ui/)?<component-name>|from ['\"].*/<component-name>['\"]" <APP_PATH>/src -g "*.ts" -g "*.tsx"
   ```
 - Delete the local file and any stale barrel export that points to it.
 - Run the verification-gate typecheck command immediately after each small deletion group.
 
 Do not delete a file only because its name resembles a shared component. Keep it if it still has
 app-specific behavior, route state, service coupling, or direct imports.
+
+For each `SAFE_DELETE_UNUSED` candidate:
+
+- Confirm the file is listed in the deep unused-file audit ledger with search/tool evidence.
+- Delete in small groups by ownership area (for example `src/views/**`, then component wrappers, then assets).
+- After each small group, run the verification-gate typecheck command.
+- If typecheck or build fails, use `$systematic-debugging` to identify the missing reference. Restore only the files needed to fix the failure and reclassify them as `REVIEW_MANUAL` or `KEEP_REACHABLE`.
 
 ### 3. Dead Adapter Cleanup
 
@@ -1961,9 +2032,9 @@ pnpm --filter <APP_PACKAGE> list <removed-dep>
 ## Batch 9 Handoff
 
 - Tracker file: `_batch-9-page-tracker.md`
-- Total discovered page routes: 115
-- In-scope pages: 114
-- PASS: 114
+- Total discovered page routes: 118
+- In-scope pages: 117
+- PASS: 117
 - OUT_OF_SCOPE: 1
 - Non-pass in-scope pages: 0
 
@@ -1978,6 +2049,24 @@ pnpm --filter <APP_PACKAGE> list <removed-dep>
 | File | Decision | Reason |
 | ---- | -------- | ------ |
 | `<path>` | `KEEP_APP_LOCAL` / `KEEP_PENDING_REVIEW` | `<reason>` |
+
+## Unused File Audit
+
+| File | Decision | Evidence | Notes |
+| ---- | -------- | -------- | ----- |
+| `<path>` | `SAFE_DELETE_UNUSED` / `KEEP_REACHABLE` / `KEEP_FRAMEWORK_CONVENTION` / `KEEP_DYNAMIC_REFERENCE` / `KEEP_PUBLIC_ASSET` / `REVIEW_MANUAL` | `<tool output + rg proof>` | `<notes>` |
+
+## Unused Files Removed
+
+| File | Action | Evidence | Verification |
+| ---- | ------ | -------- | ------------ |
+| `<path>` | `REMOVED` | `SAFE_DELETE_UNUSED` proof from audit ledger | `check-types PASS` |
+
+## Manual Review Queue
+
+| File | Reason | Required follow-up |
+| ---- | ------ | ------------------ |
+| `<path>` | `<why not safe to delete now>` | `<what to inspect next>` |
 
 ## Dependency Audit
 
@@ -1999,20 +2088,23 @@ pnpm --filter <APP_PACKAGE> list <removed-dep>
 
 ## Acceptance Criteria
 
-- `_batch-9-page-tracker.md` confirms 114/114 in-scope pages are `PASS` before cleanup begins
+- `_batch-9-page-tracker.md` confirms all current in-scope pages are `PASS` before cleanup begins; for current `admin-portal`, this is 117/117 in-scope pages
 - Zero replaced duplicates remain without documented reason
+- Deep unused-file audit completed and documented before dependency cleanup
+- Every deleted unused file has `SAFE_DELETE_UNUSED` evidence and passed typecheck after deletion
+- Every ambiguous unused-file candidate is retained in `REVIEW_MANUAL`; no speculative deletion
 - Zero broken imports after removals
 - Typecheck, lint, build all pass
 - Every dep in `apps/<APP_NAME>/package.json` is documented as directly used, config/toolchain owned, peer-required, never-remove, or removed as a confirmed orphan
 - Removed deps documented with proof of zero direct usage
-- `_cleanup-report.md` created with dependency audit section
+- `_cleanup-report.md` created with unused-file and dependency audit sections
 - No `packages/ui` files are changed in this per-app batch
 
 After this app completes Batch 10, proceed to Batch 10.5 for deferred dependency resolution.
 After ALL apps complete Batch 10 and Batch 10.5, switch to `feat/ui` in Batch 11 prep to create
 cross-app `30-cleanup-report.md` and `31-deprecation-map.md`.
 
-> Skills (if installed): `$monorepo-workspace` (pnpm dep management: `--filter`, workspace packages, explicit ownership contract); `$turborepo` (verification gate commands and package-scope checks); `$systematic-debugging` (if a deletion or dep removal breaks typecheck/build - trace root cause before reverting or broadening changes)
+> Skills (if installed): `$monorepo-workspace` (pnpm dep management: `--filter`, workspace packages, explicit ownership contract); `$turborepo` (verification gate commands and package-scope checks); `$systematic-debugging` (if a deletion or dep removal breaks typecheck/build - trace root cause before reverting or broadening changes); `$next-best-practices` (confirm framework convention files and route reachability before deleting app-router files)
 
 ```
 
