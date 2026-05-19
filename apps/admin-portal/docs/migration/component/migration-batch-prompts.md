@@ -1785,9 +1785,9 @@ Report: list of components refactored, packages/ui candidates surfaced (if any),
 
 ## Batch 10 - Cleanup & Deprecation
 
-> **Branch:** `migrate-app/<APP_NAME>` for app cleanup, then `feat/ui` for cross-app synthesis
+> **Branch:** `migrate-app/<APP_NAME>` only
 > **Run:** Once per app (Batch 10 is per-app scope)
-> **Prerequisite:** Batch 9 stabilization complete for this app
+> **Prerequisite:** Batch 9 stabilization complete for this app; for current `admin-portal`, `_batch-9-page-tracker.md` must show 114 in-scope pages and 114 `PASS`
 
 ```
 
@@ -1796,26 +1796,78 @@ You are a Principal Frontend Engineer on branch `migrate-app/<APP_NAME>`.
 Read before starting:
 
 - `<APP_PATH>/docs/migration/component/07-cleanup.md` (full spec)
-- `<APP_PATH>/docs/migration/component/_output/_migration-log.md` (adapter status section)
+- `<APP_PATH>/docs/migration/component/_output/_batch-9-page-tracker.md` (page stabilization source of truth)
+- `<APP_PATH>/docs/migration/component/_output/_migration-log.md`
 - `<APP_PATH>/docs/migration/component/_output/_audit-report.md`
+- `<APP_PATH>/docs/migration/component/_output/_parity-checklist.md`
+- `<APP_PATH>/docs/migration/verification-gate.md`
 
 ## Scope Note
 
 This batch runs PER APP on `migrate-app/<APP_NAME>`.
-Cross-app synthesis outputs (`30-cleanup-report.md`, `31-deprecation-map.md`) in packages/ui
-are produced ONLY after ALL apps complete Batch 10, on `feat/ui`.
+Do NOT switch to `feat/ui` in this batch.
+Do NOT edit `packages/ui` in this batch.
+
+Cross-app synthesis outputs (`packages/ui/docs/normalization/_output/30-cleanup-report.md`,
+`packages/ui/docs/normalization/_output/31-deprecation-map.md`) are produced only after ALL apps
+complete Batch 10 and Batch 10.5, on `feat/ui`.
+
+For current `admin-portal` cleanup, the expected Batch 9 handoff is:
+
+- Total discovered `page.tsx` routes: 115
+- In-scope pages: 114
+- PASS: 114
+- OUT_OF_SCOPE: 1 (`/oauth/msal`)
+- BLOCKED / FAIL / IN_PROGRESS / DEFERRED_DATA_TABLE / NOT_STARTED: 0
+
+If the tracker does not match this state, stop and reconcile Batch 9 first.
 
 ## Tasks
 
-### 1. Remove Safe-to-Delete Local Copies
+### 0. Preflight - prove Batch 9 is closed
 
-For each component in `_migration-log.md` with Status: DONE and local file still present:
+Before deleting anything:
 
-- Verify ALL imports have been updated to `@repo/ui` (grep the codebase)
-- Delete the local file
-- Re-run typecheck immediately to confirm no references remain
+- Read `_batch-9-page-tracker.md` and confirm every in-scope page is `PASS`.
+- Read `_migration-log.md` after the latest legacy update and confirm there is no unresolved pause, blocker, or deferred DataTable work.
+- Read `verification-gate.md` and copy the exact typecheck, lint, and build commands into your working notes.
+- Run the typecheck command once as the baseline. If it fails, use `$systematic-debugging` and fix the pre-existing break before cleanup.
 
-### 2. Dead Adapter Cleanup
+Do not use Batch 10 to finish route refactors. If any route is not `PASS`, return to Batch 9.
+
+### 1. Build a Cleanup Ledger
+
+Create a working ledger before edits. For each local component file under `<APP_PATH>/src/components`,
+assign exactly one decision:
+
+| Decision | Meaning |
+| -------- | ------- |
+| `DELETE_REPLACED` | Local duplicate fully replaced by `@repo/ui`; no local imports remain |
+| `DELETE_DEAD_ADAPTER` | Adapter wrapper explicitly marked ready for deletion and no imports remain |
+| `KEEP_APP_LOCAL` | Domain form, table config, route helper, auth shell, service-coupled component, chart/data wrapper, or app-specific behavior |
+| `KEEP_PENDING_REVIEW` | Unclear ownership; do not delete in this batch |
+
+Use the existing docs as evidence, but verify against source imports before deleting. For current
+`admin-portal`, expect many legitimate app-local files to remain, including domain forms,
+`table-config/*`, `page-header/*`, auth/shell helpers, app-specific image wrappers, dashboard chart
+data, and route-specific upload/export helpers.
+
+### 2. Remove Safe-to-Delete Local Copies
+
+For each `DELETE_REPLACED` candidate:
+
+- Confirm `_migration-log.md` or `_audit-report.md` documents replacement by `@repo/ui`.
+- Confirm no source file imports the local path anymore:
+  ```bash
+  rg "components/(ui/)?<component-name>|from ['\"].*/<component-name>['\"]" <APP_PATH>/src --type ts --type tsx
+  ```
+- Delete the local file and any stale barrel export that points to it.
+- Run the verification-gate typecheck command immediately after each small deletion group.
+
+Do not delete a file only because its name resembles a shared component. Keep it if it still has
+app-specific behavior, route state, service coupling, or direct imports.
+
+### 3. Dead Adapter Cleanup
 
 For adapters flagged in `_migration-log.md` as "Adapter Status: READY FOR DELETION":
 
@@ -1823,15 +1875,28 @@ For adapters flagged in `_migration-log.md` as "Adapter Status: READY FOR DELETI
 - Delete adapter file
 - Re-run typecheck
 
-### 2.5 Dependency Audit & Cleanup
+If no adapter has an explicit "READY FOR DELETION" marker, do not infer readiness. Record it as
+`KEEP_PENDING_REVIEW` or `KEEP_APP_LOCAL` in `_cleanup-report.md`.
+
+### 4. Stale Export, Comment, and Empty Directory Cleanup
+
+After file deletions:
+
+- Remove stale barrel exports pointing to deleted files.
+- Remove stale `TODO: migrate to @repo/ui` comments only when the migration is actually complete.
+- Remove empty directories created solely by deletions.
+- Re-run typecheck.
+
+### 5. Dependency Audit & Cleanup
 
 > Read **Section 4** of `<APP_PATH>/docs/migration/component/07-cleanup.md` for the full spec,
 > decision table, examples of legitimately app-owned deps, and the never-remove list.
 
 **Principle:** The question is never "does another package already have this dep?" - it is
-"does **this app's source code** directly import it?" If yes -> keep. If no -> investigate.
+"does **this app's source/config code** directly import or require it?" If yes -> keep. If no -> investigate.
 
-**Step 1 - Generate a direct-import count for every dep:**
+**Step 1 - Generate a direct-import count for every dep.** Include `src/` first, then manually
+check app root config files for every zero-count candidate:
 
 ```bash
 node -e "
@@ -1839,11 +1904,11 @@ const pkg = require('./apps/<APP_NAME>/package.json');
 const deps = Object.keys({...pkg.dependencies, ...pkg.devDependencies});
 deps.forEach(d => process.stdout.write(d + '\n'));
 " | while read dep; do
-  count=$(rg "from ['\"]${dep}" apps/<APP_NAME>/src --type ts --type tsx -l 2>/dev/null | wc -l)
+  count=$(rg "(from ['\"]${dep}(/|['\"])|import ['\"]${dep}(/|['\"])|require\(['\"]${dep}(/|['\"])|import\(['\"]${dep}(/|['\"]))" apps/<APP_NAME>/src --type ts --type tsx -l 2>/dev/null | wc -l)
   echo "$count $dep"
 done | sort -n
 # Deps showing 0 = no direct imports found in src/ -> candidates for Step 2 review
-```bash
+```
 
 **Step 2 - For each dep showing `0` direct imports, confirm before removing:**
 
@@ -1853,6 +1918,10 @@ done | sort -n
 - Is it a `@repo/*` workspace package? -> **KEEP** - always explicit, never rely on transitive linking
 - Was it **only** imported inside local component files that are now deleted? -> **REMOVE** (true orphan)
 - Unclear why it's there? -> **Investigate first. Do not remove.**
+
+For current `admin-portal`, be especially conservative with packages used by app-local forms,
+reports, charts, PDF/XLSX export, WYSIWYG editor flows, TanStack Query hooks, auth, CSV upload,
+and domain table configs. These are app-owned dependencies when directly imported by app code.
 
 **Step 3 - Remove confirmed orphan deps only:**
 
@@ -1868,24 +1937,10 @@ and `devDependencies` in the audit.
 Document every decision (REMOVED / RETAINED + reason) in `_cleanup-report.md` under
 "Dependency Audit".
 
-### 3. packages/ui Dead Code Check (on feat/ui, after ALL apps cleaned)
-
-Switch to `feat/ui` branch.
-Identify any exports in `packages/ui/src/index.ts` not imported by any app:
-
-```bash
-# Find exports not referenced anywhere in apps/
-grep -r "from '@repo/ui'" apps/*/src --include="*.tsx" --include="*.ts" | \
-  grep -oP "(?<=import \{ )[^}]+" | tr ',' '\n' | sort -u > /tmp/used_exports.txt
-cat packages/ui/src/index.ts | grep "^export" | ... # compare
-```bash
-
-Document unused exports with rationale: DELETE | KEEP (another app will use) | DEPRECATE.
-
-### 4. Run Verification Gate
+### 6. Run Verification Gate
 
 Read `<APP_PATH>/docs/migration/verification-gate.md`.
-Run typecheck, lint, build. Zero errors.
+Run typecheck, lint, build using the exact commands from Sections 1-3. Zero errors.
 
 If any deps were removed, also confirm:
 
@@ -1896,31 +1951,70 @@ jq '.dependencies["<removed-dep>"]' apps/<APP_NAME>/package.json  # must be null
 pnpm --filter <APP_PACKAGE> list <removed-dep>
 ```
 
-### 5. Create Per-App Cleanup Report
+### 7. Create Per-App Cleanup Report
 
 `<APP_PATH>/docs/migration/component/_output/_cleanup-report.md`:
 
-- Components removed: [list with rationale]
-- Adapters removed: [list with rationale]
-- Remaining local components: [list with "reason kept app-local"]
-- **Dependency audit:** [each dep -> REMOVED (true orphan) / RETAINED (direct usage: \<files\>) / RETAINED (never-remove list)]
-- Verification gate results
+```md
+# Cleanup Report - <APP_NAME> - <YYYY-MM-DD>
+
+## Batch 9 Handoff
+
+- Tracker file: `_batch-9-page-tracker.md`
+- Total discovered page routes: 115
+- In-scope pages: 114
+- PASS: 114
+- OUT_OF_SCOPE: 1
+- Non-pass in-scope pages: 0
+
+## Files Removed
+
+| File | Decision | Replacement / Reason | Verification |
+| ---- | -------- | -------------------- | ------------ |
+| `<path>` | `DELETE_REPLACED` / `DELETE_DEAD_ADAPTER` | `<reason>` | `check-types PASS` |
+
+## Files Retained
+
+| File | Decision | Reason |
+| ---- | -------- | ------ |
+| `<path>` | `KEEP_APP_LOCAL` / `KEEP_PENDING_REVIEW` | `<reason>` |
+
+## Dependency Audit
+
+| Package | Action | Evidence | Notes |
+| ------- | ------ | -------- | ----- |
+| `<pkg>` | `REMOVED` / `RETAINED` | `<direct import files, config usage, never-remove rule, or orphan proof>` | `<notes>` |
+
+## Verification Gate
+
+- Typecheck: PASS - `<command>`
+- Lint: PASS - `<command>`
+- Build: PASS - `<command>`
+
+## Follow-ups
+
+- Batch 10.5 deferred dependency items: `<list or none>`
+- Cross-app deprecation synthesis needed on `feat/ui`: yes, after all apps complete Batch 10 and 10.5
+```
 
 ## Acceptance Criteria
 
+- `_batch-9-page-tracker.md` confirms 114/114 in-scope pages are `PASS` before cleanup begins
 - Zero replaced duplicates remain without documented reason
 - Zero broken imports after removals
 - Typecheck, lint, build all pass
-- Every dep in `apps/<APP>/package.json` either has confirmed direct usage or is on the never-remove list
+- Every dep in `apps/<APP_NAME>/package.json` is documented as directly used, config/toolchain owned, peer-required, never-remove, or removed as a confirmed orphan
 - Removed deps documented with proof of zero direct usage
 - `_cleanup-report.md` created with dependency audit section
+- No `packages/ui` files are changed in this per-app batch
 
-After ALL apps complete Batch 10:
-Switch to `feat/ui` -> create cross-app `30-cleanup-report.md` and `31-deprecation-map.md`.
+After this app completes Batch 10, proceed to Batch 10.5 for deferred dependency resolution.
+After ALL apps complete Batch 10 and Batch 10.5, switch to `feat/ui` in Batch 11 prep to create
+cross-app `30-cleanup-report.md` and `31-deprecation-map.md`.
 
-> Skills (if installed): `$monorepo-workspace` (pnpm dep management: `--filter`, workspace packages, explicit ownership contract); `$turborepo` (filter-based grep approach for finding unused exports across apps; verify `pnpm --filter @repo/ui build` still passes after deletions)
+> Skills (if installed): `$monorepo-workspace` (pnpm dep management: `--filter`, workspace packages, explicit ownership contract); `$turborepo` (verification gate commands and package-scope checks); `$systematic-debugging` (if a deletion or dep removal breaks typecheck/build - trace root cause before reverting or broadening changes)
 
-```md
+```
 
 ---
 
