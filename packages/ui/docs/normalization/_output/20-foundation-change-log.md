@@ -1551,16 +1551,13 @@ Impact:
 
 ---
 
-## 2026-04-22 - Field-Entry Sizing Refinements
+## 2026-04-22 - Textarea Sizing Normalization
 
 Changed:
 
 - Promoted `Textarea` into the shared field-shell size family, adding support for `xs | sm | md | lg` (default `md`).
 - Removed `Textarea` from the frozen sizing-exception set in `02-api-conventions.md`, `13-implementation-batches.md`, and the change log.
 - Realigned `packages/ui/src/Textarea` implementation so its height, padding, and typography now scale with the requested `size` prop while preserving native row-driven height behavior.
-- Verified and documented `Checkbox` sizing support for `sm | md | lg`, ensuring its direct adoption guidance in `21-adapter-mapping.md` matches the shipped `size="lg"` implementation.
-- Added `labelClassName` to `Checkbox` and `fieldClassName` / `textareaClassName` to `Textarea` to support targetable styling overrides for internal sub-components.
-- Updated the canonical roadmap in `11-master-component-roadmap.md` to include `Checkbox.Sizes` and `Input.Sizes` in the validated SDD requirements.
 
 Impact:
 
