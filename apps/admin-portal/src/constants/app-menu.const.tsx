@@ -1,4 +1,4 @@
-﻿import Image, { StaticImageData } from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { ChartPie } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -9,11 +9,11 @@ import iconPolicy from "@public/images/icon-policy.png";
 import iconClaim from "@public/images/icon-claim.png";
 
 const renderChartIcon = () => (
-  <ChartPie className="text-primary h-[17px] w-[17px]" strokeWidth={3} />
+  <ChartPie className="text-primary h-[18px] w-[18px]" strokeWidth={3} />
 );
 
 const renderImageIcon = (src: StaticImageData, alt: string) => (
-  <Image src={src} alt={alt} className="w-7 min-w-7" />
+  <Image src={src} alt={alt} className="w-6 min-w-6" />
 );
 
 const formatCategoryDisplayName = (value: string | undefined) => {

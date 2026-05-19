@@ -39,12 +39,12 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <Box
-      className={`z-[51] fixed inset-0 flex justify-center items-center ${bgColor ? bgColor : 'bg-black bg-opacity-50'}`}
+      className={`z-[51] fixed inset-0 flex justify-center items-center ${bgColor ? bgColor : 'bg-black/45'}`}
       style={style}
       onClick={onClose}
     >
       <Box
-        className={`${widthClassName ? widthClassName : 'w-full'} ${heightClassName ? heightClassName : 'h-full'} ${bgColorModal ? bgColorModal : 'bg-white'} rounded-md mx-2 px-4 py-2`}
+        className={`${widthClassName ? widthClassName : 'w-full'} ${heightClassName ? heightClassName : 'h-full'} rounded-lg mx-2 px-4 py-2 ${bgColorModal ? bgColorModal : 'bg-white'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <Box>{children}</Box>

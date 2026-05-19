@@ -6,14 +6,16 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Menu } from 'react-feather';
 
-import { Box } from '@repo/ui';
+import { Box, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@repo/ui';
 
 // TODO: change for customization in env
 import Button from '@/components/core/button';
+import ChecklistIcon from '@/components/core/checklist.icon';
 import OptimizeImage from '@/components/core/image';
 import Input from '@/components/core/input';
 import { MicrosoftLoginButton } from '@/components/core/microsoft-login-button';
 import Modal from '@/components/core/modal';
+import XIcon from '@/components/core/x.icon';
 import {
   backgroundImageApp,
   logo,
@@ -26,9 +28,102 @@ import AppMenu from '@/constants/app-menu.const';
 import { useAuth } from '@/context/auth.context';
 import { useScreen } from '@/context/screen.context';
 import { toastNotification } from '@/lib/app-utils';
-import ChecklistIcon from '@/components/core/checklist.icon';
-import XIcon from '@/components/core/x.icon';
 import { authService } from '@/services/auth/api/auth.service';
+
+type SidebarTooltipSide = 'bottom' | 'right';
+
+interface SidebarMenuButtonProps {
+  icon?: React.ReactNode;
+  isActive: boolean;
+  name: string;
+  onClick: () => void;
+  tooltipSide: SidebarTooltipSide;
+}
+
+function SidebarMenuButton({ icon, isActive, name, onClick, tooltipSide }: SidebarMenuButtonProps) {
+  const labelRef = useRef<HTMLSpanElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    const label = labelRef.current;
+
+    if (!label) return undefined;
+
+    const updateOverflow = () => {
+      setIsOverflowing(label.scrollWidth > label.clientWidth + 1);
+    };
+
+    updateOverflow();
+    const animationFrame = window.requestAnimationFrame(updateOverflow);
+    const timeout = window.setTimeout(updateOverflow, 250);
+
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateOverflow) : null;
+
+    resizeObserver?.observe(label);
+    window.addEventListener('resize', updateOverflow);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(timeout);
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', updateOverflow);
+    };
+  }, [name]);
+
+  const button = (
+    <Box
+      as="button"
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => {
+        const label = labelRef.current;
+
+        if (!label) return;
+
+        setIsOverflowing(label.scrollWidth > label.clientWidth + 1);
+      }}
+      aria-current={isActive ? 'page' : undefined}
+      className={`group mb-0.5 flex min-h-10 w-full cursor-pointer items-center justify-start gap-2.5 rounded-md px-2.5 py-1.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 ${
+        isActive
+          ? 'bg-[#E8F4FB] text-[#006EA7] ring-1 ring-inset ring-[#B9DDEA]'
+          : 'text-[#334155] hover:bg-[#F3F8FB] hover:text-[#0F172A]'
+      }`}
+    >
+      <Box
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
+          isActive
+            ? 'bg-white text-[#006EA7] [&_svg]:text-[#006EA7]'
+            : 'bg-white text-[#006EA7] ring-1 ring-inset ring-slate-100 group-hover:bg-white group-hover:ring-[#D6EAF3] [&_svg]:text-[#006EA7]'
+        }`}
+      >
+        {icon}
+      </Box>
+      <Box
+        ref={labelRef}
+        as="span"
+            className={`min-w-0 flex-1 truncate text-sm ${isActive ? 'font-semibold' : 'font-medium'}`}
+      >
+        {name}
+      </Box>
+    </Box>
+  );
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      {isOverflowing && (
+        <TooltipContent
+          side={tooltipSide}
+          align={tooltipSide === 'right' ? 'center' : 'start'}
+          className="max-w-64"
+        >
+          {name}
+        </TooltipContent>
+      )}
+    </Tooltip>
+  );
+}
 
 export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -97,6 +192,9 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
     router.push(url);
     if (isMobileView) setMenu(false);
   };
+
+  const isSubmenuActive = (submenu: (typeof AppMenu.menu)[number]['submenu'][number]) =>
+    path === submenu.url || submenu.additionalPages?.some((page) => path.startsWith(page.url));
 
   const doLogin = () => login({ email, password });
 
@@ -275,7 +373,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
       <Box
         as="nav"
         className={`px-6 navbar-top bg-primary sticky top-0 left-0 ${
-          isMenuOpen && !isMobileView ? 'sm:w-[calc(100%-20%)] sm:ml-[20%]' : 'w-full'
+          isMenuOpen && !isMobileView ? 'sm:w-[calc(100%-16rem)] sm:ml-64' : 'w-full'
         } ${!user && 'w-full'} transition-all duration-300 z-50`}
         ref={navbarRef}
       >
@@ -285,7 +383,8 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
               <Box
                 as="button"
                 onClick={toggleModal}
-                className="min-w-10 px-0 text-bluedark mr-auto"
+                aria-label="Toggle sidebar"
+                className="mr-auto cursor-pointer p-0 text-white transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/35"
               >
                 <Menu color="white" />
               </Box>
@@ -315,18 +414,24 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                 </Box>
 
                 {showDropdown && (
-                  <Box className="w-52 absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md py-5 px-7">
-                    <Box className="flex flex-col items-center justify-center">
-                      <Button
-                        variant="warning"
+                  <Box className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-slate-200 bg-white p-2 shadow-[0_18px_36px_-24px_rgba(15,23,42,0.45),0_8px_18px_-12px_rgba(15,23,42,0.18)]">
+                    <Box className="flex flex-col gap-1">
+                      <Box
+                        as="button"
+                        type="button"
                         onClick={() => setIsModalChangePassword(true)}
-                        additionalClassName="w-full"
+                        className="flex min-h-10 w-full cursor-pointer items-center rounded-md px-3 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-primary-light-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
                       >
                         Change Password
-                      </Button>
-                      <Button variant="danger" onClick={doLogout} additionalClassName="w-full mt-3">
+                      </Box>
+                      <Box
+                        as="button"
+                        type="button"
+                        onClick={doLogout}
+                        className="flex min-h-10 w-full cursor-pointer items-center rounded-md px-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-100"
+                      >
                         Logout
-                      </Button>
+                      </Box>
                     </Box>
                   </Box>
                 )}
@@ -339,7 +444,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
       <Box
         as="main"
         className={`flex flex-col overflow-y-auto sm:scrollable bg-[#F8F8F8] ${
-          isMenuOpen && !isMobileView ? 'sm:w-[calc(100%-20%)] sm:ml-[20%]' : 'w-full'
+          isMenuOpen && !isMobileView ? 'sm:w-[calc(100%-16rem)] sm:ml-64' : 'w-full'
         } transition-all duration-300`}
         style={{
           backgroundImage: backgroundImageApp,
@@ -369,20 +474,23 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
 
       {isModalChangePassword && (
         <Modal
-          widthClassName={`w-[500px] ${isMobileView ? 'px-5' : 'px-10'} px-5`}
+          widthClassName="w-[500px] max-w-[calc(100vw-24px)]"
           heightClassName="h-fit"
+          bgColorModal="bg-white rounded-xl overflow-hidden shadow-[0_24px_60px_-32px_rgba(15,23,42,0.55),0_12px_28px_-20px_rgba(15,23,42,0.3)]"
           isOpen={isModalChangePassword}
           onClose={() => setIsModalChangePassword(false)}
         >
-          <Box className="flex justify-center items-center mb-3 bg-white rounded-t-md">
-            <Box className="pt-5 pb-3 px-2 text-xl font-bold">Change Password</Box>
+          <Box className="flex items-center justify-center border-b border-slate-100 px-2 py-4">
+            <Box as="h2" className="text-lg font-bold text-slate-950">
+              Change Password
+            </Box>
           </Box>
-          <Box className="h-fit max-h-[calc(70vh-50px)] overflow-y-auto sm:scrollable mb-5">
-            <Box className="text-sm mb-5">
+          <Box className="h-fit max-h-[calc(80vh-76px)] overflow-y-auto sm:scrollable px-2 py-5 sm:px-6">
+            <Box className="mb-5 text-sm text-slate-700">
               Choose a strong password and don&#39;t reuse it for other accounts.
             </Box>
             <Box className="w-full">
-              <Box className="mb-5">
+              <Box className="mb-4">
                 <Input
                   type="password"
                   value={oldPassword}
@@ -391,7 +499,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   withBorder={true}
                 />
               </Box>
-              <Box className="mb-5">
+              <Box className="mb-4">
                 <Input
                   type="password"
                   value={newPassword}
@@ -416,7 +524,7 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                 />
               </Box>
             </Box>
-            <Box className="text-sm mb-5">
+            <Box className="mb-5 text-sm leading-5 text-slate-700">
               Once your password has been changed, please log back in with the new password on all
               your devices.
             </Box>
@@ -431,13 +539,13 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
 
       {isMobileView ? (
         <Modal
-          widthClassName="w-[500px]"
+          widthClassName="w-[500px] max-w-[calc(100vw-24px)]"
           heightClassName="h-fit"
           isOpen={isMenuOpen}
           onClose={() => setMenu(false)}
         >
-          <Box className="flex justify-center items-center mb-3 bg-white rounded-t-md">
-            <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-5 px-2'}`}>
+          <Box className="flex min-h-[76px] items-center justify-center rounded-t-md border-b border-slate-100 bg-white px-3 py-2">
+            <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'px-2'}`}>
               {/*TODO: change for customization in env*/}
               {process.env.NEXT_PUBLIC_MODE === 'whitelable' ? (
                 <OptimizeImage
@@ -446,71 +554,67 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                   height={100}
                   alt="whitelable-logo-mobile"
                   src={whitelableLogo}
+                  className="h-auto max-w-full !w-[180px]"
                 />
               ) : (
                 <OptimizeImage
                   priority
-                  width={logoWidth}
-                  height={logoHeight}
+                  width={logoWidth ? Math.max(logoWidth, 185) : 185}
+                  height={logoHeight ? Math.max(logoHeight, 81) : 81}
                   alt="logo-mobile"
                   src={logo}
+                  className="h-auto max-w-full !w-[180px]"
                 />
               )}
             </Box>
           </Box>
-          <Box className="h-fit max-h-[calc(70vh-50px)] overflow-y-auto sm:scrollable mb-5">
-            {AppMenu.menu.map(
-              (menuMobile, menuMobileIndex) =>
-                menuList.includes(menuMobile.name) && (
-                  <Box key={menuMobileIndex} className={`${menuMobileIndex !== 0 && 'mt-5'}`}>
-                    <Box as="p" className="font-semibold mb-3 text-sm">
-                      {menuMobile.name}
+          <Box className="h-fit max-h-[calc(75vh-72px)] overflow-y-auto sm:scrollable px-3 py-3">
+            <TooltipProvider delayDuration={350}>
+              {AppMenu.menu.map(
+                (menuMobile, menuMobileIndex) =>
+                  menuList.includes(menuMobile.name) && (
+                    <Box
+                      key={menuMobileIndex}
+                      className={`${menuMobileIndex !== 0 && 'mt-3'} pb-2`}
+                    >
+                      <Box
+                        as="p"
+                        className="mb-1.5 px-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400"
+                      >
+                        {menuMobile.name}
+                      </Box>
+                      {menuMobile.submenu.map((submenuMobile, submenuIndex) => {
+                        const isActive = isSubmenuActive(submenuMobile);
+
+                        return (
+                          submenuList.includes(submenuMobile.name) && (
+                            <SidebarMenuButton
+                              key={submenuIndex}
+                              icon={submenuMobile.icon}
+                              isActive={isActive}
+                              name={submenuMobile.name}
+                              onClick={() => goToPage(submenuMobile.url)}
+                              tooltipSide="bottom"
+                            />
+                          )
+                        );
+                      })}
                     </Box>
-                    {menuMobile.submenu.map(
-                      (submenuMobile, submenuIndex) =>
-                        submenuList.includes(submenuMobile.name) && (
-                          <Box
-                            key={submenuIndex}
-                            onClick={() => goToPage(submenuMobile.url)}
-                            className={`flex items-center justify-start py-2 px-3 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
-                              (path.includes(submenuMobile.url) ||
-                                submenuMobile.additionalPages?.some((page) =>
-                                  path.startsWith(page.url),
-                                )) &&
-                              'bg-primary-foreground'
-                            }`}
-                          >
-                            <Box className="flex items-center mr-3">{submenuMobile.icon}</Box>
-                            <Box
-                              as="p"
-                              className={`${
-                                (path.includes(submenuMobile.url) ||
-                                  submenuMobile.additionalPages?.some((page) =>
-                                    path.startsWith(page.url),
-                                  )) &&
-                                'font-semibold'
-                              } text-sm`}
-                            >
-                              {submenuMobile.name}
-                            </Box>
-                          </Box>
-                        ),
-                    )}
-                  </Box>
-                ),
-            )}
+                  ),
+              )}
+            </TooltipProvider>
           </Box>
         </Modal>
       ) : (
         <Box
-          className={`fixed top-0 left-0 h-full px-4 py-2 hidden sm:inline bg-white transition-transform duration-300 ease-out ${
+          className={`fixed top-0 left-0 hidden h-full border-r border-slate-200/80 bg-white shadow-[8px_0_24px_-22px_rgba(15,23,42,0.45)] transition-transform duration-300 ease-out sm:inline ${
             isMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
-          style={{ width: '20%' }}
+          style={{ width: '16rem' }}
         >
           <Box className="h-full flex flex-col">
-            <Box className="flex justify-center items-center">
-              <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'py-5 px-2 mb-3'}`}>
+            <Box className="flex min-h-[76px] items-center justify-center border-b border-slate-100 px-3 py-2">
+              <Box className={`${!!process.env.NEXT_PUBLIC_LOGO && 'px-2'}`}>
                 {/*TODO: change for customization in env*/}
                 {process.env.NEXT_PUBLIC_MODE === 'whitelable' ? (
                   <OptimizeImage
@@ -519,59 +623,52 @@ export const LayoutView = ({ children }: Readonly<{ children: React.ReactNode }>
                     height={100}
                     alt="whitelable-logo"
                     src={whitelableLogo}
+                    className="h-auto max-w-full !w-[180px]"
                   />
                 ) : (
                   <OptimizeImage
                     priority
-                    width={logoWidth}
-                    height={logoHeight}
+                    width={logoWidth ? Math.max(logoWidth, 185) : 185}
+                    height={logoHeight ? Math.max(logoHeight, 81) : 81}
                     alt="logo"
                     src={logo}
+                    className="h-auto max-w-full !w-[180px]"
                   />
                 )}
               </Box>
             </Box>
-            <Box className="overflow-y-auto sm:scrollable flex-1">
-              {AppMenu.menu.map(
-                (menu, menuIndex) =>
-                  menuList.includes(menu.name) && (
-                    <Box key={menuIndex} className="mb-5">
-                      <Box as="p" className="font-semibold mb-3 text-sm">
-                        {menu.name}
+            <Box className="sm:scrollable flex-1 overflow-y-auto px-3 py-3">
+              <TooltipProvider delayDuration={350}>
+                {AppMenu.menu.map(
+                  (menu, menuIndex) =>
+                    menuList.includes(menu.name) && (
+                      <Box key={menuIndex} className={`${menuIndex !== 0 && 'mt-3'} pb-2`}>
+                        <Box
+                          as="p"
+                          className="mb-1.5 px-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400"
+                        >
+                          {menu.name}
+                        </Box>
+                        {menu.submenu.map((submenu, submenuIndex) => {
+                          const isActive = isSubmenuActive(submenu);
+
+                          return (
+                            submenuList.includes(submenu.name) && (
+                              <SidebarMenuButton
+                                key={submenuIndex}
+                                icon={submenu.icon}
+                                isActive={isActive}
+                                name={submenu.name}
+                                onClick={() => goToPage(submenu.url)}
+                                tooltipSide="right"
+                              />
+                            )
+                          );
+                        })}
                       </Box>
-                      {menu.submenu.map(
-                        (submenu, submenuIndex) =>
-                          submenuList.includes(submenu.name) && (
-                            <Box
-                              key={submenuIndex}
-                              onClick={() => goToPage(submenu.url)}
-                              className={`flex items-center justify-start p-2 rounded-md hover:bg-primary-foreground cursor-pointer mb-3 ${
-                                (path == submenu.url ||
-                                  submenu.additionalPages?.some((page) =>
-                                    path.startsWith(page.url),
-                                  )) &&
-                                'bg-primary-foreground'
-                              }`}
-                            >
-                              <Box className="flex items-center mr-3">{submenu.icon}</Box>
-                              <Box
-                                as="p"
-                                className={`${
-                                  (path == submenu.url ||
-                                    submenu.additionalPages?.some((page) =>
-                                      path.startsWith(page.url),
-                                    )) &&
-                                  'font-semibold'
-                                } text-sm`}
-                              >
-                                {submenu.name}
-                              </Box>
-                            </Box>
-                          ),
-                      )}
-                    </Box>
-                  ),
-              )}
+                    ),
+                )}
+              </TooltipProvider>
             </Box>
           </Box>
         </Box>
