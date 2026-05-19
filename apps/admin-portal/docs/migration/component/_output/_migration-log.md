@@ -1501,3 +1501,21 @@ Action: To read more of the file, you can use the 'start_line' and 'end_line' pa
 - Shared-ui impact: `Combobox, Checkbox, DataTable, and Image are now adopted from @repo/ui in the user-form sub-components. No new @repo/ui exports are introduced; these primitives were already exported by the shared package.`
 - Verification note: `This logging update is based on the current git diff for all eight changed files. No new smoke, lint, or build evidence is added in this documentation entry.`
 - Tracker impact: `No page migration status changes. This entry records user-form component refactoring and auth service normalization work only; all route migration PASS/FAIL states remain as previously recorded.`
+
+
+## Batch 11 - RoleForm Permissions Table Layout and Text-Wrapping Polish - 2026-05-19
+
+- Component focus: `RoleForm`
+- Migration intent: `Tighten the permissions table column widths, normalize horizontal cell padding, fix the permission checkbox grid to prevent column overflow on long permission names, and make permission tags in read-only view wrap long text gracefully instead of clipping.`
+- Component-local behavior updates:
+  - `apps/admin-portal/src/components/forms/role-form/index.tsx` adds `min-w-[960px]` to the `Table` root class, establishing a hard minimum width that prevents the three-column permissions table from collapsing below readable size on narrower viewports.
+  - The Menu column `TableCell` in both the editable and read-only row states changes its width classes from `min-w-48 w-80` to `w-[300px] min-w-[260px]` and its right padding from `pr-1` to `pr-3`, matching the pixel-precise column width used in the user-form permission tables and providing consistent gutter spacing between the menu and permission columns.
+  - The Permission column `TableCell` in both the editable and read-only row states gains an explicit `min-w-[520px]` constraint (previously unconstrained) and its horizontal padding is widened from `px-1` to `px-3` to match the Menu column gutter.
+  - The editable-state permission checkbox grid changes its column template from `grid-cols-[repeat(auto-fill,minmax(180px,1fr))]` to `grid-cols-[repeat(auto-fit,minmax(240px,1fr))]`, widens the minimum column track from 180 px to 240 px to prevent excessive wrapping, and adds `min-w-0` to the grid container so it participates correctly in flex/grid shrink calculations. The border-radius on the checkbox container is normalized from `rounded-xl` to `rounded-lg` for visual consistency with other card elements.
+  - The `Checkbox` components inside the permission grid receive `min-w-0` on `className` and `min-w-0 whitespace-normal break-words leading-5` on `labelClassName`, ensuring long permission name strings wrap to multiple lines rather than overflowing or being truncated.
+  - In the read-only row state, the permission tag `Box as="span"` container gains `max-w-full` and changes `items-center` to `items-start` so the inline delete button aligns to the first line when the permission name wraps. The permission name text is promoted from a bare text node to a `Box as="span"` with `min-w-0 break-words leading-5`, preventing tag overflow on long names. The delete `Button` inside each tag gains `shrink-0` so it does not compress when the tag container is narrow.
+  - Import order is corrected: `ContentLoadingWrapper` is moved above `PageHeader` to follow the alphabetical ordering used across other form components (no functional change).
+- Files changed: [`apps/admin-portal/src/components/forms/role-form/index.tsx`]
+- Shared-ui impact: `No @repo/ui exports are added or changed. All primitives used (Combobox, Checkbox, Table family, Textarea) were already adopted in this component prior to this entry.`
+- Verification note: `This logging update is based on the current git diff for the single changed file. No new smoke, lint, or build evidence is added in this documentation entry.`
+- Tracker impact: `No page migration status changes. This entry records visual polish and layout correctness fixes to the role-form permissions table only; all route migration PASS/FAIL states remain as previously recorded.`

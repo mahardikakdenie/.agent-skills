@@ -19,8 +19,8 @@ import {
   Textarea,
 } from '@repo/ui';
 
-import { PageHeader } from '@/components/core/page-header';
 import { ContentLoadingWrapper } from '@/components/core/loading';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 
 interface MenuPermissionForm {
@@ -243,7 +243,7 @@ export default function RoleForm({
               </Box>
 
               <Box className="w-full bg-white rounded-lg overflow-auto shadow-sm border border-slate-100">
-                <Table className="table-search-params border-collapse">
+                <Table className="table-search-params min-w-[960px] border-collapse">
                   <TableHeader className="bg-[#0073A8] hover:bg-[#0073A8] border-none">
                     <TableRow className="hover:bg-transparent border-none">
                       <TableHead className="whitespace-nowrap py-3 pl-4 pr-1 text-white font-bold h-11 border-none">
@@ -272,7 +272,7 @@ export default function RoleForm({
                         >
                           {item.isEditable ? (
                             <>
-                              <TableCell className="min-w-48 w-80 py-4 pl-4 pr-1 border-none align-top">
+                              <TableCell className="w-[300px] min-w-[260px] py-4 pl-4 pr-3 border-none align-top">
                                 <Controller
                                   name={`menu.${indexPage}` as const}
                                   control={control}
@@ -294,12 +294,12 @@ export default function RoleForm({
                                 />
                               </TableCell>
 
-                              <TableCell className="py-4 px-1 border-none">
+                              <TableCell className="min-w-[520px] py-4 px-3 border-none">
                                 <Controller
                                   name={`permission.${indexPage}` as const}
                                   control={control}
                                   render={({ field }) => (
-                                    <Box className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-x-6 gap-y-3 bg-white border border-slate-200 px-4 py-4 min-h-[48px] rounded-xl shadow-sm group-hover:border-blue-200 transition-all duration-200">
+                                    <Box className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-5 gap-y-3 bg-white border border-slate-200 px-4 py-4 min-h-[48px] rounded-lg shadow-sm group-hover:border-blue-200 transition-all duration-200">
                                       {permissionOptions[item.menuId]?.map(
                                         (perm: MenuPermissionOption, index: number) => (
                                           <Checkbox
@@ -313,8 +313,8 @@ export default function RoleForm({
                                                 indexPage,
                                               );
                                             }}
-                                            labelClassName="text-slate-600 font-medium"
-                                            className="hover:text-primary transition-colors"
+                                            labelClassName="min-w-0 whitespace-normal break-words text-slate-600 font-medium leading-5"
+                                            className="min-w-0 hover:text-primary transition-colors"
                                           />
                                         ),
                                       )}
@@ -348,10 +348,10 @@ export default function RoleForm({
                             </>
                           ) : (
                             <>
-                              <TableCell className="py-4 pl-4 pr-1 border-none font-semibold text-slate-800 align-top pt-5">
+                              <TableCell className="w-[300px] min-w-[260px] py-4 pl-4 pr-3 border-none font-semibold text-slate-800 align-top pt-5">
                                 {item.menu}
                               </TableCell>
-                              <TableCell className="py-4 px-1 border-none">
+                              <TableCell className="min-w-[520px] py-4 px-3 border-none">
                                 <Box className="flex flex-wrap gap-2">
                                   {permissionOptions[item.menuId]?.map(
                                     (perm: MenuPermissionOption) => {
@@ -360,14 +360,19 @@ export default function RoleForm({
                                           <Box
                                             as="span"
                                             key={perm.id}
-                                            className="inline-flex items-center gap-2 rounded-full bg-slate-50 border border-slate-200 py-1.5 px-4 text-sm font-medium text-slate-700 shadow-sm"
+                                            className="inline-flex max-w-full items-start gap-2 rounded-full bg-slate-50 border border-slate-200 py-1.5 px-4 text-sm font-medium text-slate-700 shadow-sm"
                                           >
-                                            {perm.permissions.name}
+                                            <Box
+                                              as="span"
+                                              className="min-w-0 break-words leading-5"
+                                            >
+                                              {perm.permissions.name}
+                                            </Box>
                                             <Button
                                               type="button"
                                               variant="ghost"
                                               size="xs"
-                                              className="h-5 w-5 p-0 rounded-full text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors"
+                                              className="h-5 w-5 shrink-0 p-0 rounded-full text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors"
                                               onClick={() => onDeletePermission(perm.id)}
                                             >
                                               <X className="w-3.5 h-3.5" />
