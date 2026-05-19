@@ -1,8 +1,8 @@
 import { StaticImageData } from 'next/image';
-import { Plus, X, Search, ChevronLeft, ChevronRight, Check, Trash2 } from 'react-feather';
-import { useParams } from 'react-router-dom';
+import React from 'react';
+import { Check, Plus, Search, Trash2, X } from 'react-feather';
 
-import { Box, Button } from '@repo/ui';
+import { Box, Button, Checkbox, DataTable, Image, Input, type ColumnDef } from '@repo/ui';
 import {
   Dialog,
   DialogClose,
@@ -12,16 +12,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@repo/ui';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableFooter,
-} from '@repo/ui';
-import { Input } from '@repo/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@repo/ui';
+
+import { CompactTablePagination } from '@/components/core/compact-table-pagination';
 
 export const UserGroups = (props: {
   userGroup: any[];
@@ -38,7 +31,7 @@ export const UserGroups = (props: {
   handleCheckboxChange: (id: string) => void;
   isGroupSelected: (id: string) => boolean;
   rowsPerPageGroup: number;
-  handleRowsPerPageChangeGroup: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleRowsPerPageChangeGroup: (pageSize: number) => void;
   totalItemsRoles: number;
   setPageRoles: (value: number | ((prevState: number) => number)) => void;
   page: number;
@@ -57,6 +50,7 @@ export const UserGroups = (props: {
     handleSelectGroup,
     isModalOpen,
     setIsModalOpen,
+    handleFilterGroup,
     handleSelectAllChange,
     handleCheckboxChange,
     isGroupSelected,
@@ -73,38 +67,97 @@ export const UserGroups = (props: {
     id,
   } = props;
 
+  const groupModalColumns = React.useMemo<ColumnDef<any>[]>(
+    () => [
+      {
+        id: 'select',
+        header: () => (
+          <Checkbox
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAllChange}
+            className="justify-start"
+          />
+        ),
+        enableSorting: false,
+        enableResizing: false,
+        size: 40,
+        minSize: 40,
+        meta: {
+          headerCellClassName: 'w-10 whitespace-nowrap text-left',
+          cellClassName: 'w-10 text-left align-middle',
+          cellContentClassName: 'flex items-center justify-start',
+        },
+        cell: ({ row }) => {
+          const group = row.original;
+
+          return (
+            <Box onClick={(event) => event.stopPropagation()}>
+              <Checkbox
+                checked={isGroupSelected(group.id)}
+                onCheckedChange={() => handleCheckboxChange(group.id)}
+                className="justify-start"
+              />
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'name',
+        accessorFn: (group) => group?.name || '-',
+        header: 'Group Name',
+        enableSorting: false,
+        size: 420,
+        minSize: 240,
+        meta: {
+          cellClassName: 'align-middle',
+          cellContentClassName: 'whitespace-normal break-words',
+        },
+        cell: ({ row }) => {
+          const group = row.original;
+
+          return (
+            <Box
+              className="min-w-0 cursor-pointer break-words text-sm font-medium leading-5 text-slate-900"
+              onClick={() => handleCheckboxChange(group.id)}
+            >
+              {group?.name || '-'}
+            </Box>
+          );
+        },
+      },
+    ],
+    [handleCheckboxChange, handleSelectAllChange, isAllSelected, isGroupSelected],
+  );
+
   return (
-    <Box className="p-4 sm:p-6 bg-white rounded-lg gap-4">
+    <Box className="p-4 sm:p-6 bg-white rounded-lg flex flex-col gap-4 shadow-sm border border-slate-100">
       <Box className="flex gap-4 items-center">
         <Box>
           <Box className="text-primary font-bold mb-2">User&apos;s Group ({userGroup.length})</Box>
-          <Box as="p" className="text-sm text-black/60">
-            <i>
-              All the users in the group will have permissions that are defined in the selected
-              group roles
-            </i>
+          <Box as="p" className="text-sm text-black/60 italic">
+            All the users in the group will have permissions that are defined in the selected group
+            roles
           </Box>
         </Box>
         <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <DialogTrigger asChild>
             <Button
-              color="warning"
+              type="button"
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#F5BA41] text-black hover:bg-[#e6a92d] rounded-full ml-auto w-36"
+              className="h-10 rounded-full px-5 text-black ml-auto bg-[#F5BA41] hover:bg-[#e6a92d]"
+              leftIcon={<Plus className="w-5 h-5" />}
             >
-              <Plus className="w-4 h-4 mr-2" /> Assign Group
+              Assign Group
             </Button>
           </DialogTrigger>
-          <DialogContent
-            style={{ zIndex: 100 }}
-            className="p-0 w-[1000px] max-w-full overflow-hidden"
-          >
-            <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
+          <DialogContent className="flex max-h-[calc(100vh-48px)] w-[1000px] max-w-full flex-col overflow-hidden p-0">
+            <DialogHeader className="shrink-0 bg-[#F8F8F8] py-3 px-4 sm:px-6">
               <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
                 Select Group
                 <DialogClose className="ml-auto">
                   <Button
                     type="button"
+                    variant="ghost"
                     className="bg-transparent hover:bg-transparent text-black p-0"
                   >
                     <X className="w-5 h-5" />
@@ -113,142 +166,108 @@ export const UserGroups = (props: {
               </DialogTitle>
             </DialogHeader>
 
-            <Box className="p-4">
-              <Box className="grid gap-4 mb-4">
-                <Box className="relative">
-                  <Input
-                    type="text"
-                    placeholder="Search"
-                    value={groupFilter}
-                    onChange={(e) => setGroupFilter(e.target.value)}
-                    className="px-4 text-sm border rounded-lg h-11"
-                  />
-                  <Search className="w-5 h-5 absolute right-3 top-3 text-gray-600" />
-                </Box>
+            <Box className="min-h-0 flex-1 overflow-y-auto p-4">
+              <Box className="mb-4">
+                <Input
+                  aria-label="Group Name"
+                  size="lg"
+                  type="text"
+                  placeholder="Search Group Name"
+                  value={groupFilter}
+                  onValueChange={(value) => {
+                    setGroupFilter(value);
+                    handleFilterGroup(value);
+                  }}
+                  rightIcon={<Search className="w-5 h-5 text-gray-500" />}
+                  clearable
+                  className="bg-white pr-3"
+                />
               </Box>
 
-              <Table className="table-claims">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="whitespace-nowrap py-2 w-14">
-                      <Input
-                        type="checkbox"
-                        checked={isAllSelected}
-                        onChange={handleSelectAllChange}
-                        className="w-4 h-4 mx-auto"
-                      />
-                    </TableHead>
-                    <TableHead className="py-2">Group Name</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {group.length > 0 ? (
-                    group.map((group: any, index: number) => (
-                      <TableRow
-                        key={index}
-                        className="cursor-pointer"
-                        onClick={() => handleCheckboxChange(group.id)}
-                      >
-                        <TableCell align="center">
-                          <Input
-                            type="checkbox"
-                            checked={isGroupSelected(group.id)}
-                            className="w-4 h-4"
-                          />
-                        </TableCell>
-                        <TableCell>{group?.name || '-'}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow className="hover:!bg-white">
-                      <TableCell colSpan={10}>
-                        <Box className="flex flex-col gap-4 items-center justify-center py-14">
-                          <Box as="img" alt="no data" src={noData.src} width={200} />
-                          No transaction data available
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={8}>
-                      <Box className="flex justify-center items-center gap-2 font-normal">
-                        <Box as="label" htmlFor="rowsPerPageGroup">
-                          Showing:
-                        </Box>
-                        <Box
-                          as="select"
-                          id="rowsPerPageGroup"
-                          value={rowsPerPageGroup}
-                          onChange={handleRowsPerPageChangeGroup}
-                          className="p-2 border rounded"
-                        >
-                          {[10, 20, 30, 50].map((option, index) => (
-                            <Box as="option" key={index} value={option}>
-                              {option}
-                            </Box>
-                          ))}
-                        </Box>
-                        <Box as="span" className="mr-2">
-                          of {totalItemsRoles} items
-                        </Box>
-                        <Box
-                          as="button"
-                          onClick={() => setPageRoles((prevState) => Math.max(prevState - 1, 1))}
-                          disabled={page === 1}
-                          title="Prev"
-                        >
-                          <ChevronLeft />
-                        </Box>
-                        <Box
-                          as="button"
-                          onClick={() =>
-                            setPageRoles((prevState) => Math.min(prevState + 1, totalPages))
-                          }
-                          disabled={page === totalPages}
-                          title="Next"
-                        >
-                          <ChevronRight />
-                        </Box>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
+              <DataTable
+                className="!gap-3 [&_td]:px-4 [&_td]:py-3 [&_th]:px-4 [&_th]:py-2.5"
+                data={group}
+                columns={groupModalColumns}
+                pagination={{
+                  pageIndex: page - 1,
+                  pageSize: rowsPerPageGroup,
+                  pageCount: Math.max(totalPages, 1),
+                  rowCount: totalItemsRoles,
+                  onPageChange: (pageIndex) => setPageRoles(pageIndex + 1),
+                  onPageSizeChange: (pageSize) => handleRowsPerPageChangeGroup(pageSize),
+                }}
+                pageSizeOptions={[10, 20, 30, 50]}
+                getRowClassName={({ row }) =>
+                  selectedUserGroups.includes(row.original.id)
+                    ? 'bg-slate-50 hover:!bg-slate-50'
+                    : undefined
+                }
+                emptyState={
+                  <Box className="sticky left-0 flex min-h-[14rem] w-[100cqw] items-center justify-center py-6">
+                    <Box className="flex flex-col items-center justify-center gap-3">
+                      <Image alt="no data" src={noData.src} width={180} fit="contain" />
+                      <Box as="span">No groups available</Box>
+                    </Box>
+                  </Box>
+                }
+                renderPagination={(table) => (
+                  <Box className="-mt-1">
+                    <CompactTablePagination table={table} pageSizeOptions={[10, 20, 30, 50]} />
+                  </Box>
+                )}
+                tableOptions={{
+                  manualPagination: true,
+                  enableColumnResizing: false,
+                  defaultColumn: {
+                    minSize: 56,
+                    size: 160,
+                  },
+                  getRowId: (group, index) => group?.id || `group-row-${index}`,
+                }}
+              />
             </Box>
 
-            <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-                  onClick={handleAddSelectedGroups}
-                >
-                  <Check className="w-4 h-4 mr-2" /> Save
-                </Button>
-              </DialogClose>
+            <DialogFooter className="shrink-0 sm:justify-center justify-center pb-4 sm:pb-6">
+              <Button
+                type="button"
+                className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+                onClick={handleAddSelectedGroups}
+                disabled={selectedUserGroups.length === 0}
+                leftIcon={<Check className="w-4 h-4" />}
+              >
+                Save
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </Box>
 
       {userGroup.length > 0 && (
-        <Box className="w-full bg-white rounded-lg overflow-auto mt-5">
-          <Table className="table-search-params">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="whitespace-nowrap py-2 w-52">Group</TableHead>
-                <TableHead className="py-2">Role</TableHead>
-                <TableHead className="py-2"></TableHead>
+        <Box className="w-full bg-white rounded-lg overflow-auto mt-1">
+          <Table className="table-search-params border-collapse">
+            <TableHeader className="bg-[#0073A8] hover:bg-[#0073A8] border-none">
+              <TableRow className="hover:bg-transparent border-none">
+                <TableHead className="whitespace-nowrap py-3 pl-4 pr-1 w-52 text-white font-bold h-11 border-none">
+                  Group
+                </TableHead>
+                <TableHead className="py-3 px-1 text-white font-bold h-11 border-none">
+                  Role
+                </TableHead>
+                <TableHead className="py-3 pl-1 pr-4 w-20 text-center text-white font-bold h-11 border-none">
+                  Action
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {userGroup.map((group, index) => (
-                <TableRow key={index}>
-                  <TableCell className="py-1">{group?.groups?.name || '-'}</TableCell>
-                  <TableCell className="py-1">
+                <TableRow
+                  key={group.id || index}
+                  className="transition-all duration-200 border-b border-slate-100 last:border-0 hover:bg-slate-50/80"
+                >
+                  <TableCell className="py-4 pl-4 pr-1 border-none font-semibold text-slate-800">
+                    {group?.groups?.name || '-'}
+                  </TableCell>
+                  <TableCell className="py-4 px-1 border-none">
                     <Box className="flex flex-wrap gap-2">
                       {group?.groups?.group_roles?.length > 0
                         ? group.groups.group_roles.map((groupRole: any, indexY: number) => (
@@ -263,9 +282,12 @@ export const UserGroups = (props: {
                         : '-'}
                     </Box>
                   </TableCell>
-                  <TableCell className="py-1 text-center">
+                  <TableCell className="py-4 pl-1 pr-4 text-center border-none">
                     <Button
-                      className="text-red-500 hover:text-red-700 bg-transparent hover:bg-transparent p-0"
+                      type="button"
+                      variant="ghost"
+                      size="xs"
+                      className="h-9 w-9 p-0 rounded-full text-slate-600 hover:bg-red-50 hover:!text-red-600 active:!text-red-700 transition-all border border-transparent hover:border-red-100"
                       onClick={(e) => {
                         e.preventDefault();
                         handleDeleteSelectedGroup(group.id);

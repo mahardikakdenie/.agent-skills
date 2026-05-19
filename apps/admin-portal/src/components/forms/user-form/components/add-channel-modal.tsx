@@ -1,28 +1,20 @@
-import { X, Check } from 'react-feather';
+import React from 'react';
+import { Check, X } from 'react-feather';
 
-import { Box, Button } from '@repo/ui';
+import { Box, Button, Combobox } from '@repo/ui';
 import {
-  DialogHeader,
-  DialogFooter,
-  DialogContent,
   Dialog,
   DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
 } from '@repo/ui';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui';
-import { Spinner } from '@repo/ui';
 
 export const ChannelModal = (props: {
   isChannelModalOpen: boolean;
   setIsChannelModalOpen: (open: boolean) => void;
-  accountChannels: any[];
+  accountChannels: Array<{ id: string; name: string }>;
   selectedChannels: string[];
   setSelectedChannels: (channels: string[]) => void;
   channelsLoading: boolean;
@@ -37,66 +29,59 @@ export const ChannelModal = (props: {
     channelsLoading,
     handleAddSelectedChannels,
   } = props;
+
+  const channelOptions = React.useMemo(
+    () =>
+      accountChannels.map((channel) => ({
+        label: channel?.name || '-',
+        value: String(channel?.id || ''),
+      })),
+    [accountChannels],
+  );
+
   return (
     <Dialog open={isChannelModalOpen} onClose={() => setIsChannelModalOpen(false)}>
-      <DialogContent className="p-0 w-[1000px] max-w-full overflow-hidden">
-        <DialogHeader className="bg-[#F8F8F8] py-3 px-4 sm:px-6">
-          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center justify-between">
+      <DialogContent className="flex max-h-[calc(100vh-48px)] w-[1000px] max-w-full flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 bg-[#F8F8F8] py-3 px-4 sm:px-6">
+          <DialogTitle className="text-[#016DA1] text-sm sm:text-base flex items-center">
             Select Channel
-            <DialogClose>
-              <Button type="button" className="bg-transparent hover:bg-transparent text-black p-0">
+            <DialogClose className="ml-auto">
+              <Button
+                type="button"
+                variant="ghost"
+                className="bg-transparent hover:bg-transparent text-black p-0"
+              >
                 <X className="w-5 h-5" />
               </Button>
             </DialogClose>
           </DialogTitle>
         </DialogHeader>
 
-        <Box className="p-4">
-          <Box className="grid gap-4">
-            {channelsLoading ? (
-              <Box className="flex justify-center items-center py-4">
-                <Spinner
-                  inline
-                  className="[&_[data-slot=spinner-icon]]:size-10 [&_[data-slot=spinner-icon]]:text-blue-500"
-                />
-                Loading...
-              </Box>
-            ) : (
-              <Select
-                onValueChange={(value) => {
-                  const selectedChannel = accountChannels.find((channel) => channel.id === value);
-                  if (selectedChannel) {
-                    setSelectedChannels([value]);
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a channel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {accountChannels.map((channel) => (
-                      <SelectItem key={channel.id} value={channel.id}>
-                        {channel.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          </Box>
+        <Box className="min-h-0 flex-1 overflow-y-auto p-4">
+          <Combobox
+            aria-label="Channel"
+            size="lg"
+            value={selectedChannels[0] || ''}
+            options={channelOptions}
+            placeholder="Select Channel"
+            searchPlaceholder="Search Channel"
+            loading={channelsLoading}
+            clearable
+            onValueChange={(value) => setSelectedChannels(value ? [value] : [])}
+            triggerClassName="bg-white"
+          />
         </Box>
 
-        <DialogFooter className="sm:justify-center justify-center pb-4 sm:pb-6">
-          <DialogClose asChild>
-            <Button
-              type="button"
-              className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
-              onClick={() => handleAddSelectedChannels(selectedChannels)}
-            >
-              <Check className="w-4 h-4 mr-2" /> Save
-            </Button>
-          </DialogClose>
+        <DialogFooter className="shrink-0 sm:justify-center justify-center pb-4 sm:pb-6">
+          <Button
+            type="button"
+            className="bg-[#f1ac2d] hover:bg-[#dba237] rounded-full text-black"
+            onClick={() => handleAddSelectedChannels(selectedChannels)}
+            disabled={selectedChannels.length === 0}
+            leftIcon={<Check className="w-4 h-4" />}
+          >
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

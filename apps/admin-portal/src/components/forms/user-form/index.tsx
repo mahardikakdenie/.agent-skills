@@ -4,8 +4,8 @@ import { Check, Save } from 'react-feather';
 import { Box, Button } from '@repo/ui';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@repo/ui';
 
-import { PageHeader } from '@/components/core/page-header';
 import { ContentLoadingWrapper } from '@/components/core/loading';
+import { PageHeader } from '@/components/core/page-header';
 import AppURL from '@/constants/app-url.const';
 
 import { ChannelModal } from './components/add-channel-modal';
@@ -348,8 +348,8 @@ export function UserFormWrapper({
                   handleCheckboxChange={handleCheckboxChangeGroup}
                   isGroupSelected={isGroupSelected}
                   rowsPerPageGroup={rowsPerPageGroup}
-                  handleRowsPerPageChangeGroup={(e) => {
-                    setRowsPerPageGroup(Number(e.target.value));
+                  handleRowsPerPageChangeGroup={(pageSize) => {
+                    setRowsPerPageGroup(pageSize);
                     setPageGroups(1);
                   }}
                   totalItemsRoles={filteredGroups.length}
@@ -366,6 +366,7 @@ export function UserFormWrapper({
               {onAddRole && onDeleteRole && (
                 <UserRoles
                   groupRole={groupRoles}
+                  selectedRoles={selectRole}
                   isModalOpenUser={isModalOpenUser}
                   setIsModalOpenUser={setIsModalOpenUser}
                   handleSelectRole={setSelectRole}
@@ -380,8 +381,8 @@ export function UserFormWrapper({
                   isUserSelected={isRoleSelected}
                   noData={noData}
                   rowsPerPage={rowsPerPageRole}
-                  handleRowsPerPageChange={(e) => {
-                    setRowsPerPageRole(Number(e.target.value));
+                  handleRowsPerPageChange={(pageSize) => {
+                    setRowsPerPageRole(pageSize);
                     setPageRoles(1);
                   }}
                   totalItemsUser={filteredRoles.length}
