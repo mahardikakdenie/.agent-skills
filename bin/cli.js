@@ -35,6 +35,25 @@ try {
   // Copy recursive
   fs.cpSync(sourceDir, targetDir, { recursive: true, force: true });
 
+  // Update .gitignore
+  const gitignorePath = path.resolve(process.cwd(), '.gitignore');
+  const gitignoreEntry = '\n# AI Agent Skills\n.agents\n';
+
+  try {
+    if (fs.existsSync(gitignorePath)) {
+      const content = fs.readFileSync(gitignorePath, 'utf8');
+      if (!content.includes('.agents')) {
+        fs.appendFileSync(gitignorePath, gitignoreEntry);
+        console.log('📝 Added .agents to .gitignore');
+      }
+    } else {
+      fs.writeFileSync(gitignorePath, gitignoreEntry);
+      console.log('📝 Created .gitignore and added .agents');
+    }
+  } catch (err) {
+    console.warn('⚠️  Could not update .gitignore automatically. Please add .agents to your .gitignore manually.');
+  }
+
   console.log('✅ Success! The .agents directory has been successfully integrated into your project.');
   console.log('💡 Your AI Assistant is now equipped with your project\'s engineering standards and architectural patterns.');
 } catch (error) {
