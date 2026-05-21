@@ -1,6 +1,6 @@
 {
   "name": "@mahardikakdenie/agent-skills",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Run via npx: npx @mahardikakdenie/agent-skills - Instant AI Agent Skills for your project",
   "type": "module",
   "bin": {
