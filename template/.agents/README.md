@@ -76,4 +76,4 @@ Cursor uses rules defined in `.cursor/rules/*.mdc` which reference the `.agents/
 
 ---
 
-*This system is designed to ensure the AI is not just a typing assistant, but a collaborative developer that deeply understands our architecture.*
+*Maintained and updated by the **PT FriendsureTech Developer Team**. Empowering seamless AI-Human collaboration.*

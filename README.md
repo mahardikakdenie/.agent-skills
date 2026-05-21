@@ -86,4 +86,4 @@ We welcome updates to existing skills or new skill additions!
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-*Maintained by **mahardikakdenie**. Empowering AI-Human collaboration.*
+*Maintained and updated by the **PT FriendsureTech Developer Team**. Empowering seamless AI-Human collaboration.*
