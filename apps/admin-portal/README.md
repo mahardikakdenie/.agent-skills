@@ -1,63 +1,48 @@
-## Description
+# Admin Portal
 
-The internal portal is a platform used to manage various data within our system. It features fine-grained role management, allowing precise control over access to specific resources or actions. The data managed within the portal includes:
-
-- **Transaction Management**
-- **Product Catalog Management**
-- **Claim Management**
-- **Promotion Management**
-- **Roles Management**
-- **Master Data Management**
+Internal operations portal for Friendsuretech. Manages transactions, policies, claims, membership, sanctions, promotions, product catalog, finance workflows, master data, reports, and configuration pages. Access is permission-driven via JWT.
 
 ## Getting Started
 
-First, run the development server:
+Run from the **repository root**:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm --filter admin-portal dev
+pnpm --filter admin-portal dev:https   # HTTPS dev server
 ```
 
-## Environment Configuration
+Open [http://localhost:3000](http://localhost:3000).
 
-Create a `.env` file in the project root and configure the following variables:
+## Environment
 
-```env
-NEXT_PUBLIC_AUTH_TOKEN=
-NEXT_PUBLIC_AUTH_SERVICE_URL=
-NEXT_PUBLIC_TRANSACTION_SERVICE_URL=
-NEXT_PUBLIC_PRODUCT_SERVICE_URL=
-NEXT_PUBLIC_PROMOTION_SERVICE_URL=
-NEXT_PUBLIC_CHANNEL_SERVICE_URL=
-NEXT_PUBLIC_API_POLICY_BASE_URL=
-NEXT_PUBLIC_API_CLAIM_BASE_URL=
-NEXT_PUBLIC_SANCTION_SERVICE_URL=
-NEXT_PUBLIC_COUNTRY_SERVICE_URL=
-NEXT_PUBLIC_FINANCE_SERVICE_URL=
+Copy `.env.example` and fill in the values:
+
+```bash
+cp apps/admin-portal/.env.example apps/admin-portal/.env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+See [`AGENTS.md`](./AGENTS.md) for the full list of required env vars and their purpose.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Other Commands
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+pnpm --filter admin-portal lint
+pnpm --filter admin-portal check-types
+pnpm --filter admin-portal build
+```
 
-## Learn More
+## Docker
 
-To learn more about Next.js, take a look at the following resources:
+Build and run from the monorepo root:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+docker build -f apps/admin-portal/Dockerfile -t admin-portal:local .
+docker run -p 3000:3000 --env-file apps/admin-portal/.env admin-portal:local
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## References
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [`AGENTS.md`](./AGENTS.md) — development conventions, directory map, routing rules, service patterns, and change checklist
+- [`docs/SERVICE_ARCHITECTURE.md`](./docs/SERVICE_ARCHITECTURE.md) — service layer architecture
+- [`docs/SERVICE_IMPLEMENTATION_GUIDE.md`](./docs/SERVICE_IMPLEMENTATION_GUIDE.md) — step-by-step service implementation
+- [`docs/SERVICE_REACTQUERY_PATTERNS.md`](./docs/SERVICE_REACTQUERY_PATTERNS.md) — TanStack Query patterns
