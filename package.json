@@ -22,5 +22,13 @@
     "automation"
   ],
   "author": "PT FriendsureTech Developer Team",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mahardikakdenie/.agent-skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mahardikakdenie/.agent-skills/issues"
+  },
+  "homepage": "https://github.com/mahardikakdenie/.agent-skills#readme"
 }
