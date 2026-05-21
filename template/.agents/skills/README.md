@@ -659,3 +659,7 @@ specific concern.
 └── web-design-guidelines/
     └── SKILL.md
 ```
+
+---
+
+*Maintained and updated by the **PT FriendsureTech Developer Team**. Empowering seamless AI-Human collaboration.*
