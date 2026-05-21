@@ -66,7 +66,7 @@ The CLI currently bundles **13 specialized skills**:
 1. The tool identifies your project root.
 2. It copies the structured `.agents/` knowledge base into your repo.
 3. Your AI assistant detects these files (via `CLAUDE.md`, `.cursorrules`, or Gemini's auto-discovery).
-4. Profit! Your AI is now an expert in your specific tech stack.
+4. **Ready to go!** Your AI assistant is now fully aligned with your specific technical stack and architectural standards.
 
 ---
 

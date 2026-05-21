@@ -1,6 +1,6 @@
 {
   "name": "@mahardikakdenie/agent-skills",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "CLI to inject AI Agent Skills into your project",
   "type": "module",
   "bin": {

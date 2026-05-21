@@ -35,8 +35,8 @@ try {
   // Copy recursive
   fs.cpSync(sourceDir, targetDir, { recursive: true, force: true });
 
-  console.log('✅ Success! Folder .agents has been added to your project.');
-  console.log('💡 Your AI Assistant is now much smarter and understands your codebase standards!');
+  console.log('✅ Success! The .agents directory has been successfully integrated into your project.');
+  console.log('💡 Your AI Assistant is now equipped with your project\'s engineering standards and architectural patterns.');
 } catch (error) {
   console.error('❌ Failed to copy skills:', error.message);
   process.exit(1);
