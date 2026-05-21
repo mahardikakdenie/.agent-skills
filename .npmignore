@@ -1,0 +1,4 @@
+.vscode/
+.git/
+test-injection/
+npx-cli-implementation-plan.md

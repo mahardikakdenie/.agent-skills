@@ -1,0 +1,26 @@
+{
+  "name": "@mahardikakdenie/agent-skills",
+  "version": "1.0.1",
+  "description": "CLI to inject AI Agent Skills into your project",
+  "type": "module",
+  "bin": {
+    "agent-skills": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "template"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "skills",
+    "cli",
+    "npx",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT"
+}
