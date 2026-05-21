@@ -35,19 +35,19 @@ There are **13 skills** in this directory. Load each based on task context.
 
 | Skill                                                         | Directory                             | Load when you are…                                                                                                                                                                        |
 | ------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`monorepo-workspace`](#monorepo-workspace)                   | `skills/monorepo-workspace/`          | Touching any package boundary, writing imports, using turbo CLI, adding a new package/app, or uncertain where a file belongs                                                              |
-| [`react-query`](#react-query)                                 | `skills/react-query/`                 | Writing or reviewing any `useQuery`, `useMutation`, service hook, API client, query key, or `QueryClient` setup                                                                           |
-| [`forms-validation`](#forms-validation)                       | `skills/forms-validation/`            | Working on any form: `react-hook-form`, `zod`, `Controller`, `useFieldArray`, or form submission with TanStack Query                                                                      |
-| [`design-system`](#design-system)                             | `skills/design-system/`               | Building or editing components in `packages/ui`, defining tokens, writing CVA variants, or reviewing shared-vs-local boundary                                                             |
-| [`systematic-debugging`](#systematic-debugging)               | `skills/systematic-debugging/`        | Encountering any bug, test failure, or unexpected behavior — **skip if the root cause is already obvious**                                                                                |
-| [`turborepo`](#turborepo)                                     | `skills/turborepo/`                   | Configuring `turbo.json`, writing pipeline tasks, using `--filter`, optimizing CI caching, or debugging turbo cache                                                                       |
-| [`next-best-practices`](#next-best-practices)                 | `skills/next-best-practices/`         | Writing or reviewing any Next.js App Router code: RSC boundaries, async APIs, data fetching, metadata, images, error handling                                                             |
-| [`next-cache-components`](#next-cache-components)             | `skills/next-cache-components/`       | Working with Next.js 16+ `use cache` directive, Cache Components (PPR), `cacheLife`, `cacheTag`, or `updateTag`                                                                           |
-| [`next-upgrade`](#next-upgrade)                               | `skills/next-upgrade/`                | Upgrading Next.js to a new major version, running codemods, or reviewing breaking changes                                                                                                 |
-| [`vercel-react-best-practices`](#vercel-react-best-practices) | `skills/vercel-react-best-practices/` | Writing or refactoring React/Next.js components and applying the 45 Vercel Engineering rules: async waterfalls, bundle size, re-renders, server-side data fetching, rendering performance |
-| [`vercel-composition-patterns`](#vercel-composition-patterns) | `skills/vercel-composition-patterns/` | Designing or reviewing component APIs, refactoring boolean-prop-heavy components, building compound components or context providers                                                       |
-| [`agent-browser`](#agent-browser)                             | `skills/agent-browser/`               | Automating browser tasks: smoke testing routes, visual parity verification, form automation, session management, or data extraction                                                       |
-| [`web-design-guidelines`](#web-design-guidelines)             | `skills/web-design-guidelines/`       | Explicitly auditing UI for accessibility and UX compliance against Vercel's Web Interface Guidelines                                                                                      |
+| [`monorepo-workspace`](#monorepo-workspace)                   | `.agents/skills/monorepo-workspace/`          | Touching any package boundary, writing imports, using turbo CLI, adding a new package/app, or uncertain where a file belongs                                                              |
+| [`react-query`](#react-query)                                 | `.agents/skills/react-query/`                 | Writing or reviewing any `useQuery`, `useMutation`, service hook, API client, query key, or `QueryClient` setup                                                                           |
+| [`forms-validation`](#forms-validation)                       | `.agents/skills/forms-validation/`            | Working on any form: `react-hook-form`, `zod`, `Controller`, `useFieldArray`, or form submission with TanStack Query                                                                      |
+| [`impeccable`](#impeccable)                                   | `.agents/skills/impeccable/`                  | Designing, redesigning, auditing, polishing, or improving frontend interfaces: websites, dashboards, app shells, components, forms, onboarding, empty states, visual hierarchy, and motion |
+| [`design-system`](#design-system)                             | `.agents/skills/design-system/`               | Building or editing components in `packages/ui`, defining tokens, writing CVA variants, or reviewing shared-vs-local boundary                                                             |
+| [`systematic-debugging`](#systematic-debugging)               | `.agents/skills/systematic-debugging/`        | Encountering any bug, test failure, or unexpected behavior — **skip if the root cause is already obvious**                                                                                |
+| [`turborepo`](#turborepo)                                     | `.agents/skills/turborepo/`                   | Configuring `turbo.json`, writing pipeline tasks, using `--filter`, optimizing CI caching, or debugging turbo cache                                                                       |
+| [`next-best-practices`](#next-best-practices)                 | `.agents/skills/next-best-practices/`         | Writing or reviewing any Next.js App Router code: RSC boundaries, async APIs, data fetching, metadata, images, error handling                                                             |
+| [`next-cache-components`](#next-cache-components)             | `.agents/skills/next-cache-components/`       | Working with Next.js 16+ `use cache` directive, Cache Components (PPR), `cacheLife`, `cacheTag`, or `updateTag`                                                                           |
+| [`next-upgrade`](#next-upgrade)                               | `.agents/skills/next-upgrade/`                | Upgrading Next.js to a new major version, running codemods, or reviewing breaking changes                                                                                                 |
+| [`vercel-react-best-practices`](#vercel-react-best-practices) | `.agents/skills/vercel-react-best-practices/` | Writing or refactoring React/Next.js components and applying the 45 Vercel Engineering rules: async waterfalls, bundle size, re-renders, server-side data fetching, rendering performance |
+| [`vercel-composition-patterns`](#vercel-composition-patterns) | `.agents/skills/vercel-composition-patterns/` | Designing or reviewing component APIs, refactoring boolean-prop-heavy components, building compound components or context providers                                                       |
+| [`web-design-guidelines`](#web-design-guidelines)             | `.agents/skills/web-design-guidelines/`       | Explicitly auditing UI for accessibility and UX compliance against Vercel's Web Interface Guidelines                                                                                      |
 
 ---
 
@@ -73,6 +73,14 @@ optimistic updates, pagination, infinite queries, Next.js App Router hydration, 
 `Controller` integration for `@repo/ui` components, `useFieldArray`, mutation-integrated
 submissions, accessible error display (`aria-invalid`, `aria-describedby`, `role="alert"`),
 multi-step forms, and performance optimizations.
+
+#### `impeccable`
+
+Production-grade frontend interface design and iteration. Covers design, redesign, critique,
+audit, polish, accessibility, visual hierarchy, information architecture, responsive behavior,
+theming, typography, layout, motion, UX copy, error states, and reusable design systems or tokens.
+Load for websites, landing pages, dashboards, product UI, app shells, components, forms,
+settings, onboarding, empty states, and live browser iteration on UI.
 
 #### `design-system`
 
@@ -132,13 +140,6 @@ React composition patterns to avoid boolean prop proliferation: compound compone
 context-based state decoupling, explicit variant components, children over render props,
 and React 19 API changes (`forwardRef` removal, `use()` hook). From Vercel Engineering.
 
-#### `agent-browser`
-
-Browser automation CLI for AI agents using `agent-browser`. Covers the core snapshot → ref →
-interact → re-snapshot workflow, form submission, authenticated sessions with state persistence,
-data extraction, parallel sessions, iOS Simulator support, JavaScript evaluation, and
-semantic locators. Used for smoke testing, visual parity verification, and E2E automation.
-
 #### `web-design-guidelines`
 
 UI review workflow against Vercel's Web Interface Guidelines. Fetches the latest rules from
@@ -171,31 +172,33 @@ Place a `CLAUDE.md` in the repo root (or any subdirectory) and reference skills 
 
 ## Agent Skills
 
-Before starting any task, read the relevant skills from the `skills/` directory.
+Before starting any task, read the relevant skills from the `.agents/skills/` directory.
 
 ### Always load
 
-- `skills/monorepo-workspace/SKILL.md` — workspace topology and boundaries
+- `.agents/skills/monorepo-workspace/SKILL.md` — workspace topology and boundaries
 
 ### Load when relevant
 
-- `skills/react-query/SKILL.md` — when writing useQuery/useMutation/service hooks
-- `skills/forms-validation/SKILL.md` — when working on any form
-- `skills/systematic-debugging/SKILL.md` — when debugging any bug before proposing a fix
-- `skills/design-system/SKILL.md` — when editing packages/ui
-- `skills/turborepo/SKILL.md` — when configuring turbo.json or using the turbo CLI
-- `skills/next-best-practices/SKILL.md` — when writing Next.js App Router code
-- `skills/vercel-react-best-practices/SKILL.md` — when writing or refactoring React/Next.js components (waterfalls, bundle size, re-renders)
-- `skills/vercel-composition-patterns/SKILL.md` — when designing component APIs
-- `skills/agent-browser/SKILL.md` — when running browser automation or smoke tests
-- `skills/web-design-guidelines/SKILL.md` — when auditing UI for a11y and UX compliance
+- `.agents/skills/react-query/SKILL.md` — when writing useQuery/useMutation/service hooks
+- `.agents/skills/forms-validation/SKILL.md` — when working on any form
+- `.agents/skills/impeccable/SKILL.md` — when designing, redesigning, auditing, or polishing frontend UI
+- `.agents/skills/systematic-debugging/SKILL.md` — when debugging any bug before proposing a fix
+- `.agents/skills/design-system/SKILL.md` — when editing packages/ui
+- `.agents/skills/turborepo/SKILL.md` — when configuring turbo.json or using the turbo CLI
+- `.agents/skills/next-best-practices/SKILL.md` — when writing Next.js App Router code
+- `.agents/skills/next-cache-components/SKILL.md` — when working with Next.js 16 Cache Components, PPR, or cache tags
+- `.agents/skills/next-upgrade/SKILL.md` — when upgrading Next.js or running migration codemods
+- `.agents/skills/vercel-react-best-practices/SKILL.md` — when writing or refactoring React/Next.js components (waterfalls, bundle size, re-renders)
+- `.agents/skills/vercel-composition-patterns/SKILL.md` — when designing component APIs
+- `.agents/skills/web-design-guidelines/SKILL.md` — when auditing UI for a11y and UX compliance
 ```
 
 #### Option B — On-demand via slash command
 
 ```bash
 # In your Claude Code session
-/skill skills/react-query/SKILL.md
+/skill .agents/skills/react-query/SKILL.md
 ```
 
 #### Option C — Project-level `settings.json`
@@ -204,7 +207,7 @@ Before starting any task, read the relevant skills from the `skills/` directory.
 // .claude/settings.json
 {
   "permissions": {
-    "allow": ["Read(skills/**/SKILL.md)"]
+    "allow": ["Read(.agents/skills/**/SKILL.md)"]
   }
 }
 ```
@@ -212,19 +215,19 @@ Before starting any task, read the relevant skills from the `skills/` directory.
 Then instruct Claude explicitly in your prompt:
 
 ```
-Read skills/react-query/SKILL.md before writing any service hooks.
+Read .agents/skills/react-query/SKILL.md before writing any service hooks.
 ```
 
 ---
 
 ### Gemini CLI / Antigravity (Google)
 
-Antigravity discovers skills automatically from a `skills/` directory at the repository root.
+Antigravity discovers skills automatically from a `.agents/skills/` directory at the repository root.
 Each `SKILL.md` frontmatter `description` field controls when the skill is triggered.
 
 #### How it works
 
-1. Antigravity scans `skills/*/SKILL.md` on every task
+1. Antigravity scans `.agents/skills/*/SKILL.md` on every task
 2. It matches the frontmatter `description` against the current task context
 3. It reads the matched `SKILL.md` automatically before responding
 
@@ -233,7 +236,7 @@ Each `SKILL.md` frontmatter `description` field controls when the skill is trigg
 Confirm Antigravity can see the skills directory:
 
 ```bash
-ls skills/*/SKILL.md
+ls .agents/skills/*/SKILL.md
 ```
 
 All entries must be readable files. Skills with `user-invocable: false` in frontmatter
@@ -263,24 +266,26 @@ Several skills include a pre-compiled `AGENTS.md` for direct inclusion.
 
 ## Development Skills
 
-Before coding, read the applicable skill files from the `skills/` directory.
+Before coding, read the applicable skill files from the `.agents/skills/` directory.
 
 ### Mandatory context
 
-- Always read: `skills/monorepo-workspace/SKILL.md`
+- Always read: `.agents/skills/monorepo-workspace/SKILL.md`
 
 ### Task-conditional context
 
-- Forms work: `skills/forms-validation/SKILL.md`
-- Data fetching: `skills/react-query/SKILL.md`
-- Debugging: `skills/systematic-debugging/SKILL.md`
-- UI components in packages/ui: `skills/design-system/SKILL.md`
-- Next.js work: `skills/next-best-practices/SKILL.md`
-- React/Next.js component authoring or refactoring (waterfalls, bundle, re-renders): `skills/vercel-react-best-practices/SKILL.md`
-- Component architecture: `skills/vercel-composition-patterns/SKILL.md`
-- Browser automation: `skills/agent-browser/SKILL.md`
-- Turbo / monorepo tooling: `skills/turborepo/SKILL.md`
-- UI accessibility/UX audit: `skills/web-design-guidelines/SKILL.md`
+- Forms work: `.agents/skills/forms-validation/SKILL.md`
+- Data fetching: `.agents/skills/react-query/SKILL.md`
+- Frontend interface design / polish: `.agents/skills/impeccable/SKILL.md`
+- Debugging: `.agents/skills/systematic-debugging/SKILL.md`
+- UI components in packages/ui: `.agents/skills/design-system/SKILL.md`
+- Next.js work: `.agents/skills/next-best-practices/SKILL.md`
+- Next.js Cache Components / PPR: `.agents/skills/next-cache-components/SKILL.md`
+- Next.js upgrades: `.agents/skills/next-upgrade/SKILL.md`
+- React/Next.js component authoring or refactoring (waterfalls, bundle, re-renders): `.agents/skills/vercel-react-best-practices/SKILL.md`
+- Component architecture: `.agents/skills/vercel-composition-patterns/SKILL.md`
+- Turbo / monorepo tooling: `.agents/skills/turborepo/SKILL.md`
+- UI accessibility/UX audit: `.agents/skills/web-design-guidelines/SKILL.md`
 ```
 
 #### Option B — `.github/copilot-instructions.md` (GitHub Copilot Chat)
@@ -289,17 +294,22 @@ Before coding, read the applicable skill files from the `skills/` directory.
 # Copilot Instructions
 
 This repository uses structured AI skills. When relevant to the task,
-read the corresponding `SKILL.md` from the `skills/` directory before
+read the corresponding `SKILL.md` from the `.agents/skills/` directory before
 generating code. Key skills:
 
-- `skills/monorepo-workspace/SKILL.md` — package boundaries, imports, turbo commands
-- `skills/react-query/SKILL.md` — TanStack Query v5 service layer patterns
-- `skills/forms-validation/SKILL.md` — react-hook-form + zod patterns
-- `skills/design-system/SKILL.md` — @repo/ui component authoring
-- `skills/systematic-debugging/SKILL.md` — debugging before fixing
-- `skills/next-best-practices/SKILL.md` — Next.js App Router rules
-- `skills/vercel-react-best-practices/SKILL.md` — writing/refactoring React components: async waterfalls, bundle size, re-render optimization
-- `skills/web-design-guidelines/SKILL.md` — UI accessibility and UX audit
+- `.agents/skills/monorepo-workspace/SKILL.md` — package boundaries, imports, turbo commands
+- `.agents/skills/react-query/SKILL.md` — TanStack Query v5 service layer patterns
+- `.agents/skills/forms-validation/SKILL.md` — react-hook-form + zod patterns
+- `.agents/skills/impeccable/SKILL.md` — frontend interface design, polish, UX, accessibility, and motion
+- `.agents/skills/design-system/SKILL.md` — @repo/ui component authoring
+- `.agents/skills/systematic-debugging/SKILL.md` — debugging before fixing
+- `.agents/skills/next-best-practices/SKILL.md` — Next.js App Router rules
+- `.agents/skills/next-cache-components/SKILL.md` — Next.js 16 Cache Components and PPR
+- `.agents/skills/next-upgrade/SKILL.md` — Next.js upgrade guides and codemods
+- `.agents/skills/turborepo/SKILL.md` — turbo pipeline, filtering, and cache rules
+- `.agents/skills/vercel-react-best-practices/SKILL.md` — writing/refactoring React components: async waterfalls, bundle size, re-render optimization
+- `.agents/skills/vercel-composition-patterns/SKILL.md` — component API and composition patterns
+- `.agents/skills/web-design-guidelines/SKILL.md` — UI accessibility and UX audit
 ```
 
 #### Option C — Include compiled `AGENTS.md` from skill directories
@@ -307,8 +317,8 @@ generating code. Key skills:
 Some skills ship a pre-compiled `AGENTS.md`:
 
 ```
-skills/vercel-react-best-practices/AGENTS.md
-skills/vercel-composition-patterns/AGENTS.md
+.agents/skills/vercel-react-best-practices/AGENTS.md
+.agents/skills/vercel-composition-patterns/AGENTS.md
 ```
 
 Reference these directly in your root `AGENTS.md`:
@@ -316,8 +326,8 @@ Reference these directly in your root `AGENTS.md`:
 ```markdown
 # Include compiled skills
 
-See: skills/vercel-react-best-practices/AGENTS.md
-See: skills/vercel-composition-patterns/AGENTS.md
+See: .agents/skills/vercel-react-best-practices/AGENTS.md
+See: .agents/skills/vercel-composition-patterns/AGENTS.md
 ```
 
 ---
@@ -339,7 +349,7 @@ alwaysApply: false
 
 ---
 
-Read `skills/monorepo-workspace/SKILL.md` before responding.
+Read `.agents/skills/monorepo-workspace/SKILL.md` before responding.
 ```
 
 ```markdown
@@ -351,7 +361,7 @@ alwaysApply: false
 
 ---
 
-Read `skills/react-query/SKILL.md` before responding.
+Read `.agents/skills/react-query/SKILL.md` before responding.
 ```
 
 ```markdown
@@ -363,7 +373,7 @@ alwaysApply: false
 
 ---
 
-Read `skills/forms-validation/SKILL.md` before responding.
+Read `.agents/skills/forms-validation/SKILL.md` before responding.
 ```
 
 ```markdown
@@ -374,7 +384,7 @@ alwaysApply: false
 
 ---
 
-Read `skills/systematic-debugging/SKILL.md` before proposing any fix.
+Read `.agents/skills/systematic-debugging/SKILL.md` before proposing any fix.
 ```
 
 #### Option B — `.cursorrules` (legacy, simpler)
@@ -384,20 +394,22 @@ Read `skills/systematic-debugging/SKILL.md` before proposing any fix.
 
 ## Skills
 
-This project has AI skills in the `skills/` directory. Read the relevant SKILL.md
+This project has AI skills in the `.agents/skills/` directory. Read the relevant SKILL.md
 before every task:
 
-- Monorepo / imports / packages → skills/monorepo-workspace/SKILL.md
-- React Query / service hooks  → skills/react-query/SKILL.md
-- Forms / zod / rhf            → skills/forms-validation/SKILL.md
-- Design system / @repo/ui     → skills/design-system/SKILL.md
-- Debugging                    → skills/systematic-debugging/SKILL.md
-- Next.js                      → skills/next-best-practices/SKILL.md
-- React / Next.js components (waterfalls, bundle, re-renders) → skills/vercel-react-best-practices/SKILL.md
-- Turbo / monorepo tasks       → skills/turborepo/SKILL.md
-- Component API design         → skills/vercel-composition-patterns/SKILL.md
-- Browser automation           → skills/agent-browser/SKILL.md
-- UI accessibility / UX audit  → skills/web-design-guidelines/SKILL.md
+- Monorepo / imports / packages → .agents/skills/monorepo-workspace/SKILL.md
+- React Query / service hooks  → .agents/skills/react-query/SKILL.md
+- Forms / zod / rhf            → .agents/skills/forms-validation/SKILL.md
+- Frontend UI design / polish  → .agents/skills/impeccable/SKILL.md
+- Design system / @repo/ui     → .agents/skills/design-system/SKILL.md
+- Debugging                    → .agents/skills/systematic-debugging/SKILL.md
+- Next.js                      → .agents/skills/next-best-practices/SKILL.md
+- Next.js Cache Components     → .agents/skills/next-cache-components/SKILL.md
+- Next.js upgrades             → .agents/skills/next-upgrade/SKILL.md
+- React / Next.js components (waterfalls, bundle, re-renders) → .agents/skills/vercel-react-best-practices/SKILL.md
+- Turbo / monorepo tasks       → .agents/skills/turborepo/SKILL.md
+- Component API design         → .agents/skills/vercel-composition-patterns/SKILL.md
+- UI accessibility / UX audit  → .agents/skills/web-design-guidelines/SKILL.md
 ```
 
 ---
@@ -413,27 +425,29 @@ Windsurf reads `.windsurfrules` and also supports memories via `@remember`.
 
 ## AI Skills
 
-Read skills from the `skills/` directory based on task context:
+Read skills from the `.agents/skills/` directory based on task context:
 
 | Task type | Skill file |
 |-----------|-----------|
-| Any file placement, import, turbo command | skills/monorepo-workspace/SKILL.md |
-| useQuery, useMutation, service layer | skills/react-query/SKILL.md |
-| Forms, react-hook-form, zod | skills/forms-validation/SKILL.md |
-| packages/ui components, design tokens | skills/design-system/SKILL.md |
-| Bug, test failure, unexpected behavior | skills/systematic-debugging/SKILL.md |
-| Next.js App Router code | skills/next-best-practices/SKILL.md |
-| Writing/refactoring React components: waterfalls, bundle size, re-renders | skills/vercel-react-best-practices/SKILL.md |
-| turbo.json, --filter, CI caching | skills/turborepo/SKILL.md |
-| Component API design | skills/vercel-composition-patterns/SKILL.md |
-| Browser automation, smoke tests | skills/agent-browser/SKILL.md |
-| UI accessibility / UX audit | skills/web-design-guidelines/SKILL.md |
+| Any file placement, import, turbo command | .agents/skills/monorepo-workspace/SKILL.md |
+| useQuery, useMutation, service layer | .agents/skills/react-query/SKILL.md |
+| Forms, react-hook-form, zod | .agents/skills/forms-validation/SKILL.md |
+| Frontend UI design, redesign, polish, UX, accessibility, motion | .agents/skills/impeccable/SKILL.md |
+| packages/ui components, design tokens | .agents/skills/design-system/SKILL.md |
+| Bug, test failure, unexpected behavior | .agents/skills/systematic-debugging/SKILL.md |
+| Next.js App Router code | .agents/skills/next-best-practices/SKILL.md |
+| Next.js Cache Components, PPR, cache tags | .agents/skills/next-cache-components/SKILL.md |
+| Next.js version upgrades, migration codemods | .agents/skills/next-upgrade/SKILL.md |
+| Writing/refactoring React components: waterfalls, bundle size, re-renders | .agents/skills/vercel-react-best-practices/SKILL.md |
+| turbo.json, --filter, CI caching | .agents/skills/turborepo/SKILL.md |
+| Component API design | .agents/skills/vercel-composition-patterns/SKILL.md |
+| UI accessibility / UX audit | .agents/skills/web-design-guidelines/SKILL.md |
 ```
 
 #### Windsurf Memories (persistent)
 
 ```
-@remember For this project, always read skills/monorepo-workspace/SKILL.md before
+@remember For this project, always read .agents/skills/monorepo-workspace/SKILL.md before
 touching any package boundary or import path.
 ```
 
@@ -460,14 +474,14 @@ Continue reads `.continuerc.json` and supports `@file` context providers.
       "params": {}
     }
   ],
-  "systemMessage": "This project uses AI skills in the `skills/` directory. When relevant, read the SKILL.md for: monorepo-workspace (imports/packages), react-query (data fetching/service hooks), forms-validation (forms), design-system (UI components in packages/ui), systematic-debugging (before fixing any bug), next-best-practices (Next.js App Router), vercel-react-best-practices (writing/refactoring React components: waterfalls, bundle size, re-renders), web-design-guidelines (UI a11y and UX audit)."
+  "systemMessage": "This project uses AI skills in the `.agents/skills/` directory. When relevant, read the SKILL.md for: monorepo-workspace (imports/packages), react-query (data fetching/service hooks), forms-validation (forms), impeccable (frontend interface design/polish/UX/a11y/motion), design-system (UI components in packages/ui), systematic-debugging (before fixing any bug), turborepo (pipeline/filtering/cache), next-best-practices (Next.js App Router), next-cache-components (Next.js 16 Cache Components/PPR), next-upgrade (Next.js migrations/codemods), vercel-react-best-practices (writing/refactoring React components: waterfalls, bundle size, re-renders), vercel-composition-patterns (component API design), web-design-guidelines (UI a11y and UX audit)."
 }
 ```
 
 #### Inline skill loading in Continue
 
 ```
-@file skills/react-query/SKILL.md
+@file .agents/skills/react-query/SKILL.md
 
 Now write a mutation hook for updating a user's profile.
 ```
@@ -483,30 +497,30 @@ For any AI agent that reads a root-level instruction file, use this template:
 
 ## Skills System
 
-This project has structured knowledge files called "skills" in the `skills/` directory.
+This project has structured knowledge files called "skills" in the `.agents/skills/` directory.
 Each skill is a `SKILL.md` file that documents conventions, patterns, and rules for a
 specific concern.
 
 ### Always read before any task
 
-- `skills/monorepo-workspace/SKILL.md`
+- `.agents/skills/monorepo-workspace/SKILL.md`
 
 ### Read when the task involves…
 
 | Task involves                                                                         | Skill to read                                 |
 | ------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `useQuery`, `useMutation`, API service hooks, `QueryClient`                           | `skills/react-query/SKILL.md`                 |
-| Forms, `react-hook-form`, `zod`, form submission                                      | `skills/forms-validation/SKILL.md`            |
-| `packages/ui`, design tokens, CVA variants, accessibility                             | `skills/design-system/SKILL.md`               |
-| Any bug, test failure, or unexpected behavior                                         | `skills/systematic-debugging/SKILL.md`        |
-| `turbo.json`, `--filter`, turbo CLI, CI pipeline                                      | `skills/turborepo/SKILL.md`                   |
-| Next.js App Router, RSC, `use client`, data patterns                                  | `skills/next-best-practices/SKILL.md`         |
-| Next.js 16+ `use cache`, PPR, Cache Components                                        | `skills/next-cache-components/SKILL.md`       |
-| Writing or refactoring React/Next.js components (waterfalls, bundle size, re-renders) | `skills/vercel-react-best-practices/SKILL.md` |
-| Component API design, compound components, context                                    | `skills/vercel-composition-patterns/SKILL.md` |
-| Browser automation, smoke testing, visual parity                                      | `skills/agent-browser/SKILL.md`               |
-| Upgrading Next.js version                                                             | `skills/next-upgrade/SKILL.md`                |
-| UI accessibility / UX audit against external guidelines                               | `skills/web-design-guidelines/SKILL.md`       |
+| `useQuery`, `useMutation`, API service hooks, `QueryClient`                           | `.agents/skills/react-query/SKILL.md`                 |
+| Forms, `react-hook-form`, `zod`, form submission                                      | `.agents/skills/forms-validation/SKILL.md`            |
+| Frontend UI design, redesign, polish, UX, accessibility, motion                       | `.agents/skills/impeccable/SKILL.md`                  |
+| `packages/ui`, design tokens, CVA variants, accessibility                             | `.agents/skills/design-system/SKILL.md`               |
+| Any bug, test failure, or unexpected behavior                                         | `.agents/skills/systematic-debugging/SKILL.md`        |
+| `turbo.json`, `--filter`, turbo CLI, CI pipeline                                      | `.agents/skills/turborepo/SKILL.md`                   |
+| Next.js App Router, RSC, `use client`, data patterns                                  | `.agents/skills/next-best-practices/SKILL.md`         |
+| Next.js 16+ `use cache`, PPR, Cache Components                                        | `.agents/skills/next-cache-components/SKILL.md`       |
+| Writing or refactoring React/Next.js components (waterfalls, bundle size, re-renders) | `.agents/skills/vercel-react-best-practices/SKILL.md` |
+| Component API design, compound components, context                                    | `.agents/skills/vercel-composition-patterns/SKILL.md` |
+| Upgrading Next.js version                                                             | `.agents/skills/next-upgrade/SKILL.md`                |
+| UI accessibility / UX audit against external guidelines                               | `.agents/skills/web-design-guidelines/SKILL.md`       |
 ```
 
 ---
@@ -539,7 +553,7 @@ specific concern.
 1. **Create the directory:**
 
    ```bash
-   mkdir skills/<skill-name>
+   mkdir .agents/skills/<skill-name>
    ```
 
 2. **Create `SKILL.md` with standard frontmatter:**
@@ -597,18 +611,16 @@ specific concern.
 ## Directory Structure Reference
 
 ```
-skills/
+.agents/skills/
 ├── README.md                        ← this file
-│
-├── agent-browser/
-│   ├── SKILL.md                     ← entry point (always present)
-│   ├── references/                  ← deep-dive reference docs
-│   └── templates/                   ← ready-to-run shell scripts
 │
 ├── design-system/
 │   └── SKILL.md
 │
 ├── forms-validation/
+│   └── SKILL.md
+│
+├── impeccable/
 │   └── SKILL.md
 │
 ├── monorepo-workspace/

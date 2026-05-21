@@ -139,39 +139,19 @@ export default function Page() {
 
 ## API And Data Access
 
-Prefer this shape for newer service work:
+The service layer follows a colocated, domain-first architecture. Full documentation lives in:
 
-```text
-src/services/<domain>/
-  api/
-    <domain>.endpoints.ts
-    <domain>.service.ts
-    <domain>.types.ts
-  hooks/
-    queries/
-    mutations/
-  query-keys.ts
-```
+- [`docs/SERVICE_ARCHITECTURE.md`](./docs/SERVICE_ARCHITECTURE.md) — structure, boundaries, and ADRs
+- [`docs/SERVICE_IMPLEMENTATION_GUIDE.md`](./docs/SERVICE_IMPLEMENTATION_GUIDE.md) — step-by-step implementation checklist
+- [`docs/SERVICE_REACTQUERY_PATTERNS.md`](./docs/SERVICE_REACTQUERY_PATTERNS.md) — TanStack Query hook patterns and pitfalls
 
-Service rules:
+Key rules to keep in mind:
 
+- One service per base URL — do not split endpoints sharing the same base URL into multiple services.
 - Use `createApiClient(API_BASE_URLS.<domain>)` from `@/lib/api-client`.
-- Keep endpoint strings in `<domain>.endpoints.ts`.
-- Serialize query params with `qs.stringify(..., { arrayFormat: "brackets" })`
-  when matching existing services.
 - Return `response.data` from service methods, not raw Axios responses.
-- Pass `AbortSignal` through query hooks where the service supports cancellation.
-- For unauthenticated/static calls, explicitly set `withAuth: false`.
-- Keep domain services narrow. Do not put cross-domain endpoint calls into an
-  unrelated service because it is convenient.
-
-TanStack Query rules:
-
-- `QueryProvider` is already mounted globally.
-- Put stable query keys in `query-keys.ts`.
-- Do not hardcode ad hoc array keys across views.
-- Let mutations invalidate or update the smallest relevant query set.
-- Avoid duplicating a legacy hook and a query hook for the same new behavior.
+- Put stable query keys in `query-keys.ts`; never hardcode ad hoc arrays in views.
+- Let mutations invalidate the smallest relevant query set and always call `options?.onSuccess`.
 
 ## Forms
 
@@ -278,6 +258,25 @@ docker run -p 3000:3000 --env-file apps/admin-portal/.env admin-portal:local
   with this flow.
 - If a new workspace package is required at runtime, declare it in
   `apps/admin-portal/package.json` so Turbo prune includes it.
+
+## Skills
+
+Agent skills are available at `.agents/skills/` in the repository root. Use them
+when the task matches their scope:
+
+- `design-system` — Token-driven UI components in `packages/ui`
+- `forms-validation` — Forms + validation (react-hook-form + zod)
+- `impeccable` — UI polish: visual hierarchy, motion, typography, spacing, UX copy
+- `monorepo-workspace` — Package topology & inter-package boundaries
+- `next-best-practices` — File conventions, RSC, data, error, bundling
+- `next-cache-components` — PPR & `use cache` in Next.js 16+
+- `next-upgrade` — Upgrade Next.js via official migration guide
+- `react-query` — Query/mutation hooks + service layer (TanStack v5)
+- `systematic-debugging` — Root cause first, then fix
+- `turborepo` — Pipeline, caching, filter, env vars in `turbo.json`
+- `vercel-composition-patterns` — Compound components, avoid boolean props
+- `vercel-react-best-practices` — Bundle, async, event listener optimization
+- `web-design-guidelines` — UI audit: a11y, UX, visual hierarchy
 
 ## Documentation Lookup
 
