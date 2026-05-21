@@ -1,5 +1,4 @@
 # AI Agent Skills — Setup Guide
-
 > **What are skills?**
 > Skills are curated, structured knowledge files that teach an AI agent the conventions,
 > patterns, and rules of this codebase. When an agent reads a skill before working on a task,
